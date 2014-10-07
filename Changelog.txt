@@ -1,0 +1,155 @@
+*2.19.5 10/7/2014
+** Detect when SendPlay will not work and switch to SendInput (SendPlay requires Administrative Rights)
+** Added ability to use a Defaults.ini file.
+
+*2.19d 5/28/2013
+** Changed the shortcut key to delete a learned word to Ctrl-Shift-Del. If this causes problems, I will make it customizable.
+
+*2.19c 5/28/2013
+** Changed the shortcut key to delete a learned word to Shift-Del. If this causes problems, I will either make it Ctrl-Shift-Del or I will make it customizable.
+
+*2.19b 5/23/2013
+** Some editors show a * in the window title if the file is edited, which was clearing the current word. I have changed the title comparison to filter out *, -, and space characters. Please let me know if any additional characters should be added.
+
+*2.19 5/22/2013
+** A new preference, SuppressMatchingWord, has been added to suppress any words from the wordlist which match the current word. This is case-sensitive if NoBackspace=Off, otherwise it's case in-sensitive.
+** Ctrl-Del has been added to delete learned words. This ONLY works for learned words and there is no confirmation upon deletion.
+** Ctrl-Del and Ctrl-Shift-C are disabled when LearnMode is not On.
+** Enter has been added as an AutoComplete key. This can be disabled by adding "U" to the DisabledAutoCompleteKeys.
+** The Title matching algorithm added in v2.18 has been changed to be case-sensitive.
+** When ArrowKeyMethod was set to Off, the match list was not being constructed properly.
+** Better examples have been added to the Preferences ini file.
+
+*2.18 5/14/2013
+** Changed active window detection algorithm. If the Window Title changes, this will now be treated as if the active window has changed. The current word will be reset and the Include/Exclude parameters will be re-evaluated.
+
+*2.17 5/10/2013
+** Learned Words are now stored in a separate file - WordlistLearned.txt. This will automatically convert your existing wordlist (though I would recommend creating a manual backup).
+** Removed all direct references to ascii 002 (delimiter character) in the code.
+** Fixed a bug where some Learned Words could be removed if someone had manually added duplicates to the Learned Word list.
+** Fixed a bug which could occur if ;LEARNEDWORDS; existed twice in the file (though this code shouldn't even be hit after the conversion to the new format).
+
+*2.16f 11/7/2012
+** Fixed issue where the box could snap to the left side of the screen even if the text was not too long.
+
+*2.16e 10/30/2012
+** Fixed issue where left side of box would disappear from screen if text was too long.
+
+*2.16d 9/10/2012
+** Included some incorrect source files with v2.16c.
+
+*2.16c 8/13/2012
+** Fixed crash in AHK_L when the wordlist box touched the bottom of the screen.
+
+*2.16b 12/10/2010
+** Script should now work with AHK_L again.
+** Changed how the Include file directories are referenced.
+
+*2.16 08/16/2010
+** Added the parameter DoNotLearnStrings. Any words which contain a string from DoNotLearnStrings will not be learned.
+** Words which do not contain any alphabetical characters (A-Z) will not be learned.
+** Words which contain numbers will now be learned even if Number keys are enabled as AutoComplete keys, the number pad may be used to type numbers without autocompleting the word.
+
+*2.15 05/17/2010
+** Disabled AutoComplete keys when the ListBox is not showing.
+** Minor code reorganization.
+** If Space or Tab are not in the TerminatingCharacters list, words with all spaces or tabs will no longer be learned.
+** If DetectMouseClickMove is off, Right Clicking the ListBox will no longer activate the window.
+** Fixed a bug where typing numbers would reset the word if Number keys were disabled as AutoComplete keys.
+** Alt-Tab, Win-Tab, and switching windows with the mouse should no longer ever reset the word until you type in a different window.
+** Minimizing or resizing the window via the titlebar should no longer reset the word until you type in a different window.
+** If NumPresses is 2, typing numbers should now work better with the wordlist.
+
+*2.14b 05/06/2010
+** Fixed a bug introduced with 2.14 that would prevent the List Box from disappearing when switching windows.
+
+*2.14 05/04/2010
+** Reduced the flashing of the icon when switching programs.
+** Added an option to automatically add a space to the end of a word (Default is OFF).
+** Added an option to make it so the backspaces are not sent before completing the word. This makes it so the capitalization is kept as typed as opposed to using the capitalization in the wordlist file (Default is ON).
+** Internal code reorganization.
+** Made Helper Window Transparent.
+** Changed the ToolTip to a ListBox structure.
+
+*2.13 03/22/2010
+** Changed the Include Title parameter to a list of partial title matches.
+** Added an Include list for program executables.
+** Added exclude lists for program executables and partial title matches.
+** Added lists to enable the Helper Window automatically for program executables and title matches.
+** If you close the Helper Window in a program for which it opens automatically, it will not re-open in that instance of the program until you tell it manually to open again.
+** Word is not cleared if you type in a non-enabled window, then switch back to the previous caret position in the last enabled window.
+** Changed HelperWindow to +Owner, not +ToolWindow (slightly changes appearance).
+** Eliminated the flash of the "S">"H">"S" icon when loading TypingAid and the current program is not an enabled program.
+** Fixed a bug introduced with 2.12 that prevented the HelperWindow from being dragged.
+** Fixed a bug introduced with 2.12 that allowed words with numbers to be learned when numbers were enabled as AutoCompleteKeys.
+
+*2.12 03/09/2010
+** Unused HotKeys are now disabled and not just bypassed.
+** Added a new parameter to disable or enable resetting of the tooltip on a mouseclick. This should be disabled when using an On-Screen keyboard, otherwise it should be enabled as it allows you to scroll with the mousewheel.
+** Added the ability to disable the number keys as AutoCompleteKeys, allowing you to have words that contain numbers.
+** Hide the tooltip and helper window when the window title does not contain the Title preference parameter.
+** Set process priority to low when waiting for a window which contains the Title preference parameter.
+** Suspend HotKeys when waiting for a window which contains the Title preference parameter.
+** Changed the helper window so it does not become the active window when it is opened.
+** Words containing numbers or ForceNewWordCharacters will now be ranked if they are already learned words.
+** If Ctrl-Enter, Ctrl-Space, Tab, and Right arrow are all disabled as AutoCompleteKeys, then the ArrowKeyMethod is set to Off.
+
+*2.11 03/03/2010
+** Fixed a bug introduced with 2.07 which caused learned words to no longer be ranked.
+
+*2.10 02/26/2010
+** Removed {BS} (BackSpace) from the Terminating Characters list in the preferences file and hardcoded it. BackSpace is necessary for script functionality and should not be removed.
+** Added code to reset the word if you use the mouse to move the caret within the same line.
+** Updated the documentation in the Preferences file to be more user-friendly and descriptive.
+
+*2.09 02/12/2010
+** Added the Right Arrow key as an AutoComplete key
+** Added a workaround for an AHK bug which prevented the first backspace from occasionally being sent when SendMethod=1 or 1C.
+** Added a fix for an issue which caused "v" to be sent occasionally when SendMethod=4C.
+** Added more safeguards to prevent the issue noted in 2.06 with hexadecimal numbers. The error still occured occasionally.
+
+*2.08 02/09/2010
+** Fixed a bug which caused the script to error when a word was too long when LearnMode=Off.
+** Fixed a bug which caused the script to remove unicode characters from learned words when saving the wordlist in unicode mode.
+
+*2.07 02/08/2010
+** Fixed a bug which prevented phrases with commas from being learned when hitting Ctrl-Shift-C or when comma was not a terminating character.
+
+*2.06 02/03/2010
+** Hotkeys are now suspended when loading and saving the wordlist. This lets hotkeys be typed while loading/saving and also shows an S rather than an H in the icon when the script is loading/saving.
+** Fixed a bug introduced with 2.04 which made it so the tooltip didn't go away after changing windows.
+** Hopefully fixed a bug which caused the script to sometimes convert all numbers to hexadecimal, causing the script to malfunction.
+
+*2.05b 02/01/2010
+** Fixed a bug introduced to length change in 2.05.
+
+*2.05 02/01/2010
+** Increased Max Length of words to 123 characters when not using unicode AHK.
+** Added alternative sending methods to the preferences file.
+** Added valid value checking when reading the preferences file.
+
+*2.04 01/28/2010
+** Lowered priority of the thread which checks for a changed window.
+** Fixed bug causing tooltip to not appear above cursor when at the bottom of the screen.
+** Added a new parameter to the preferences file to control the height of a line in the tooltip (in case you have changed the font size).
+** Fixed bug causing the preferences file to be written to every time you exited when you had shown the Helper window once.
+** Allow words with numbers and characters in ForceNewWordCharacters to be learned when you hit Ctrl-Shift-C.
+** Implement full Unicode support for the UTF-8 character set when using AutoHotKeyU.
+** Due to the UTF-8 support, learned words are now limited to 61 characters.
+
+*2.03 01/26/2010
+** Fixed a bug with title matching which was causing only the beginning of the window title to match.
+** Limited the length of entries in the wordlist.txt file and learned words to 82 characters when learnmode is on to prevent a crash.
+** Changed the script priority to high when running (it is normal when loading and saving the wordlist).
+** Uncapped the script CPU usage when running (it is capped to 67% when loading and saving the wordlist).
+** Removed the Helper window from the taskbar and alt-tab window.
+** Fixed a bug which caused the script to delete some or all LearnedWords from the wordlist if the script is exited before the wordlist is loaded.
+
+*2.02 01/25/2010
+** Parameter added to the preferences file to control the number of characters that need to be typed for a word to be learned.
+
+*2.01 01/25/2010
+** Helper window position is now saved between sessions.
+
+*2.0 01/22/2010
+** Initial Re-Release
