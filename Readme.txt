@@ -3,8 +3,8 @@ TypingAid is a simple, compact, and handy auto-completion utility.
 It is customizable enough to be useful for regular typing and for programming.
 
 [b]Download:[/b]
-[url=https://github.com/ManiacDC/TypingAid/blob/master/Releases/v2.19.5/TypingAid.exe?raw=true]TypingAid v2.19.5 Precompiled Executable[/url]
-[url=https://github.com/ManiacDC/TypingAid/blob/master/Releases/v2.19.5/TypingAid%20v2.19.5.zip?raw=true]TypingAid v2.19.5 AHK Script[/url]
+[url=https://github.com/ManiacDC/TypingAid/releases/download/v2.19.5/TypingAid.exe]TypingAid v2.19.5 Precompiled Executable[/url]
+[url=https://github.com/ManiacDC/TypingAid/archive/v2.19.5.zip]TypingAid v2.19.5 AHK Script[/url]
 
 English Wordlists:
 [url=https://github.com/ManiacDC/TypingAid/raw/master/Wordlists/Wordlist%201200%20frequency%20weighted.txt]1200 English Words Weighted By Frequency[/url]
@@ -98,7 +98,6 @@ Full (untested) for UTF-8 character set.
 [*]Add a new type of Helper Window which would basically be a self-contained edit window. ( hhttp://www.autohotkey.com/board/topic/49517-typingaid-v219-word-autocompletion-utility/page-31#entry473544 )[/*]
 [*]Add the ability to parse out and index CamelCase strings by UpperCase letters. ( http://www.autohotkey.com/board/topic/49517-typingaid-v219-word-autocompletion-utility/page-33#entry511828 )[/*]
 [*]Warn the user when the Wordlist file does not exist or is empty. ( http://www.autohotkey.com/board/topic/49517-typingaid-v219-word-autocompletion-utility/page-34#entry524677 )[/*]
-[*]Try to auto-determine the appropriate SendMethod. ( http://www.autohotkey.com/board/topic/49517-typingaid-v219-word-autocompletion-utility/page-36#entry532663 )[/*]
 [*]Add support for Russian ( http://www.autohotkey.com/board/topic/49517-typingaid-v218-word-autocompletion-utility/page-38#entry553085 )[/*]
 [*]Add an option to suppress plural forms of words ( http://www.autohotkey.com/board/topic/49517-typingaid-v219-word-autocompletion-utility/page-40#entry590557 )[/*]
 [*]Add a way to reorder the wordlist based on # Characters left to type in combination with the existing frequency weighting ( http://www.autohotkey.com/board/topic/49517-typingaid-v219d-word-autocompletion-utility/#entry591512 )[/*]
