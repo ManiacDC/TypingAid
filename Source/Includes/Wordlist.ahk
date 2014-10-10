@@ -14,12 +14,14 @@ ReadWordList()
    }
    
    IF not wDB.Query("CREATE TEMP TABLE Words (hash TEXT, word TEXT UNIQUE, count INTEGER);")
+   ;IF not wDB.Query("CREATE TABLE Words (hash TEXT, word TEXT UNIQUE, count INTEGER);")
    {
       msgbox Cannot Create Table - fatal error...
       ExitApp
    }
    
    IF not wDB.Query("CREATE INDEX temp.Hash ON Words (hash);")
+   ;IF not wDB.Query("CREATE INDEX Hash ON Words (hash);")
    {
       msgbox Cannot Create Index - fatal error...
       ExitApp
@@ -156,8 +158,8 @@ AddWordToList(AddWord,ForceCountNewOnly)
       IfNotEqual,LearnedWordsCount,  ;if this is a stored learned word, this will only have a value when LearnedWords are read in from the wordlist
       {
          WhereQuery := "WHERE word = '" . addword . "'"
-         QueryResult := wDB.Query("SELECT * FROM words " . WhereQuery . ";")
-         IF !QueryResult  ; if we haven't yet added this word, add it to the count and list
+         QueryResult := wDB.QueryValue("SELECT COUNT(*) FROM words " . WhereQuery . ";")
+         IfEqual, QueryResult, 0  ; if we haven't yet added this word, add it to the count and list
          {
             IfEqual, LearnedWords,     ;if we haven't learned any words yet, set the LearnedWords list to the new word
             {
@@ -174,7 +176,7 @@ AddWordToList(AddWord,ForceCountNewOnly)
    } else { ; If this is an on-the-fly learned word
             AddWordInList := wDB.Query("SELECT * FROM words WHERE word = '" . AddWord . "';")
             
-            IfEqual, AddWordInList, ; if the word is not in the list
+            IF !( AddWordInList.Count() ) ; if the word is not in the list
             {
             
                IfNotEqual, ForceCountNewOnly, 1
@@ -222,7 +224,7 @@ AddWordToList(AddWord,ForceCountNewOnly)
                         IfEqual, ForceCountNewOnly, 1                     
                         {
                         
-                           For each, row in AddWordList.Rows
+                           For each, row in AddWordInList.Rows
                            {
                               CountValue := row[3]
                               break
@@ -307,23 +309,12 @@ UpdateWordCount(word,SortOnly)
       Return
    
    Local CountValue
-   Local Query
-   Local ValueType
-   Local Values
-   Local each
-   Local row
    
-   Query := wDB.Query("SELECT count FROM words WHERE word = '" . word . "';")
-   
-   For each, row in Query.Rows
-   {
-      CountValue := row[1]
-      break
-   }
+   CountValue := wDB.QueryValue("SELECT count FROM words WHERE word = '" . word . "';")
    
    IfNotEqual, CountValue,
    {
-      Query := wDB.Query("UPDATE words SET count = ('" . CountValue++ . "') WHERE word = '" . word . "';")
+      wDB.Query("UPDATE words SET count = ('" . CountValue++ . "') WHERE word = '" . word . "';")
    }
    Return
 }

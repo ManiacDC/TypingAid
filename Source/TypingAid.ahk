@@ -309,7 +309,7 @@ RecomputeMatches()
             }
    }
    
-   Matches := wDB.Query("SELECT word FROM Words WHERE hash = '" . baseword . "' AND word LIKE '" . Word . "%'" . SuppressMatchingWordQuery . " ORDER BY CASE WHEN count IS NULL then 0 else 1 end, count, Word;")
+   Matches := wDB.Query("SELECT word FROM Words WHERE hash = '" . baseword . "' AND word LIKE '" . Word . "%'" . SuppressMatchingWordQuery . " ORDER BY CASE WHEN count IS NULL then ROWID else 'z' end, count, Word;")
    
    for each, row in Matches.Rows
    {
