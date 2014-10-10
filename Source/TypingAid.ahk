@@ -261,14 +261,14 @@ ProcessKey(chr,EndKey)
                   Gosub, clearallvars   
                   Return
                 }
-    
+                
    ;Wait till minimum letters 
    IF ( StrLen(Word) < wlen )
    {
+      aWord := aWord . "," . Word
       CloseListBox()
       Return
    }
-   
    RecomputeMatches()
 }
 
@@ -276,6 +276,13 @@ RecomputeMatches()
 {
    ; This function will take the given word, and will recompile the list of matches and redisplay the wordlist.
    global
+   
+   Local Matches
+   Local SuppressMatchingWordQuery
+   Local each
+   Local row
+   Local ValueType
+   Local Values
 
    SavePriorMatchPosition()
 
@@ -291,35 +298,32 @@ RecomputeMatches()
          LimitTotalMatches = %ListBoxRows%
       else LimitTotalMatches = 10
    }
-
-   Loop
+   
+   IfEqual, SuppressMatchingWord, On
    {
-      IfEqual, zword%baseword%%a_index%,, Break
-      
+      IfEqual, NoBackSpace, Off
+      {
+         SuppressMatchingWordQuery := " AND word <> '" . Word . "'"
+      } else {
+               SuppressMatchingWordQuery := " AND word NOT LIKE '" . Word . "'"
+            }
+   }
+   
+   Matches := wDB.Query("SELECT word FROM Words WHERE hash = '" . baseword . "' AND word LIKE '" . Word . "%'" . SuppressMatchingWordQuery . " ORDER BY CASE WHEN count IS NULL then 0 else 1 end, count, Word;")
+   
+   for each, row in Matches.Rows
+   {
       IfEqual, ArrowKeyMethod, Off
       {
          IfGreaterOrEqual, number, %LimitTotalMatches%
-            Break
+            break
       }
       
-      IfEqual, SuppressMatchingWord, On
-      {
-         IfEqual, NoBackSpace, Off
-         {
-            If ( zword%baseword%%a_index% == Word )
-               continue
-         } else If ( zword%baseword%%a_index% = Word )
-                     continue
-      }
+      number++
+      singlematch := row[1]
+      singlematch%number% = %singlematch%
       
-      if ( SubStr(zword%baseword%%a_index%, 1, StrLen(Word)) = Word )
-      {
-         number ++
-         singlematch := zword%baseword%%a_index%
-         singlematch%number% = %singlematch%
-            
-         Continue            
-      }
+      continue
    }
    
    ;If no match then clear Tip 
@@ -910,3 +914,4 @@ ExitApp
 #Include %A_ScriptDir%\Includes\Sending.ahk
 #Include %A_ScriptDir%\Includes\Window.ahk
 #Include %A_ScriptDir%\Includes\Wordlist.ahk
+#Include <DBA>
