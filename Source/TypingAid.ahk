@@ -56,14 +56,10 @@ BlockInput, Send
 
 IfEqual, A_IsUnicode, 1
 {
-   ; MaxLengthInLearnMode = (253 (max len of var name) - zcount)/ 4 rounded down
-   MaxLengthInLearnMode = 61
    ; Need 4 characters in Unicode mode
    AsciiPrefix = 000
    AsciiTrimLength = -3
 } else {
-         ; MaxLengthInLearnMode = (253 (max len of var name) - zcount)/ 2 rounded down
-         MaxLengthInLearnMode = 123
          ; Need 2 characters in Ascii mode
          AsciiPrefix = 0
          AsciiTrimLength = -1
@@ -283,14 +279,13 @@ RecomputeMatches()
    Local row
    Local ValueType
    Local Values
+   Local WordMatch
 
    SavePriorMatchPosition()
 
    ;Match part-word with command 
    Num = 
    number = 0 
-   StringLeft, baseword, Word, %wlen%
-   baseword := ConvertWordToAscii(baseword,1)
    
    IfEqual, ArrowKeyMethod, Off
    {
@@ -299,17 +294,19 @@ RecomputeMatches()
       else LimitTotalMatches = 10
    }
    
+   StringUpper, WordMatch, Word   
+   
    IfEqual, SuppressMatchingWord, On
    {
       IfEqual, NoBackSpace, Off
       {
          SuppressMatchingWordQuery := " AND word <> '" . Word . "'"
       } else {
-               SuppressMatchingWordQuery := " AND word NOT LIKE '" . Word . "'"
+               SuppressMatchingWordQuery := " AND wordindexed <> '" . WordMatch . "'"
             }
    }
    
-   Matches := wDB.Query("SELECT word FROM Words WHERE hash = '" . baseword . "' AND word LIKE '" . Word . "%'" . SuppressMatchingWordQuery . " ORDER BY CASE WHEN count IS NULL then ROWID else 'z' end, count, Word;")
+   Matches := wDB.Query("SELECT word FROM Words WHERE wordindexed GLOB '" . WordMatch . "*' " . SuppressMatchingWordQuery . " ORDER BY CASE WHEN count IS NULL then ROWID else 'z' end, count DESC, Word LIMIT 200;")
    
    for each, row in Matches.Rows
    {

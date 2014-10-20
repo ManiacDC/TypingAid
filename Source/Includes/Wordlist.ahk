@@ -6,6 +6,12 @@ ReadWordList()
    ;mark the wordlist as not done
    WordListDone = 0
    
+   Local ParseWords
+   Local LearnedWordsTable
+   Local TempAddToLearned
+   Local each
+   Local row
+   
    wDB := DBA.DataBaseFactory.OpenDataBase("SQLite", A_ScriptDir . "\WordlistLearned.db" )
    if !wDB
    {
@@ -13,17 +19,24 @@ ReadWordList()
       exitapp
    }
    
-   IF not wDB.Query("CREATE TEMP TABLE Words (hash TEXT, word TEXT UNIQUE, count INTEGER);")
-   ;IF not wDB.Query("CREATE TABLE Words (hash TEXT, word TEXT UNIQUE, count INTEGER);")
+   IF not wDB.Query("CREATE TEMP TABLE Words (wordindexed TEXT, word TEXT UNIQUE, count INTEGER);")
+   ;IF not wDB.Query("CREATE TABLE Words (wordindexed TEXT, word TEXT UNIQUE, count INTEGER);")
    {
       msgbox Cannot Create Table - fatal error...
       ExitApp
    }
    
-   IF not wDB.Query("CREATE INDEX temp.Hash ON Words (hash);")
-   ;IF not wDB.Query("CREATE INDEX Hash ON Words (hash);")
+   IF not wDB.Query("CREATE INDEX temp.WordIndex ON Words (wordindexed);")
+   ;IF not wDB.Query("CREATE INDEX WordIndex ON Words (wordindexed);")
    {
       msgbox Cannot Create Index - fatal error...
+      ExitApp
+   }
+   
+   IF not wDB.Query("CREATE TEMP TABLE LearnedWords (learnedword TEXT UNIQUE);")
+   ;IF not wDB.Query("CREATE TABLE LearnedWords (learnedword TEXT UNIQUE);")
+   {
+      MsgBox Cannot Create Table - fatal error...
       ExitApp
    }
    
@@ -32,22 +45,49 @@ ReadWordList()
    FileRead, ParseWords, %A_ScriptDir%\Wordlist.txt
    Loop, Parse, ParseWords, `n, `r
    {
-      AddWordToList(A_LoopField,0)
+      IfEqual, TempAddToLearned, 1
+      {
+         IF CheckValid(A_LoopField)
+         {
+            wDB.Query("INSERT INTO Learnedwords VALUES ('" . A_LoopField . "')")
+         }
+      } else IfEqual, A_LoopField, `;LEARNEDWORDS`;
+      {
+         IfEqual, LearnMode, On
+         {
+            TempAddToLearned=1
+            LegacyLearnedWords=1 ; Set Flag that we need to convert wordlist file
+         }
+      } else {
+                  AddWordToList(A_LoopField,0)
+            }
    }
    ParseWords =
    wDB.EndTransaction()
-    
-   ;Force LearnedWordsCount to 0 as we are now reading Learned Words from the Learned Words file
-   IfEqual, LearnedWordsCount, 
-      LearnedWordsCount=0
- 
+   
+   wDB.BeginTransaction()
    ;reads list of words from file 
    FileRead, ParseWords, %A_ScriptDir%\WordlistLearned.txt
    Loop, Parse, ParseWords, `n, `r
    {
-      AddWordToList(A_LoopField,0)
+      IF CheckValid(A_LoopField)
+      {
+         wDB.Query("INSERT INTO Learnedwords VALUES ('" . A_LoopField . "')")
+      }
    }
    ParseWords =
+   wDB.EndTransaction()
+    
+   ;Force LearnedWordsCount to 0 as we are now processing Learned Words
+   LearnedWordsCount=0
+   
+   LearnedWordsTable := wDB.Query("SELECT learnedword FROM LearnedWords;")
+      
+   For each, row in LearnedWordsTable.Rows
+   {
+      AddWordToList(row[1],0)
+   }
+   LearnedWordsTable =
 
    ;reverse the numbers of the word counts in memory
    GoSub, ReverseWordNums
@@ -66,18 +106,21 @@ ReverseWordNums:
 IfEqual, LearnMode, Off,
    Return
 
-wDB.BeginTransaction()
 LearnedWordsCount+=4
-Loop,parse,LearnedWords, %DelimiterChar%
+
+LearnedWordsTable := wDB.Query("SELECT learnedWord FROM LearnedWords;")
+
+wDB.BeginTransaction()
+For each, row in LearnedWordsTable.Rows
 {
-   StringLeft, baseword, A_LoopField, %wlen%
-   baseword := ConvertWordToAscii(baseword,1)
-   WhereQuery := "WHERE word = '" . A_LoopField . "'"
-   wDB.Query("UPDATE words SET count = (SELECT " . LearnedWordsCount . " - count FROM words " . WhereQuery . ") WHERE " . WhereQuery . ";")
+   WhereQuery := "WHERE word = '" . row[1] . "'"
+   wDB.Query("UPDATE words SET count = (SELECT " . LearnedWordsCount . " - count FROM words " . WhereQuery . ") " . WhereQuery . ";")
 }
 wDB.EndTransaction()
 
-AsciiWord = 
+each=
+row=
+LearnedWordsTable =
 LearnedWordsCount = 
 
 Return
@@ -90,7 +133,6 @@ AddWordToList(AddWord,ForceCountNewOnly)
    ;ForceCountNewOnly = force this word to be permanently learned even if learnmode is off
    global
    Local CharTerminateList
-   Local Base
    Local AddWordInList
    Local CountWord
    Local pos
@@ -100,51 +142,20 @@ AddWordToList(AddWord,ForceCountNewOnly)
    Local CountValue
    Local each
    Local row
+   Local AddWordIndex
+   
+   StringUpper, AddWordIndex, AddWord
    
    IfEqual, LearnMode, On
    {
       LearnModeTemp = 1
-      ;force words to max of MaxLengthInLearnMode characters
-      StringLeft, AddWord, AddWord, %MaxLengthInLearnMode%
    } else {
             IfEqual, ForceCountNewOnly, 1
                LearnModeTemp = 1
          }
-
-   Ifequal, Addword,  ;If we have no word to add, skip out.
-      Return
-            
-   if addword is space ;If addword is only whitespace, skip out.
-      Return
-   
-   ;if addword does not contain at least one alpha character, skip out.
-   if ( RegExMatch(addword, "S)[a-zA-Z]") = 0 )   
-      Return
-   
-   if ( Substr(addword,1,1) = ";" ) ;If first char is ";", clear word and skip out.
-   {
-      IfEqual, LearnMode, On ;Check LearnMode here as we only do this if the wordlist is not done
-      {
-         IfEqual, wordlistdone, 0 ;If we are still reading the wordlist file and we come across ;LEARNEDWORDS; set the LearnedWordsCount flag
-         {
-            IfEqual, AddWord, `;LEARNEDWORDS`;
-               {
-                  LegacyLearnedWords=1 ; Set Flag that we need to convert wordlist file
-                  IfEqual, LearnedWordsCount, 
-                  {
-                     LearnedWordsCount=0
-                     wDB.EndTransaction()
-                  }
-               }
-         }
-      }
-      Return
-   }
-   
-   IF ( StrLen(addword) <= wlen ) ; don't add the word if it's not longer than the minimum length
-   {
-      Return
-   }
+         
+   if !(CheckValid(AddWord))
+      return
    
    ifequal, wordlistdone, 1
    {
@@ -152,25 +163,13 @@ AddWordToList(AddWord,ForceCountNewOnly)
          Return    
    }
 
-   Base := ConvertWordToAscii(SubStr(addword,1,wlen),1)
    IfEqual, WordListDone, 0 ;if this is read from the wordlist
    {
       IfNotEqual,LearnedWordsCount,  ;if this is a stored learned word, this will only have a value when LearnedWords are read in from the wordlist
       {
-         WhereQuery := "WHERE word = '" . addword . "'"
-         QueryResult := wDB.QueryValue("SELECT COUNT(*) FROM words " . WhereQuery . ";")
-         IfEqual, QueryResult, 0  ; if we haven't yet added this word, add it to the count and list
-         {
-            IfEqual, LearnedWords,     ;if we haven't learned any words yet, set the LearnedWords list to the new word
-            {
-               LearnedWords = %addword%  
-            } else {   ;otherwise append the learned word to the list
-                     LearnedWords .= DelimiterChar . addword
-                  }
-            wDB.Query("INSERT INTO words VALUES ('" . base . "','" . addword . "','" . LearnedWordsCount++ . "');")
-         }
+         wDB.Query("INSERT INTO words VALUES ('" . AddWordIndex . "','" . addword . "','" . LearnedWordsCount++ . "');")
       } else {
-               wDB.Query("INSERT INTO words (hash,word) VALUES ('" . base . "','" . addword . "');")
+               wDB.Query("INSERT INTO words (wordindexed,word) VALUES ('" . AddWordIndex . "','" . addword . "');")
             }
       
    } else { ; If this is an on-the-fly learned word
@@ -201,23 +200,11 @@ AddWordToList(AddWord,ForceCountNewOnly)
                
                IfEqual, LearnMode, On
                {
-                  wDB.Query("INSERT INTO words VALUES ('" . base . "','" . addword . "','" . CountValue . "');")
+                  wDB.Query("INSERT INTO words VALUES ('" . AddWordIndex . "','" . addword . "','" . CountValue . "');")
+                  wDB.Query("INSERT INTO LearnedWords VALUES ('" . addword . "');")                  
                } else {
-                        wDB.Query("INSERT INTO words (hash,word) VALUES ('" . base . "','" . addword . "');")
+                        wDB.Query("INSERT INTO words (wordindexed,word) VALUES ('" . AddWordIndex . "','" . addword . "');")
                      }
-                     
-               IfEqual, LearnedWords,    ;if we haven't learned any words yet, set the LearnedWords list to the new word
-               {
-                  LearnedWords = %addword%  
-               } else {   ;otherwise append the learned word to the list
-                        LearnedWords .= DelimiterChar . addword
-                     }
-               
-               IfEqual, LearnMode, On
-               {
-                  IfEqual, ForceCountNewOnly, 1
-                     UpdateWordCount(addword,1) ;re-sort the necessary words if it's a forced added word
-               }
             } else {
                      IfEqual, LearnMode, On
                      {
@@ -234,7 +221,6 @@ AddWordToList(AddWord,ForceCountNewOnly)
                            {
                               wDB.QUERY("UPDATE words SET count = ('" . LearnCount . "') WHERE word = '" . addword . "');")
                            }
-                           UpdateWordCount(addWord,1)
                         } else {
                                  UpdateWordCount(addword,0) ;Increment the word count if it's already in the list and we aren't forcing it on
                               }
@@ -245,20 +231,36 @@ AddWordToList(AddWord,ForceCountNewOnly)
    Return
 }
 
+CheckValid(Word)
+{
+   
+   Ifequal, Word,  ;If we have no word to add, skip out.
+      Return
+            
+   if Word is space ;If Word is only whitespace, skip out.
+      Return
+   
+   ;if Word does not contain at least one alpha character, skip out.
+   if ( RegExMatch(Word, "S)[a-zA-Z]") = 0 )   
+      Return
+   
+   if ( Substr(Word,1,1) = ";" ) ;If first char is ";", clear word and skip out.
+   {
+      Return
+   }
+   
+   IF ( StrLen(Word) <= wlen ) ; don't add the word if it's not longer than the minimum length
+   {
+      Return
+   }
+   
+   Return, 1
+}
+
 DeleteWordFromList(DeleteWord)
 {
    global
    
-   Local Base
-   Local DeleteWordInList
-   Local CountWord
-   Local Pos   
-   Local OldStringCaseSense
-   Local SearchableLearnedWords
-   Local SearchDeleteWord
-   Local CurrentNum
-   Local NextNum
-
    Ifequal, DeleteWord,  ;If we have no word to delete, skip out.
       Return
             
@@ -268,26 +270,7 @@ DeleteWordFromList(DeleteWord)
    IfNotEqual, LearnMode, On
       Return
    
-   ; add surrounding delimiter chars
-   SearchableLearnedWords = %DelimiterChar%%LearnedWords%%DelimiterChar%
-   SearchDeleteWord = %DelimiterChar%%DeleteWord%%DelimiterChar%
-   WordInLearnedWords := InStr(SearchableLearnedWords,SearchDeleteWord,CaseSensitive)
-   
-   IFEqual, WordInLearnedWords,
-      Return
-   
-   ; Set Case Sensitive
-   OldStringCaseSense := A_StringCaseSense
-   StringCaseSense, On
-   ;Remove word from LearnedWords if present   
-   ; remove DeleteWord
-   StringReplace, LearnedWords, SearchableLearnedWords, %DelimiterChar%%DeleteWord%%DelimiterChar%, %DelimiterChar%, All   
-   ; remove surrounding delimiter chars
-   StringTrimLeft, LearnedWords, LearnedWords, 1
-   StringTrimRight, LearnedWords, LearnedWords, 1
-   ; Restore old case sensitive setting
-   StringCaseSense, %OldStringCaseSense%
-   
+   wDB.Query("DELETE FROM LearnedWords WHERE learnedword = '" . DeleteWord . "';")
    wDB.Query("DELETE FROM words WHERE word = '" . DeleteWord . "';")
       
    Return   
@@ -308,14 +291,9 @@ UpdateWordCount(word,SortOnly)
    IfEqual, SortOnly, 
       Return
    
-   Local CountValue
+   WhereQuery := "WHERE word = '" . word . "'"
+   wDB.Query("UPDATE words SET count = (SELECT count + 1 FROM words " . WhereQuery . ") " . WhereQuery . ";")
    
-   CountValue := wDB.QueryValue("SELECT count FROM words WHERE word = '" . word . "';")
-   
-   IfNotEqual, CountValue,
-   {
-      wDB.Query("UPDATE words SET count = ('" . CountValue++ . "') WHERE word = '" . word . "';")
-   }
    Return
 }
 
@@ -350,60 +328,33 @@ MaybeUpdateWordlist()
     
    local TempWordList
    local SortWordList
-   local AppendWord
    local LearnedwordsPos
    local ParseWords
+   Local each
+   Local row
    ; Update the Learned Words
-   ;IfNotEqual, LearnedWords, 
-   If (!1)
+   IfEqual, WordListDone, 1
    {
-      IfEqual, WordlistDone, 1
+      IfEqual, LearnMode, Off
       {
-         ; Parse the learned words and store them in a new list by count if their total count is greater than LearnCount.
-         ; Prefix the word with the count and "z" for sorting
-      
-         IfEqual, LearnMode, Off
-         {
-            SortWordList := LearnedWords
-         } else {
-   
-                  Loop, Parse, LearnedWords, %DelimiterChar%
-                  { 
-                     SortWord := ConvertWordToAscii(A_LoopField,0)
-         
-                     IfGreaterOrEqual, zCount%SortWord%, %LearnCount%
-                     {
-                        SortWordList .= DelimiterChar . zCount%SortWord% . "z" . A_LoopField
-                     }
-                  }
-      
-                  StringTrimLeft, SortWordList, SortWordList, 1 ;remove extra starting ASCII 2
-   
-                  Sort, SortWordList, N R D%DelimiterChar% ; Sort numerically, comma delimiter
-               }
-   
-         IfNotEqual, SortWordList, ; If SortWordList exists write to the file, otherwise don't.
-         {
-				         
-            Loop, Parse, SortWordList, %DelimiterChar%
-            {
-               IfEqual, LearnMode, On
-               {
-                  StringTrimLeft, AppendWord, A_LoopField, InStr(A_LoopField,"z") ;Strip (Number,"z") from beginning
-               } else {
-                        AppendWord := A_LoopField
-                        }
-               
-               TempWordList .= AppendWord . "`r`n"
-            }
-                
-            StringTrimRight, TempWordList, TempWordList, 2
-   
-            FileDelete, %A_ScriptDir%\Temp_WordlistLearned.txt
-            FileAppendDispatch(TempWordList, A_ScriptDir . "\Temp_WordlistLearned.txt")
-            FileCopy, %A_ScriptDir%\Temp_WordlistLearned.txt, %A_ScriptDir%\WordlistLearned.txt, 1
-            FileDelete, %A_ScriptDir%\Temp_WordlistLearned.txt
+         SortWordList := wDB.Query("SELECT LearnedWord FROM LearnedWords;")
+      } else {
+         SortWordList := wDB.Query("SELECT LearnedWord FROM LearnedWords LEFT JOIN Words ON LearnedWords.LearnedWord = Words.Word WHERE Words.count NOT NULL ORDER BY Words.count DESC;")
          }
+      
+      for each, row in SortWordList.Rows
+      {
+         TempWordList .= row[1] . "`r`n"
+      }
+      
+      IfNotEqual, TempWordList,
+      {
+         StringTrimRight, TempWordList, TempWordList, 2
+   
+         FileDelete, %A_ScriptDir%\Temp_WordlistLearned.txt
+         FileAppendDispatch(TempWordList, A_ScriptDir . "\Temp_WordlistLearned.txt")
+         FileCopy, %A_ScriptDir%\Temp_WordlistLearned.txt, %A_ScriptDir%\WordlistLearned.txt, 1
+         FileDelete, %A_ScriptDir%\Temp_WordlistLearned.txt
          
          ; Convert the Old Wordlist file to not have ;LEARNEDWORDS;
          IfEqual, LegacyLearnedWords, 1
@@ -421,8 +372,9 @@ MaybeUpdateWordlist()
       }
    }
    
-   wDb.Query("DROP INDEX temp.hash ON Words;"),
    wDB.Query("DROP TABLE Words;"),
+   wDB.Query("DROP TABLE LearnedWords;"),
+   wDB.Query("DROP INDEX temp.WordIndex;"),
    wDB.Close(),
    
 }
