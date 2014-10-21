@@ -103,8 +103,8 @@ Full (untested) for UTF-8 character set.
 [*]Add a way to reorder the wordlist based on # Characters left to type in combination with the existing frequency weighting ( http://www.autohotkey.com/board/topic/49517-typingaid-v219d-word-autocompletion-utility/#entry591512 )[/*]
 [*]Changed Learned Words to be stored in a SQL database ( http://www.autohotkey.com/board/topic/49517-typingaid-v219d-word-autocompletion-utility/page-41#entry592912 )[/*]
 [*]Allow a way to quickly switch between different wordlists ( http://www.autohotkey.com/board/topic/49517-typingaid-v219d-word-autocompletion-utility/page-43#entry635313 )[/*]
-[*]Allow a way to quickly switch between different wordlists ( http://www.autohotkey.com/board/topic/49517-typingaid-v219d-word-autocompletion-utility/page-43#entry635313 )[/*]
 [*]Allow the script to recognize multiple partial string matches ( http://www.autohotkey.com/board/topic/49517-typingaid-v219d-word-autocompletion-utility/?p=640330 )[/*]
+[*]Add word descriptions ( http://www.autohotkey.com/board/topic/49517-typingaid-v2195-word-autocompletion-utility/page-46#entry673435 )[/*]
 [/LIST]
 [b]Credits:[/b]
 Jordi S
