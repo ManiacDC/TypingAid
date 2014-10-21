@@ -105,6 +105,7 @@ Full (untested) for UTF-8 character set.
 [*]Allow a way to quickly switch between different wordlists ( http://www.autohotkey.com/board/topic/49517-typingaid-v219d-word-autocompletion-utility/page-43#entry635313 )[/*]
 [*]Allow the script to recognize multiple partial string matches ( http://www.autohotkey.com/board/topic/49517-typingaid-v219d-word-autocompletion-utility/?p=640330 )[/*]
 [*]Add word descriptions ( http://www.autohotkey.com/board/topic/49517-typingaid-v2195-word-autocompletion-utility/page-46#entry673435 )[/*]
+[*]Allow learned words to appear before static words ( http://www.autohotkey.com/board/topic/49517-typingaid-v2195-word-autocompletion-utility/page-46#entry672898 )[/*]
 [/LIST]
 [b]Credits:[/b]
 Jordi S
