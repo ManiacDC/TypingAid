@@ -79,17 +79,25 @@ AddWordToList(AddWord,ForceCountNewOnly)
                LearnModeTemp = 1
          }
 
-   Ifequal, Addword,  ;If we have no word to add, skip out.
+   Ifequal, AddWord,  ;If we have no word to add, skip out.
       Return
             
-   if addword is space ;If addword is only whitespace, skip out.
+   if AddWord is space ;If addword is only whitespace, skip out.
       Return
    
    ;if addword does not contain at least one alpha character, skip out.
-   if ( RegExMatch(addword, "S)[a-zA-Z]") = 0 )   
+   IfEqual, A_IsUnicode, 1
+   {
+      if ( RegExMatch(AddWord, "S)\pL") = 0 )  
+      {
+         return
+      }
+   } else if ( RegExMatch(AddWord, "S)[a-zA-Zà-öø-ÿÀ-ÖØ-ß]") = 0 )
+   {
       Return
+   }
    
-   if ( Substr(addword,1,1) = ";" ) ;If first char is ";", clear word and skip out.
+   if ( Substr(AddWord,1,1) = ";" ) ;If first char is ";", clear word and skip out.
    {
       IfEqual, LearnMode, On ;Check LearnMode here as we only do this if the wordlist is not done
       {
@@ -106,7 +114,7 @@ AddWordToList(AddWord,ForceCountNewOnly)
       Return
    }
    
-   IF ( StrLen(addword) <= wlen ) ; don't add the word if it's not longer than the minimum length
+   IF ( StrLen(AddWord) <= wlen ) ; don't add the word if it's not longer than the minimum length
    {
       Return
    }
@@ -117,12 +125,12 @@ AddWordToList(AddWord,ForceCountNewOnly)
          Return    
    }
 
-   Base := ConvertWordToAscii(SubStr(addword,1,wlen),1)
+   Base := ConvertWordToAscii(SubStr(AddWord,1,wlen),1)
    IfEqual, WordListDone, 0 ;if this is read from the wordlist
    {
       IfNotEqual,LearnedWordsCount,  ;if this is a stored learned word, this will only have a value when LearnedWords are read in from the wordlist
       {
-         CountWord := ConvertWordToAscii(addword,0)
+         CountWord := ConvertWordToAscii(AddWord,0)
          IfEqual,zCount%CountWord%,  ; if we haven't yet added this word, add it to the count and list
          {
             IfEqual, LearnedWords,     ;if we haven't learned any words yet, set the LearnedWords list to the new word
@@ -144,13 +152,13 @@ AddWordToList(AddWord,ForceCountNewOnly)
             
                IfNotEqual, ForceCountNewOnly, 1
                {
-                  IF ( StrLen(addword) < LearnLength ) ; don't add the word if it's not longer than the minimum length for learning if we aren't force learning it
+                  IF ( StrLen(AddWord) < LearnLength ) ; don't add the word if it's not longer than the minimum length for learning if we aren't force learning it
                      Return
                
-                  if addword contains %ForceNewWordCharacters%
+                  if AddWord contains %ForceNewWordCharacters%
                      Return
                   
-                  if addword contains %DoNotLearnStrings%
+                  if AddWord contains %DoNotLearnStrings%
                      Return
                   
                }
@@ -167,28 +175,28 @@ AddWordToList(AddWord,ForceCountNewOnly)
                }
                IfEqual, LearnedWords,    ;if we haven't learned any words yet, set the LearnedWords list to the new word
                {
-                  LearnedWords = %addword%  
+                  LearnedWords = %AddWord%  
                } else {   ;otherwise append the learned word to the list
-                        LearnedWords .= DelimiterChar . addword
+                        LearnedWords .= DelimiterChar . AddWord
                      }
                IncrementCounterAndAddWord(Base,AddWord)
                
                IfEqual, LearnMode, On
                {
                   IfEqual, ForceCountNewOnly, 1
-                     UpdateWordCount(addword,1) ;resort the necessary words if it's a forced added word
+                     UpdateWordCount(AddWord,1) ;resort the necessary words if it's a forced added word
                }
             } else {
                      IfEqual, LearnMode, On
                      {                  
                         IfEqual, ForceCountNewOnly, 1                     
                         {
-                           CountWord := ConvertWordToAscii(addWord,0)
+                           CountWord := ConvertWordToAscii(AddWord,0)
                            IF ( zCount%CountWord% < LearnCount )
                               zCount%CountWord% = %LearnCount%
-                           UpdateWordCount(addWord,1)
+                           UpdateWordCount(AddWord,1)
                         } else {
-                                 UpdateWordCount(addword,0) ;Increment the word count if it's already in the list and we aren't forcing it on
+                                 UpdateWordCount(AddWord,0) ;Increment the word count if it's already in the list and we aren't forcing it on
                               }
                      }
                   }

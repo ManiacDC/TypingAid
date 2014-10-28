@@ -144,9 +144,10 @@ Loop
       GetIncludedActiveWindow()
    
    ;Get one key at a time 
-   Input, chr, L1 V, {BS}%TerminatingCharacters%
+   Input, chr, L1 V, {BS}%TerminatingEndKeys%
+   EndKey := ErrorLevel
    
-   ProcessKey(chr,errorlevel)
+   ProcessKey(chr,EndKey)
 }
 
 ProcessKey(chr,EndKey)
@@ -230,7 +231,7 @@ ProcessKey(chr,EndKey)
                   StringTrimRight, Word, Word, 1
                 }     
       }
-   } else ifequal, EndKey, Max
+   } else if ( ( EndKey == "Max" ) && !(InStr(TerminatingCharacters, chr)) )
          {
             ; If active window has different window ID from the last input,
             ;learn and blank word, then assign number pressed to the word
