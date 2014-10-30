@@ -3,8 +3,9 @@ TypingAid is a simple, compact, and handy auto-completion utility.
 It is customizable enough to be useful for regular typing and for programming.
 
 [b]Download:[/b]
-[url=https://github.com/ManiacDC/TypingAid/releases/download/v2.19.5/TypingAid.exe]TypingAid v2.19.5 Precompiled Executable[/url]
-[url=https://github.com/ManiacDC/TypingAid/archive/v2.19.5.zip]TypingAid v2.19.5 AHK Script[/url]
+[url=https://github.com/ManiacDC/TypingAid/releases/download/v2.19.6/TypingAid.exe]TypingAid v2.19.6 Precompiled Executable[/url]
+[url=https://github.com/ManiacDC/TypingAid/releases/download/v2.19.6/TypingAid64.exe]TypingAid v2.19.6 64-bit Precompiled Executable[/url]
+[url=https://github.com/ManiacDC/TypingAid/archive/v2.19.6.zip]TypingAid v2.19.6 AHK Script[/url]
 
 English Wordlists:
 [url=https://github.com/ManiacDC/TypingAid/raw/master/Wordlists/Wordlist%201200%20frequency%20weighted.txt]1200 English Words Weighted By Frequency[/url]
