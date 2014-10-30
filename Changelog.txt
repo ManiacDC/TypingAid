@@ -1,3 +1,8 @@
+*2.19.6 10/30/2014
+** Fix issue with AHK v1.1. Sometimes the script would stop detecting Input.
+** Fixes to support Diacritic and Unicode characters.
+** Fixes to support alternative keyboard layouts.
+
 *2.19.5 10/7/2014
 ** Detect when SendPlay will not work and switch to SendInput (SendPlay requires Administrative Rights)
 ** Added ability to use a Defaults.ini file.

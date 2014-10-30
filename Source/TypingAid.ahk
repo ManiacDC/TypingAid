@@ -164,6 +164,9 @@ ProcessKey(chr,EndKey)
    {
       EndKey = Max
    }
+   
+   IfEqual, EndKey, NewInput
+      Return
 
    IfEqual, EndKey, Endkey:Tab
       If ( GetKeyState("Alt") =1 || GetKeyState("LWin") =1 || GetKeyState("RWin") =1 )
