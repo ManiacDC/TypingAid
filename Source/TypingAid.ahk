@@ -265,7 +265,6 @@ ProcessKey(chr,EndKey)
    ;Wait till minimum letters 
    IF ( StrLen(Word) < wlen )
    {
-      aWord := aWord . "," . Word
       CloseListBox()
       Return
    }

@@ -241,8 +241,16 @@ CheckValid(Word)
       Return
    
    ;if Word does not contain at least one alpha character, skip out.
-   if ( RegExMatch(Word, "S)[a-zA-Z]") = 0 )   
+   IfEqual, A_IsUnicode, 1
+   {
+      if ( RegExMatch(Word, "S)\pL") = 0 )  
+      {
+         return
+      }
+   } else if ( RegExMatch(Word, "S)[a-zA-Zà-öø-ÿÀ-ÖØ-ß]") = 0 )
+   {
       Return
+   }
    
    if ( Substr(Word,1,1) = ";" ) ;If first char is ";", clear word and skip out.
    {
@@ -281,6 +289,7 @@ DeleteWordFromList(DeleteWord)
 UpdateWordCount(word,SortOnly)
 {
    global
+   Local WhereQuery
    ;Word = Word to increment count for
    ;SortOnly = Only sort the words, don't increment the count
    
@@ -295,29 +304,6 @@ UpdateWordCount(word,SortOnly)
    wDB.Query("UPDATE words SET count = (SELECT count + 1 FROM words " . WhereQuery . ") " . WhereQuery . ";")
    
    Return
-}
-
-;------------------------------------------------------------------------
-      
-ConvertWordToAscii(Base,Caps)
-{
-; Return the word in Hex Ascii or Unicode numbers padded to length 2 (ascii mode) or 4 (unicode mode) per character
-; Capitalize the string if NoCaps is not set
-   global AsciiPrefix
-   global AsciiTrimLength
-   IfEqual, Caps, 1
-      StringUpper, Base, Base
-   Critical, On
-   SetFormat,Integer, H
-   Loop, Parse, Base
-   {
-      IfEqual, A_FormatInteger, D
-         SetFormat, Integer, H
-      New .= SubStr( AsciiPrefix . SubStr(Asc(A_LoopField),3), AsciiTrimLength)
-   }
-   SetFormat,Integer,D
-   Critical, Off
-Return New
 }
 
 ;------------------------------------------------------------------------

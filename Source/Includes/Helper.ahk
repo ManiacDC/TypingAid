@@ -65,10 +65,6 @@ CheckHelperWindowAuto(ActiveProcess,ActiveTitle)
 MaybeOpenOrCloseHelperWindowManual()
 {
    ;Called when we hit Ctrl-Shift-H
-   
-   ;make sure we are in decimal format in case ConvertWordToAscii was interrupted
-   IfEqual, A_FormatInteger, H
-      SetFormat,Integer,D
       
    global Helper_id
    global HelperManual
@@ -113,9 +109,6 @@ MaybeCreateHelperWindow()
    IfNotEqual, Helper_id,
       Return
       
-   ;make sure we are in decimal format in case ConvertWordToAscii was interrupted
-   IfEqual, A_FormatInteger, H
-      SetFormat,Integer,D
    Global XY
    Gui, %HelperGui%:+Owner -MinimizeBox -MaximizeBox +AlwaysOnTop
    Gui, %HelperGui%:+LabelHelper_
@@ -140,9 +133,6 @@ Return
 
 HelperWindowClosed()
 {
-   ;make sure we are in decimal format in case ConvertWordToAscii was interrupted
-   IfEqual, A_FormatInteger, H
-      SetFormat,Integer,D
    global Helper_id
    global HelperManual
    IfNotEqual, Helper_id,

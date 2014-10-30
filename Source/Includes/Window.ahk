@@ -3,9 +3,6 @@
 
 ; Timed function to detect change of focus (and remove ListBox when changing active window) 
 Winchanged: 
-   ;make sure we are in decimal format in case ConvertWordToAscii was interrupted
-   IfEqual, A_FormatInteger, H
-      SetFormat,Integer,D
    
    IF ( ReturnWinActive() )
    {
@@ -29,9 +26,6 @@ Winchanged:
 
 GetIncludedActiveWindow()
 {
-   ;make sure we are in decimal format in case ConvertWordToAscii was interrupted
-   IfEqual, A_FormatInteger, H
-      SetFormat,Integer,D
    global Helper_id
    global A_id
    global A_Title

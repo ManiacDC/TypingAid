@@ -112,8 +112,6 @@ NumPresses=1
 ;
 ;
 ;LearnMode defines whether or not the script should learn new words as you type them, either On or Off.
-;Entries in the wordlist are limited to a length of 123 characters in ANSI version
-;or 61 characters in Unicode version if LearnMode is On.
 LearnMode=On
 ;
 ;
