@@ -55,7 +55,7 @@ GetIncludedActiveWindow()
                Return
             }
          
-               
+         Input
          Suspend, On
          CloseListBox()
          MaybeSaveHelperWindowPos()
@@ -70,6 +70,7 @@ GetIncludedActiveWindow()
          Break
       If CheckForActive(ActiveProcess,ActiveTitle)
          Break
+      Input
       Suspend, On
       CloseListBox()
       MaybeSaveHelperWindowPos()

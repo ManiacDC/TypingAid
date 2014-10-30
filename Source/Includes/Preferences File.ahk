@@ -372,6 +372,8 @@ XY=200,277
    IfEqual, TerminatingCharacters,
       TerminatingCharacters = %DftTerminatingCharacters%
    
+   ParseTerminatingCharacters()
+   
    if ListBoxOffset is not Integer
       ListBoxOffset = 14
       
@@ -406,4 +408,41 @@ XY=200,277
                   ListBoxRows = 30
          
    Return
+}
+
+ParseTerminatingCharacters()
+{
+   global TerminatingCharacters
+   global TerminatingEndKeys
+   
+   Loop, Parse, TerminatingCharacters
+   {
+      IfEqual, OpenWord, 1
+      {
+         If ( A_LoopField == "{" )
+         {
+            TempCharacters .= A_LoopField
+         } else If ( A_LoopField == "}" )
+         {
+            OpenWord =
+            TempEndKeys .= "{" . Word . "}"
+            Word =
+         } else 
+         {
+            Word .= A_LoopField
+         }
+      } else if ( A_LoopField  == "{" )
+      {
+         OpenWord = 1
+      } else
+      {
+         TempCharacters .= A_LoopField
+      }
+   }
+      
+      IfNotEqual, Word,
+         TempCharacters .= Word
+   
+   TerminatingCharacters := TempCharacters
+   TerminatingEndKeys := TempEndKeys
 }

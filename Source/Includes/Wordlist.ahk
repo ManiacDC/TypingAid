@@ -167,9 +167,9 @@ AddWordToList(AddWord,ForceCountNewOnly)
    {
       IfNotEqual,LearnedWordsCount,  ;if this is a stored learned word, this will only have a value when LearnedWords are read in from the wordlist
       {
-         wDB.Query("INSERT INTO words VALUES ('" . AddWordIndex . "','" . addword . "','" . LearnedWordsCount++ . "');")
+         wDB.Query("INSERT INTO words VALUES ('" . AddWordIndex . "','" . AddWord . "','" . LearnedWordsCount++ . "');")
       } else {
-               wDB.Query("INSERT INTO words (wordindexed,word) VALUES ('" . AddWordIndex . "','" . addword . "');")
+               wDB.Query("INSERT INTO words (wordindexed,word) VALUES ('" . AddWordIndex . "','" . AddWord . "');")
             }
       
    } else { ; If this is an on-the-fly learned word
@@ -180,13 +180,13 @@ AddWordToList(AddWord,ForceCountNewOnly)
             
                IfNotEqual, ForceCountNewOnly, 1
                {
-                  IF ( StrLen(addword) < LearnLength ) ; don't add the word if it's not longer than the minimum length for learning if we aren't force learning it
+                  IF ( StrLen(AddWord) < LearnLength ) ; don't add the word if it's not longer than the minimum length for learning if we aren't force learning it
                      Return
                
-                  if addword contains %ForceNewWordCharacters%
+                  if AddWord contains %ForceNewWordCharacters%
                      Return
                   
-                  if addword contains %DoNotLearnStrings%
+                  if AddWord contains %DoNotLearnStrings%
                      Return
                   
                }
@@ -200,10 +200,10 @@ AddWordToList(AddWord,ForceCountNewOnly)
                
                IfEqual, LearnMode, On
                {
-                  wDB.Query("INSERT INTO words VALUES ('" . AddWordIndex . "','" . addword . "','" . CountValue . "');")
-                  wDB.Query("INSERT INTO LearnedWords VALUES ('" . addword . "');")                  
+                  wDB.Query("INSERT INTO words VALUES ('" . AddWordIndex . "','" . AddWord . "','" . CountValue . "');")
+                  wDB.Query("INSERT INTO LearnedWords VALUES ('" . AddWord . "');")                  
                } else {
-                        wDB.Query("INSERT INTO words (wordindexed,word) VALUES ('" . AddWordIndex . "','" . addword . "');")
+                        wDB.Query("INSERT INTO words (wordindexed,word) VALUES ('" . AddWordIndex . "','" . AddWord . "');")
                      }
             } else {
                      IfEqual, LearnMode, On
@@ -219,10 +219,10 @@ AddWordToList(AddWord,ForceCountNewOnly)
                            
                            IF ( CountValue < LearnCount )
                            {
-                              wDB.QUERY("UPDATE words SET count = ('" . LearnCount . "') WHERE word = '" . addword . "');")
+                              wDB.QUERY("UPDATE words SET count = ('" . LearnCount . "') WHERE word = '" . AddWord . "');")
                            }
                         } else {
-                                 UpdateWordCount(addword,0) ;Increment the word count if it's already in the list and we aren't forcing it on
+                                 UpdateWordCount(AddWord,0) ;Increment the word count if it's already in the list and we aren't forcing it on
                               }
                      }
                   }
