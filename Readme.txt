@@ -14,6 +14,9 @@ English Wordlists:
 [url=https://github.com/ManiacDC/TypingAid/raw/master/Wordlists/Wordlist%203600.txt]3600 English Words[/url]
 [url=https://github.com/ManiacDC/TypingAid/raw/master/Wordlists/English%20wordlist%20unfiltered.txt]Large English Wordlist (Unfiltered, may contain curse words, etc)[/url]
 
+Non-English Wordlists
+[url=https://raw.githubusercontent.com/ManiacDC/TypingAid/master/Wordlists/Wordlist%20Romanian.txt]Romanian Wordlist (282,000+ words), thanks to Ochisor.[/url] Extracted from [url=http://www.ub-filosofie.ro/~solcan/wt/gnu/s/aspell-ro.html]here[/url].
+
 AHK Keyword Wordlist:
 [url=https://github.com/ManiacDC/TypingAid/raw/master/Wordlists/WordList%20AHK.txt]Wordlist AHK.txt[/url] (Thanks [url=http://www.autohotkey.com/board/topic/49517-typingaid-v219-word-autocompletion-utility/page-22#entry425973]tidbit[/url].)
 
