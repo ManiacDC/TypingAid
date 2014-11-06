@@ -7,7 +7,7 @@ MaybeWriteHelperWindowPos()
    IfEqual, XYSaved, 1
    {
       IfNotEqual, XY, 
-         IniWrite, %XY%, %A_ScriptDir%\Preferences.ini, HelperWindow, XY
+         IniWrite, %XY%, %A_ScriptDir%\LastState.ini, HelperWindow, XY
    }
    Return
 }
@@ -19,70 +19,144 @@ ReadPreferences()
    global
    Local Prefs
    Local INI
-   Local IniToRead
    Local Defaults
+   Local LastState
+   Local IniValues
+   Local CurrentIniValues
+   Local CurrentIniValues0
+   Local CurrentIniValues1
+   Local CurrentIniValues2
+   Local CurrentIniValues3
+   Local CurrentIniValues4
+   Local CurrentIniValues5
+   Local SpaceVar
+   Local DftVariable
+   Local NormalVariable
+   Local IniSection
+   Local IniKey
+   Local DftValue
+   
+   Local DftIncludeProgramExecutables
+   Local DftIncludeProgramTitles
+   Local DftExcludeProgramExecutables
+   Local DftExcludeProgramTitles
+   Local DftWlen
+   Local DftNumPresses
+   Local DftLearnMode
+   Local DftLearnCount
+   Local DftLearnLength
+   Local DftDoNotLearnStrings
+   Local DftArrowKeyMethod
+   Local DftDisabledAutoCompleteKeys
+   Local DftDetectMouseClickMove
+   Local DftNoBackSpace
+   Local DftAutoSpace
+   Local DftSuppressMatchingWord
+   Local DftSendMethod
+   Local DftTerminatingCharacters
+   Local DftForceNewWordCharacters
+   Local DftListBoxOffSet
+   Local DftListBoxFontFixed
+   Local DftListBoxFontOverride
+   Local DftListBoxFontSize
+   Local DftListBoxCharacterWidth
+   Local DftListBoxOpacity
+   Local DftListBoxRows
+   Local DftHelperWindowProgramExecutables
+   Local DftHelperWindowProgramTitles
    
    Prefs = %A_ScriptDir%\Preferences.ini
    Defaults = %A_ScriptDir%\Defaults.ini
-   If FileExist(Prefs)
-      IniToRead := Prefs
-   else If FileExist(Defaults)
-      IniToRead := Defaults
+   LastState = %A_ScriptDir%\LastState.ini
    
+   MaybeFixFileEncoding(Prefs,"UTF-16")
+   MaybeFixFileEncoding(Defaults,"UTF-16")
+   MaybeFixFileEncoding(LastState,"UTF-16")
+      
    DftTerminatingCharacters = {enter}{space}{esc}{tab}{Home}{End}{PgUp}{PgDn}{Up}{Down}{Left}{Right}.;`,¿?¡!'"()[]{}{}}{{}``~`%$&*-+=\/><^|@#:
-   IfNotEqual, IniToRead,
+   
+   SpaceVar := "%A_Space%"
+   
+   IniValues =
+   (
+      DftIncludeProgramExecutables,IncludeProgramExecutables,IncludePrograms,IncludeProgramExecutables,%SpaceVar%
+      DftIncludeProgramTitles,IncludeProgramTitles,IncludePrograms,IncludeProgramTitles,%SpaceVar%
+      DftExcludeProgramExecutables,ExcludeProgramExecutables,ExcludePrograms,ExcludeProgramExecutables,%SpaceVar%
+      DftExcludeProgramTitles,ExcludeProgramTitles,ExcludePrograms,ExcludeProgramTitles,%SpaceVar%
+      ,Title,Settings,Title,%SpaceVar%
+      DftWlen,Wlen,Settings,Length,3
+      DftNumPresses,NumPresses,Settings,NumPresses,1
+      DftLearnMode,LearnMode,Settings,LearnMode,On
+      DftLearnCount,LearnCount,Settings,LearnCount,5
+      DftLearnLength,LearnLength,Settings,LearnLength,%SpaceVar%
+      DftDoNotLearnStrings,DoNotLearnStrings,Settings,DoNotLearnStrings, %SpaceVar%
+      DftArrowKeyMethod,ArrowKeyMethod,Settings,ArrowKeyMethod,First
+      DftDisabledAutoCompleteKeys,DisabledAutoCompleteKeys,Settings,DisabledAutoCompleteKeys,%SpaceVar%
+      DftDetectMouseClickMove,DetectMouseClickMove,Settings,DetectMouseClickMove,On
+      DftNoBackSpace,NoBackSpace,Settings,NoBackSpace,On
+      DftAutoSpace,AutoSpace,Settings,AutoSpace,Off
+      DftSuppressMatchingWord,SuppressMatchingWord,Settings,SuppressMatchingWord,Off
+      DftSendMethod,SendMethod,Settings,SendMethod,1
+      DftTerminatingCharacters,TerminatingCharacters,Settings,TerminatingCharacters,%DftTerminatingCharacters%
+      DftForceNewWordCharacters,ForceNewWordCharacters,Settings,ForceNewWordCharacters,%SpaceVar%
+      DftListBoxOffSet,ListBoxOffset,ListBoxSettings,ListBoxOffset,14
+      DftListBoxFontFixed,ListBoxFontFixed,ListBoxSettings,ListBoxFontFixed,Off
+      DftListBoxFontOverride,ListBoxFontOverride,ListBoxSettings,ListBoxFontOverride,%SpaceVar%
+      DftListBoxFontSize,ListBoxFontSize,ListBoxSettings,ListBoxFontSize,10      
+      DftListBoxCharacterWidth,ListBoxCharacterWidth,ListBoxSettings,ListBoxCharacterWidth,%SpaceVar%
+      DftListBoxOpacity,ListBoxOpacity,ListBoxSettings,ListBoxOpacity,215
+      DftListBoxRows,ListBoxRows,ListBoxSettings,ListBoxRows,10
+      DftHelperWindowProgramExecutables,HelperWindowProgramExecutables,HelperWindow,HelperWindowProgramExecutables,%SpaceVar%
+      DftHelperWindowProgramTitles,HelperWindowProgramTitles,HelperWindow,HelperWindowProgramTitles,%SpaceVar%
+      ,XY,HelperWindow,XY,%SpaceVar%
+    )
+    
+   Loop, Parse, IniValues, `n, `r%A_Space%
    {
-      ;IncludePrograms
-      IniRead, IncludeProgramExecutables, %IniToRead%, IncludePrograms, IncludeProgramExecutables, %A_Space%
-      IniRead, IncludeProgramTitles, %IniToRead%, IncludePrograms, IncludeProgramTitles, %A_Space%
-      ;ExcludePrograms
-      IniRead, ExcludeProgramExecutables, %IniToRead%, ExcludePrograms, ExcludeProgramExecutables, %A_Space%
-      IniRead, ExcludeProgramTitles, %IniToRead%, ExcludePrograms, ExcludeProgramTitles, %A_Space%
-      ;Settings
-      IniRead, ETitle, %IniToRead%, Settings, Title, %A_Space%
-      IniRead, Wlen, %IniToRead%, Settings, Length, 3
-      IniRead, NumPresses, %IniToRead%, Settings, NumPresses, 1
-      IniRead, LearnMode, %IniToRead%, Settings, LearnMode, On
-      IniRead, LearnCount, %IniToRead%, Settings, LearnCount, 5
-      LearnLength := Wlen + 2
-      IniRead, LearnLength, %IniToRead%, Settings, LearnLength, %LearnLength%
-      IniRead, DoNotLearnStrings, %IniToRead%, Settings, DoNotLearnStrings, %A_Space%
-      IniRead, ArrowKeyMethod, %IniToRead%, Settings, ArrowKeyMethod, First
-      IniRead, DisabledAutoCompleteKeys, %IniToRead%, Settings, DisabledAutoCompleteKeys, %A_Space%
-      IniRead, DetectMouseClickMove, %IniToRead%, Settings, DetectMouseClickMove, On
-      IniRead, NoBackSpace, %IniToRead%, Settings, NoBackSpace, On
-      IniRead, AutoSpace, %IniToRead%, Settings, AutoSpace, Off
-      IniRead, SuppressMatchingWord, %IniToRead%, Settings, SuppressMatchingWord, Off
-      IniRead, SendMethod, %IniToRead%, Settings, SendMethod, 1
-      IniRead, TerminatingCharacters, %IniToRead%, Settings, TerminatingCharacters, %DftTerminatingCharacters%
-      IniRead, ForceNewWordCharacters, %IniToRead%, Settings, ForceNewWordCharacters, %A_Space%
-      ;ListBox
-      IniRead, ListBoxOffSet, %IniToRead%, ListBoxSettings, ListBoxOffset, 14
-      IniRead, ListBoxFontFixed, %IniToRead%, ListBoxSettings, ListBoxFontFixed, Off
-      IniRead, ListBoxFontOverride, %IniToRead%, ListBoxSettings, ListBoxFontOverride, %A_Space%
-      IniRead, ListBoxFontSize, %IniToRead%, ListBoxSettings, ListBoxFontSize, 10      
-      IniRead, ListBoxCharacterWidth, %IniToRead%, ListBoxSettings, ListBoxCharacterWidth, %A_Space%
-      IniRead, ListBoxOpacity, %IniToRead%, ListBoxSettings, ListBoxOpacity, 215
-      IniRead, ListBoxRows, %IniToRead%, ListBoxSettings, ListBoxRows, 10
-      ;HelperWindow
-      IniRead, HelperWindowProgramExecutables, %IniToRead%, HelperWindow, HelperWindowProgramExecutables, %A_Space%
-      IniRead, HelperWindowProgramTitles, %IniToRead%, HelperWindow, HelperWindowProgramTitles, %A_Space%
-      IniRead, XY, %IniToRead%, HelperWindow, XY, %A_Space%
-   } else {
-            INI= 
+      StringSplit, CurrentIniValues, A_LoopField, `,
+      DftVariable := CurrentIniValues1
+      NormalVariable := CurrentIniValues2
+      IniSection := CurrentIniValues3
+      IniKey := CurrentIniValues4
+      DftValue := CurrentIniValues5
+   
+      IF ( DftValue = "%A_Space%" )
+         DftValue := A_Space
+      
+      IniRead, %NormalVariable%, %Prefs%, %IniSection%, %IniKey%, %A_Space%
+      
+      IF DftVariable
+      { 
+         IniRead, %DftVariable%, %Defaults%, %IniSection%, %IniKey%, %DftValue%
+         IfEqual, %NormalVariable%,
+            %NormalVariable% := %DftVariable%
+      }
+   }
+   
+   IfEqual, LearnLength,
+      LearnLength := Wlen +2
+   
+   IfExist, %LastState%
+   {
+      IniRead, XY, %LastState%, HelperWindow, XY, %A_Space%
+   }
+   
+   If !(FileExist(Prefs) || FileExist(Defaults))
+   {
+      INI= 
                ( 
 [IncludePrograms]
 ;
 ;IncludeProgramExecutables is a list of executable (.exe) files that TypingAid should be enabled for.
 ;If one the executables matches the current program, TypingAid is enabled for that program.
 ; ex: IncludeProgramExecutables=notepad.exe|iexplore.exe
-IncludeProgramExecutables=
+IncludeProgramExecutables=%DftIncludeProgramExecutables%
 ;
 ;
 ;IncludeProgramTitles is a list of strings (separated by | ) to find in the title of the window you want TypingAid enabled for.
 ;If one of the strings is found in the title, TypingAid is enabled for that window.
 ; ex: IncludeProgramTitles=Notepad|Internet Explorer
-IncludeProgramTitles=
+IncludeProgramTitles=%DftIncludeProgramTitles%
 ;
 ;
 [ExcludePrograms]
@@ -90,13 +164,13 @@ IncludeProgramTitles=
 ;ExcludeProgramExecutables is a list of executable (.exe) files that TypingAid should be disabled for.
 ;If one the executables matches the current program, TypingAid is disabled for that program.
 ; ex: ExcludeProgramExecutables=notepad.exe|iexplore.exe
-ExcludeProgramExecutables=
+ExcludeProgramExecutables=%DftExcludeProgramExecutables%
 ;
 ;
 ;ExcludeProgramTitles is a list of strings (separated by | ) to find in the title of the window you want TypingAid disabled for.
 ;If one of the strings is found in the title, TypingAid is disabled for that window.
 ; ex: ExcludeProgramTitles=Notepad|Internet Explorer
-ExcludeProgramTitles=
+ExcludeProgramTitles=%DftExcludeProgramTitles%
 ;
 ;
 [Settings]
@@ -104,32 +178,32 @@ ExcludeProgramTitles=
 ;Length is the minimum number of characters that need to be typed before the program shows a List of words.
 ;Generally, the higher this number the better the performance will be.
 ;For example, if you need to autocomplete "as soon as possible" in the word list, set this to 2, type 'as' and a list will appear.
-Length=3
+Length=%DftWlen%
 ;
 ;
 ;NumPresses is the number of times the number hotkey must be tapped for the word to be selected, either 1 or 2.
-NumPresses=1
+NumPresses=%DftNumPresses%
 ;
 ;
 ;LearnMode defines whether or not the script should learn new words as you type them, either On or Off.
 ;Entries in the wordlist are limited to a length of 123 characters in ANSI version
 ;or 61 characters in Unicode version if LearnMode is On.
-LearnMode=On
+LearnMode=%DftLearnMode%
 ;
 ;
 ;LearnCount defines the number of times you have to type a word within a single session for it to be learned permanently.
-LearnCount=5
+LearnCount=%DftLearnCount%
 ;
 ;
 ;LearnLength is the minimum number of characters in a word for it to be learned. This must be at least Length+1.
-LearnLength=5
+LearnLength=%DftLearnLength%
 ;
 ;
 ;DoNotLearnStrings is a comma separated list of strings. Any words which contain any of these strings will not be learned.
 ;This can be used to prevent the program from learning passwords or other critical information.
 ;For example, if you have ord98 in DoNotLearnStrings, password987 will not be learned.
 ; ex: DoNotLearnStrings=ord98,fr21
-DoNotLearnStrings=
+DoNotLearnStrings=%DftDoNotLearnStrings%
 ;
 ;
 ;ArrowKeyMethod is the way the arrow keys are handled when a list is shown.
@@ -138,7 +212,7 @@ DoNotLearnStrings=
 ;  First - resets the selection cursor to the beginning whenever you type a new character
 ;  LastWord - keeps the selection cursor on the prior selected word if it's still in the list, else resets to the beginning
 ;  LastPosition - maintains the selection cursor's position
-ArrowKeyMethod=First
+ArrowKeyMethod=%DftArrowKeyMethod%
 ;
 ;
 ;DisabledAutoCompleteKeys is used to disable certain hotkeys from autocompleting the selected item in the list.
@@ -151,26 +225,26 @@ ArrowKeyMethod=First
 ;  R = Right Arrow
 ;  N = Number Keys
 ;  U = Enter
-DisabledAutoCompleteKeys=
+DisabledAutoCompleteKeys=%DftDisabledAutoCompleteKeys%
 ;
 ;
 ;DetectMouseClickMove is used to detect when the cursor is moved with the mouse.
 ; On - TypingAid will not work when used with an On-Screen keyboard.
 ; Off - TypingAid will not detect when the cursor is moved within the same line using the mouse, and scrolling the text will clear the list.
-DetectMouseClickMove=On
+DetectMouseClickMove=%DftDetectMouseClickMove%
 ;
 ;
 ;NoBackSpace is used to make TypingAid not backspace any of the previously typed characters
 ;(ie, do not change the case of any previously typed characters).
 ;  On - characters you have already typed will not be changed
 ;  Off - characters you have already typed will be backspaced and replaced with the case of the word you have chosen.
-NoBackSpace=On
+NoBackSpace=%DftNoBackSpace%
 ;
 ;
 ;AutoSpace is used to automatically add a space to the end of an autocompleted word.
 ; On - Add a space to the end of the autocompleted word.
 ; Off - Do not add a space to the end of the autocompleted word.
-AutoSpace=Off
+AutoSpace=%DftAutoSpace%
 ;
 ;
 ;SuppressMatchingWord is used to suppress a word from the Word list if it matches the typed word.
@@ -178,7 +252,7 @@ AutoSpace=Off
 ;  If NoBackspace=Off, then the match is case-sensitive.
 ; On - Suppress matching words from the word list.
 ; Off - Do not suppress matching words from the word list.
-SuppressMatchingWord=Off
+SuppressMatchingWord=%DftSuppressMatchingWord%
 ;
 ;
 ;SendMethod is used to change the way the program sends the keys to the screen, this is included for compatibility reasons.
@@ -193,7 +267,7 @@ SuppressMatchingWord=Off
 ;  2C = Same as 2 above, doesn't work on some machines.
 ;  3C = Same as 3 above.
 ;  4C = Alternate method.
-SendMethod=1
+SendMethod=%DftSendMethod%
 ;
 ;
 ;TerminatingCharacters is a list of characters (EndKey) which will signal the program that you are done typing a word.
@@ -229,27 +303,27 @@ TerminatingCharacters=%DftTerminatingCharacters%
 ;if learning is enabled.
 ;Change this only if you know what you are doing, it is probably only useful for certain programming languages.
 ; ex: ForceNewWordCharacters=@,:,#
-ForceNewWordCharacters=
+ForceNewWordCharacters=%DftForceNewWordCharacters%
 ;
 ;
 [ListBoxSettings]
 ;
 ;ListBoxOffset is the number of pixels below the top of the caret (vertical blinking line) to display the list.
-ListBoxOffset=14
+ListBoxOffset=%DftListBoxOffSet%
 ;
 ;
 ;ListBoxFontFixed controls whether a fixed or variable character font width is used.
 ;(ie, in fixed width, "i" and "w" take the same number of pixels)
-ListBoxFontFixed=Off
+ListBoxFontFixed=%DftListBoxFontFixed%
 ;
 ;
 ;ListBoxFontOverride is used to specify a font for the List Box to use. The default for Fixed is Courier,
 ;and the default for Variable is Tahoma.
-ListBoxFontOverride=
+ListBoxFontOverride=%DftListBoxFontOverride%
 ;
 ;
 ;ListBoxFontSize controls the size of the font in the list.
-ListBoxFontSize=10
+ListBoxFontSize=%DftListBoxFontSize%
 ;
 ;
 ;ListBoxCharacterWidth is the width (in pixels) of one character in the List Box.
@@ -259,16 +333,16 @@ ListBoxFontSize=10
 ; 2. Changing the ListBoxFontFixed setting
 ; 3. Changing the ListBoxFontSize setting
 ;Leave this blank to let TypingAid try to compute the width.
-ListBoxCharacterWidth=
+ListBoxCharacterWidth=%DftListBoxCharacterWidth%
 ;
 ;
 ;ListBoxOpacity is how transparent (see-through) the ListBox should be. Use a value of 255 to make it so the
 ;ListBox is fully Opaque, or use a value of 0 to make it so the ListBox cannot be seen at all.
-ListBoxOpacity=215
+ListBoxOpacity=%DftListBoxOpacity%
 ;
 ;
 ;ListBoxRows is the maximum number of rows to show in the ListBox. This value can range from 3 to 30.
-ListBoxRows=10
+ListBoxRows=%DftListBoxRows%
 ;
 ;
 [HelperWindow]
@@ -276,20 +350,15 @@ ListBoxRows=10
 ;HelperWindowProgramExecutables is a list of executable (.exe) files that the HelperWindow should be automatically enabled for.
 ;If one the executables matches the current program, the HelperWindow will pop up automatically for that program.
 ; ex: HelperWindowProgramExecutables=notepad.exe|iexplore.exe
-HelperWindowProgramExecutables=
+HelperWindowProgramExecutables=%DftHelperWindowProgramExecutables%
 ;
 ;
 ;HelperWindowProgramTitles is a list of strings (separated by | ) to find in the title of the window that the HelperWindow should be automatically enabled for.
 ;If one of the strings is found in the title, the HelperWindow will pop up automatically for that program.
 ; ex: HelperWindowProgramTitles=Notepad|Internet Explorer
-HelperWindowProgramTitles=
-;
-;
-; XY specifies the position the HelperWindow opens at. This will be updated automatically when the HelperWindow is
-; next opened and closed
-XY=200,277
+HelperWindowProgramTitles=%DftHelperWindowProgramTitles%
                )
-               FileAppendDispatch(INI, Prefs)
+               FileAppendDispatch(INI, Prefs, "UTF-16")
          }
    
    ; Legacy support for old Preferences File
@@ -307,17 +376,17 @@ XY=200,277
    
    if Wlen is not integer
    {
-      Wlen = 3
+      Wlen = %DftWlen%
    }
    
    if NumPresses not in 1,2
-      NumPresses = 1
+      NumPresses = %DftNumPresses%
    
    If LearnMode not in On,Off
-      LearnMode = On
+      LearnMode = %DftLearnMode%
    
    If LearnCount is not Integer
-      LearnCount = 5
+      LearnCount = %DftLearnCount%
       
    If LearnLength is not Integer
    {
@@ -339,20 +408,20 @@ XY=200,277
    
    If ArrowKeyMethod not in First,Off,LastWord,LastPosition
    {
-      ArrowKeyMethod = First       
+      ArrowKeyMethod = %DftArrowKeyMethod%       
    }
    
    If DetectMouseClickMove not in On,Off
-      DetectMouseClickMove = On
+      DetectMouseClickMove = %DftDetectMouseClickMove%
    
    If NoBackSpace not in On,Off
-      NoBackSpace = On
+      NoBackSpace = %DftNoBackSpace%
       
    If AutoSpace not in On,Off
-      AutoSpace = Off
+      AutoSpace = %DftAutoSpace%
    
    if SendMethod not in 1,2,3,1C,2C,3C,4C
-      SendMethod = 1
+      SendMethod = %DftSendMethod%
    
    ;SendPlay does not work when not running as Administrator, switch to SendInput
    If not A_IsAdmin
@@ -375,33 +444,33 @@ XY=200,277
    ParseTerminatingCharacters()
    
    if ListBoxOffset is not Integer
-      ListBoxOffset = 14
+      ListBoxOffset = %DftListBoxOffSet%
       
    if ListBoxFontFixed not in On,Off
-      ListBoxFontFixed = Off
+      ListBoxFontFixed = %DftListBoxFontFixed%
    
    If ListBoxFontSize is not Integer
-      ListBoxFontSize = 8
+      ListBoxFontSize = %DftListBoxFontSize%
    else {
          IfLess, ListBoxFontSize, 2
             ListBoxFontSize = 2
       }
    
    if ListBoxCharacterWidth is not Integer
-      ListBoxCharacterWidth = 
+      ListBoxCharacterWidth = %DftListBoxCharacterWidth%
          
    IfEqual, ListBoxCharacterWidth,
       ListBoxCharacterWidth := Ceil(ListBoxFontSize * 0.8 )
       
    If ListBoxOpacity is not Integer
-      ListBoxOpacity = 215
+      ListBoxOpacity = %DftListBoxOpacity%
    else IfLess, ListBoxOpacity, 0
             ListBoxOpacity = 0
          else IfGreater, ListBoxOpacity, 255
                   ListBoxOpacity = 255
                   
    If ListBoxRows is not Integer
-      ListBoxRows = 10
+      ListBoxRows = %DftListBoxRows%
    else IfLess, ListBoxRows, 3
             ListBoxRows = 3
          else IfGreater, ListBoxRows, 30

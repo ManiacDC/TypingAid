@@ -5,9 +5,18 @@ ReadWordList()
    global
    ;mark the wordlist as not done
    WordListDone = 0
+   
+   Local WordList
+   Local WordlistLearned
+   
+   Wordlist = %A_ScriptDir%\Wordlist.txt
+   WordlistLearned = %A_ScriptDir%\WordlistLearned.txt
+   
+   MaybeFixFileEncoding(Wordlist,"UTF-8")
+   MaybeFixFileEncoding(WordlistLearned,"UTF-8")
 
    ;reads list of words from file 
-   FileRead, ParseWords, %A_ScriptDir%\Wordlist.txt
+   FileRead, ParseWords, %Wordlist%
    Loop, Parse, ParseWords, `n, `r
    {
       AddWordToList(A_LoopField,0)
@@ -19,7 +28,7 @@ ReadWordList()
       LearnedWordsCount=0
 
    ;reads list of words from file 
-   FileRead, ParseWords, %A_ScriptDir%\WordlistLearned.txt
+   FileRead, ParseWords, %WordlistLearned%
    Loop, Parse, ParseWords, `n, `r
    {
       AddWordToList(A_LoopField,0)
