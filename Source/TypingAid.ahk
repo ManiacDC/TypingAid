@@ -870,15 +870,68 @@ clearallvars:
 
 ;------------------------------------------------------------------------
 
-FileAppendDispatch(Text,FileName)
+FileAppendDispatch(Text,FileName,ForceEncoding=0)
 {
    IfEqual, A_IsUnicode, 1
    {
-      FileAppend, %Text%, %FileName%, UTF-8
+      IfNotEqual, ForceEncoding, 0
+      {
+         FileAppend, %Text%, %FileName%, %ForceEncoding%
+      } else
+      {
+         FileAppend, %Text%, %FileName%, UTF-8
+      }
    } else {
             FileAppend, %Text%, %FileName%
          }
    Return
+}
+
+MaybeFixFileEncoding(File,Encoding)
+{
+   IfGreaterOrEqual, A_AhkVersion, 1.0.90.0
+   {
+      
+      IfExist, %File%
+      {    
+         IfNotEqual, A_IsUnicode, 1
+         {
+            Encoding =
+         }
+         
+         
+         EncodingCheck := FileOpen(File,"r")
+         
+         If EncodingCheck
+         {
+            If Encoding
+            {
+               IF !(EncodingCheck.Encoding = Encoding)
+                  WriteFile = 1
+            } else
+            {
+               IF (SubStr(EncodingCheck.Encoding, 1, 3) = "UTF")
+                  WriteFile = 1
+            }
+         
+            IF WriteFile
+            {
+               Contents := EncodingCheck.Read()
+               EncodingCheck.Close()
+               EncodingCheck =
+               FileCopy, %File%, %File%.preconv.bak
+               FileDelete, %File%
+               FileAppend, %Contents%, %File%, %Encoding%
+               
+               Contents =
+            } else
+            {
+               EncodingCheck.Close()
+               EncodingCheck =
+            }
+         }
+      }
+   }
 }
 
 ;------------------------------------------------------------------------

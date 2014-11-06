@@ -1,3 +1,10 @@
+*2.19.7 11/6/2014
+** The script is no longer compatible with AHK Basic. Please get the newest version from http://www.ahkscript.org.
+** Fixes for Unicode - the script would stop reading the preferences file
+** Fixes for how the Defaults.ini works when a Preferences.ini exists
+** Consolidation of ini reading code
+** Auto-correction of Preferences and Wordlist when swapping to/from Unicode version of AHK
+
 *2.19.6 10/30/2014
 ** Fix issue with AHK v1.1. Sometimes the script would stop detecting Input.
 ** Fixes to support Diacritic and Unicode characters.

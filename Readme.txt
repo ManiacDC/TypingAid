@@ -3,9 +3,11 @@ TypingAid is a simple, compact, and handy auto-completion utility.
 It is customizable enough to be useful for regular typing and for programming.
 
 [b]Download:[/b]
-[url=https://github.com/ManiacDC/TypingAid/releases/download/v2.19.6/TypingAid.exe]TypingAid v2.19.6 Precompiled Executable[/url]
-[url=https://github.com/ManiacDC/TypingAid/releases/download/v2.19.6/TypingAid64.exe]TypingAid v2.19.6 64-bit Precompiled Executable[/url]
-[url=https://github.com/ManiacDC/TypingAid/archive/v2.19.6.zip]TypingAid v2.19.6 AHK Script[/url]
+[url=https://github.com/ManiacDC/TypingAid/releases/download/v2.19.7/TypingAid.exe]TypingAid v2.19.7 Precompiled Executable[/url]
+[url=https://github.com/ManiacDC/TypingAid/releases/download/v2.19.7/TypingAid64.exe]TypingAid v2.19.7 64-bit Precompiled Executable[/url]
+[url=https://github.com/ManiacDC/TypingAid/archive/v2.19.7.zip]TypingAid v2.19.7 AHK Script[/url]
+
+As of version 2.19.7.0, the script is no longer compatible with AHK Basic. Please get the newest version from [url]http://www.ahkscript.org[/url].
 
 English Wordlists:
 [url=https://github.com/ManiacDC/TypingAid/raw/master/Wordlists/Wordlist%201200%20frequency%20weighted.txt]1200 English Words Weighted By Frequency[/url]
@@ -13,6 +15,9 @@ English Wordlists:
 [url=https://github.com/ManiacDC/TypingAid/raw/master/Wordlists/Wordlist%202000%20common%202.txt]2000 Common English Words (Alternative)[/url]
 [url=https://github.com/ManiacDC/TypingAid/raw/master/Wordlists/Wordlist%203600.txt]3600 English Words[/url]
 [url=https://github.com/ManiacDC/TypingAid/raw/master/Wordlists/English%20wordlist%20unfiltered.txt]Large English Wordlist (Unfiltered, may contain curse words, etc)[/url]
+
+Non-English Wordlists
+[url=https://raw.githubusercontent.com/ManiacDC/TypingAid/master/Wordlists/Wordlist%20Romanian.txt]Romanian Wordlist (282,000+ words)[/url] Thanks to [url=http://www.autohotkey.com/board/user/38990-ochisor/]Ochisor[/url]. Extracted from [url=http://www.ub-filosofie.ro/~solcan/wt/gnu/s/aspell-ro.html]here[/url].
 
 AHK Keyword Wordlist:
 [url=https://github.com/ManiacDC/TypingAid/raw/master/Wordlists/WordList%20AHK.txt]Wordlist AHK.txt[/url] (Thanks [url=http://www.autohotkey.com/board/topic/49517-typingaid-v219-word-autocompletion-utility/page-22#entry425973]tidbit[/url].)
@@ -71,32 +76,8 @@ Full (untested) for UTF-8 character set.
 
 [b][url=https://github.com/ManiacDC/TypingAid/issues?q=is%3Aissue+is%3Aclosed+label%3Awontfix]Workarounds[/url][/b]
 
-[b]Future Features:[/b]
-[LIST]
-[*]A toggle hotkey to activate/suspend script, also via tray menu (configurable)[/*]
-[*]Add a tray menu to allow for configuring settings more easily[/*]
-[*]Possibly implement a method of checking to see if the typed letter actually typed a letter (when helper window is not open - check to see if caret moved).[/*]
-[*]Possibly add customized autocomplete combinations (such as send word and a space, or send word and a period, http://www.autohotkey.com/board/topic/49517-typingaid-v219-word-autocompletion-utility/page-10#entry324795 ).[/*]
-[*]Allow a way to add more "weight" to words when you type/complete them so they jump up the list faster ( http://www.autohotkey.com/board/topic/49517-typingaid-v219-word-autocompletion-utility/page-14#entry341770 ).[/*]
-[*]Add word replacement ( http://www.autohotkey.com/board/topic/49517-typingaid-v219-word-autocompletion-utility/page-19#entry400346 ).[/*]
-[*]Add tiered wordlists (Parent>Child relationships) ( http://www.autohotkey.com/board/topic/49517-typingaid-v219-word-autocompletion-utility/page-20#entry401897 ).[/*]
-[*]Add sentence and/or pattern learning. ( http://www.autohotkey.com/board/topic/49517-typingaid-v219b-word-autocompletion-utility/page-40#entry590757 ).[/*]
-[*]Allow TypingAid to send in non-raw format (for putting in special characters). ( http://www.autohotkey.com/board/topic/49517-typingaid-v219-word-autocompletion-utility/page-21#entry406500 )[/*]
-[*]Allow users to customize shortcut keys. ( http://www.autohotkey.com/board/topic/49517-typingaid-v219-word-autocompletion-utility/page-21#entry408261 )[/*]
-[*]Monitor the clipboard to find words to add to the list. ( http://www.autohotkey.com/board/topic/49517-typingaid-v219-word-autocompletion-utility/page-23#entry443169 )[/*]
-[*]Add a way to use a hardcoded list of words rather than wordlist.txt[/*]
-[*]Add a new type of Helper Window which would basically be a self-contained edit window. ( hhttp://www.autohotkey.com/board/topic/49517-typingaid-v219-word-autocompletion-utility/page-31#entry473544 )[/*]
-[*]Add the ability to parse out and index CamelCase strings by UpperCase letters. ( http://www.autohotkey.com/board/topic/49517-typingaid-v219-word-autocompletion-utility/page-33#entry511828 )[/*]
-[*]Warn the user when the Wordlist file does not exist or is empty. ( http://www.autohotkey.com/board/topic/49517-typingaid-v219-word-autocompletion-utility/page-34#entry524677 )[/*]
-[*]Add support for Russian ( http://www.autohotkey.com/board/topic/49517-typingaid-v218-word-autocompletion-utility/page-38#entry553085 )[/*]
-[*]Add an option to suppress plural forms of words ( http://www.autohotkey.com/board/topic/49517-typingaid-v219-word-autocompletion-utility/page-40#entry590557 )[/*]
-[*]Add a way to reorder the wordlist based on # Characters left to type in combination with the existing frequency weighting ( http://www.autohotkey.com/board/topic/49517-typingaid-v219d-word-autocompletion-utility/#entry591512 )[/*]
-[*]Changed Learned Words to be stored in a SQL database ( http://www.autohotkey.com/board/topic/49517-typingaid-v219d-word-autocompletion-utility/page-41#entry592912 )[/*]
-[*]Allow a way to quickly switch between different wordlists ( http://www.autohotkey.com/board/topic/49517-typingaid-v219d-word-autocompletion-utility/page-43#entry635313 )[/*]
-[*]Allow the script to recognize multiple partial string matches ( http://www.autohotkey.com/board/topic/49517-typingaid-v219d-word-autocompletion-utility/?p=640330 )[/*]
-[*]Add word descriptions ( http://www.autohotkey.com/board/topic/49517-typingaid-v2195-word-autocompletion-utility/page-46#entry673435 )[/*]
-[*]Allow learned words to appear before static words ( http://www.autohotkey.com/board/topic/49517-typingaid-v2195-word-autocompletion-utility/page-46#entry672898 )[/*]
-[/LIST]
+[b][url=https://github.com/ManiacDC/TypingAid/issues?q=is%3Aopen+is%3Aissue+label%3Aenhancement]Future Features[/url][/b]
+
 [b]Credits:[/b]
 Jordi S
 Maniac

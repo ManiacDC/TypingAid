@@ -11,7 +11,15 @@ ReadWordList()
    Local TempAddToLearned
    Local each
    Local row
+   Local WordList
+   Local WordlistLearned
    
+   Wordlist = %A_ScriptDir%\Wordlist.txt
+   WordlistLearned = %A_ScriptDir%\WordlistLearned.txt
+   
+   MaybeFixFileEncoding(Wordlist,"UTF-8")
+   MaybeFixFileEncoding(WordlistLearned,"UTF-8")
+
    wDB := DBA.DataBaseFactory.OpenDataBase("SQLite", A_ScriptDir . "\WordlistLearned.db" )
    if !wDB
    {
@@ -42,7 +50,7 @@ ReadWordList()
    
    wDB.BeginTransaction()   
    ;reads list of words from file 
-   FileRead, ParseWords, %A_ScriptDir%\Wordlist.txt
+   FileRead, ParseWords, %Wordlist%
    Loop, Parse, ParseWords, `n, `r
    {
       IfEqual, TempAddToLearned, 1
@@ -67,7 +75,7 @@ ReadWordList()
    
    wDB.BeginTransaction()
    ;reads list of words from file 
-   FileRead, ParseWords, %A_ScriptDir%\WordlistLearned.txt
+   FileRead, ParseWords, %WordlistLearned%
    Loop, Parse, ParseWords, `n, `r
    {
       IF CheckValid(A_LoopField)
