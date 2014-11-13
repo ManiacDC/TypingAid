@@ -13,6 +13,8 @@ ReadWordList()
    Local row
    Local WordList
    Local WordlistLearned
+   Local tableconverted
+   Local WordlistConverted
    
    Wordlist = %A_ScriptDir%\Wordlist.txt
    WordlistLearned = %A_ScriptDir%\WordlistLearned.txt
@@ -27,28 +29,53 @@ ReadWordList()
       exitapp
    }
    
-   IF not wDB.Query("CREATE TEMP TABLE Words (wordindexed TEXT, word TEXT UNIQUE, count INTEGER);")
-   ;IF not wDB.Query("CREATE TABLE Words (wordindexed TEXT, word TEXT UNIQUE, count INTEGER);")
+   tableconverted := wDB.Query("SELECT tableconverted FROM LastState;")
+   
+   for each, row in WordDb.Rows
    {
-      msgbox Cannot Create Table - fatal error...
-      ExitApp
+      WordlistConverted := tableconverted[1]
    }
    
-   IF not wDB.Query("CREATE INDEX temp.WordIndex ON Words (wordindexed);")
-   ;IF not wDB.Query("CREATE INDEX WordIndex ON Words (wordindexed);")
+   IfNotEqual, WordlistConverted, 1
    {
-      msgbox Cannot Create Index - fatal error...
-      ExitApp
+      wDB.Query("DROP TABLE Words;")
+      wDB.Query("DROP INDEX WordIndex;")
+      wDB.Query("DROP TABLE LearnedWords;")
+      wDB.Query("DROP TABLE LastState;")
+      
+      IF not wDB.Query("CREATE TABLE Words (wordindexed TEXT, word TEXT UNIQUE, count INTEGER);")
+      ;IF not wDB.Query("CREATE TABLE Words (wordindexed TEXT, word TEXT UNIQUE, count INTEGER);")
+      {
+         msgbox Cannot Create Table - fatal error...
+         ExitApp
+      }
+   
+      IF not wDB.Query("CREATE INDEX WordIndex ON Words (wordindexed);")
+      ;IF not wDB.Query("CREATE INDEX WordIndex ON Words (wordindexed);")
+      {
+         msgbox Cannot Create Index - fatal error...
+         ExitApp
+      }
+   
+      IF not wDB.Query("CREATE TABLE LearnedWords (learnedword TEXT UNIQUE);")
+      ;IF not wDB.Query("CREATE TABLE LearnedWords (learnedword TEXT UNIQUE);")
+      {
+         MsgBox Cannot Create Table - fatal error...
+         ExitApp
+      }
+   
+      IF not wDB.Query("CREATE TABLE LastState (tableconverted INTEGER);")
+      ;IF not wDB.Query("CREATE TABLE LearnedWords (learnedword TEXT UNIQUE);")
+      {
+         MsgBox Cannot Create Table - fatal error...
+         ExitApp
+      }
+   } else
+   {
+      wDB.Query("DELETE FROM Words WHERE count IS NULL;")
    }
    
-   IF not wDB.Query("CREATE TEMP TABLE LearnedWords (learnedword TEXT UNIQUE);")
-   ;IF not wDB.Query("CREATE TABLE LearnedWords (learnedword TEXT UNIQUE);")
-   {
-      MsgBox Cannot Create Table - fatal error...
-      ExitApp
-   }
-   
-   wDB.BeginTransaction()   
+   wDB.BeginTransaction()
    ;reads list of words from file 
    FileRead, ParseWords, %Wordlist%
    Loop, Parse, ParseWords, `n, `r
@@ -57,11 +84,14 @@ ReadWordList()
       {
          IF CheckValid(A_LoopField)
          {
-            wDB.Query("INSERT INTO Learnedwords VALUES ('" . A_LoopField . "')")
+            wDB.Query("INSERT INTO Learnedwords VALUES ('" . A_LoopField . "');")
          }
       } else IfEqual, A_LoopField, `;LEARNEDWORDS`;
       {
-         IfEqual, LearnMode, On
+         IfEqual, WordlistConverted, 1
+         {
+            break
+         } Else IfEqual, LearnMode, On
          {
             TempAddToLearned=1
             LegacyLearnedWords=1 ; Set Flag that we need to convert wordlist file
@@ -73,32 +103,41 @@ ReadWordList()
    ParseWords =
    wDB.EndTransaction()
    
-   wDB.BeginTransaction()
-   ;reads list of words from file 
-   FileRead, ParseWords, %WordlistLearned%
-   Loop, Parse, ParseWords, `n, `r
+   IfNotEqual, WordlistConverted, 1
    {
-      IF CheckValid(A_LoopField)
-      {
-         wDB.Query("INSERT INTO Learnedwords VALUES ('" . A_LoopField . "')")
-      }
-   }
-   ParseWords =
-   wDB.EndTransaction()
-    
-   ;Force LearnedWordsCount to 0 as we are now processing Learned Words
-   LearnedWordsCount=0
-   
-   LearnedWordsTable := wDB.Query("SELECT learnedword FROM LearnedWords;")
+      SplashTextOn, 300, 50, %A_ScriptName%, Converting wordlist`n`rPlease wait...
       
-   For each, row in LearnedWordsTable.Rows
-   {
-      AddWordToList(row[1],0)
-   }
-   LearnedWordsTable =
+      wDB.BeginTransaction()
+      ;reads list of words from file 
+      FileRead, ParseWords, %WordlistLearned%
+      Loop, Parse, ParseWords, `n, `r
+      {
+         IF CheckValid(A_LoopField)
+         {
+            wDB.Query("INSERT INTO Learnedwords VALUES ('" . A_LoopField . "');")
+         }
+      }
+      ParseWords =
+      wDB.EndTransaction()
+    
+      ;Force LearnedWordsCount to 0 as we are now processing Learned Words
+      LearnedWordsCount=0
+   
+      LearnedWordsTable := wDB.Query("SELECT learnedword FROM LearnedWords;")
+      
+      For each, row in LearnedWordsTable.Rows
+      {
+         AddWordToList(row[1],0)
+      }
+      LearnedWordsTable =
 
-   ;reverse the numbers of the word counts in memory
-   GoSub, ReverseWordNums
+      ;reverse the numbers of the word counts in memory
+      GoSub, ReverseWordNums
+      
+      wDB.Query("INSERT INTO LastState VALUES ('1');")
+      
+      SplashTextOff
+   }
 
    ;mark the wordlist as completed
    WordlistDone = 1
@@ -329,6 +368,9 @@ MaybeUpdateWordlist()
    ; Update the Learned Words
    IfEqual, WordListDone, 1
    {
+      
+      wDB.Query("DELETE FROM Words WHERE count IS NULL;")
+      
       IfEqual, LearnMode, Off
       {
          SortWordList := wDB.Query("SELECT LearnedWord FROM LearnedWords;")
@@ -366,9 +408,6 @@ MaybeUpdateWordlist()
       }
    }
    
-   wDB.Query("DROP TABLE Words;"),
-   wDB.Query("DROP TABLE LearnedWords;"),
-   wDB.Query("DROP INDEX temp.WordIndex;"),
    wDB.Close(),
    
 }
