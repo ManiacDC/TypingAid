@@ -31,9 +31,9 @@ ReadWordList()
    
    tableconverted := wDB.Query("SELECT tableconverted FROM LastState;")
    
-   for each, row in WordDb.Rows
+   for each, row in tableconverted.Rows
    {
-      WordlistConverted := tableconverted[1]
+      WordlistConverted := row[1]
    }
    
    IfNotEqual, WordlistConverted, 1
@@ -57,13 +57,6 @@ ReadWordList()
          ExitApp
       }
    
-      IF not wDB.Query("CREATE TABLE LearnedWords (learnedword TEXT UNIQUE);")
-      ;IF not wDB.Query("CREATE TABLE LearnedWords (learnedword TEXT UNIQUE);")
-      {
-         MsgBox Cannot Create Table - fatal error...
-         ExitApp
-      }
-   
       IF not wDB.Query("CREATE TABLE LastState (tableconverted INTEGER);")
       ;IF not wDB.Query("CREATE TABLE LearnedWords (learnedword TEXT UNIQUE);")
       {
@@ -73,6 +66,7 @@ ReadWordList()
    } else
    {
       wDB.Query("DELETE FROM Words WHERE count IS NULL;")
+      wDB.Query("DELETE FROM Words WHERE count < " . LearnCount . ";")
    }
    
    wDB.BeginTransaction()
@@ -80,20 +74,14 @@ ReadWordList()
    FileRead, ParseWords, %Wordlist%
    Loop, Parse, ParseWords, `n, `r
    {
-      IfEqual, TempAddToLearned, 1
-      {
-         IF CheckValid(A_LoopField)
-         {
-            wDB.Query("INSERT INTO Learnedwords VALUES ('" . A_LoopField . "');")
-         }
-      } else IfEqual, A_LoopField, `;LEARNEDWORDS`;
+      IfEqual, A_LoopField, `;LEARNEDWORDS`;
       {
          IfEqual, WordlistConverted, 1
          {
             break
          } Else IfEqual, LearnMode, On
          {
-            TempAddToLearned=1
+            LearnedWordsCount=0
             LegacyLearnedWords=1 ; Set Flag that we need to convert wordlist file
          }
       } else {
@@ -105,38 +93,33 @@ ReadWordList()
    
    IfNotEqual, WordlistConverted, 1
    {
-      SplashTextOn, 300, 50, %A_ScriptName%, Converting wordlist`n`rPlease wait...
+      Progress, M, Please wait..., Converting wordlist, %A_ScriptName%
+    
+      ;Force LearnedWordsCount to 0 if not already set as we are now processing Learned Words
+      IfEqual, LearnedWordsCount,
+      {
+         LearnedWordsCount=0
+      }
       
       wDB.BeginTransaction()
       ;reads list of words from file 
       FileRead, ParseWords, %WordlistLearned%
       Loop, Parse, ParseWords, `n, `r
       {
-         IF CheckValid(A_LoopField)
-         {
-            wDB.Query("INSERT INTO Learnedwords VALUES ('" . A_LoopField . "');")
-         }
+         
+         AddWordToList(A_LoopField,0)
       }
       ParseWords =
       wDB.EndTransaction()
-    
-      ;Force LearnedWordsCount to 0 as we are now processing Learned Words
-      LearnedWordsCount=0
-   
-      LearnedWordsTable := wDB.Query("SELECT learnedword FROM LearnedWords;")
       
-      For each, row in LearnedWordsTable.Rows
-      {
-         AddWordToList(row[1],0)
-      }
-      LearnedWordsTable =
+      Progress, 50, Please wait..., Converting wordlist, %A_ScriptName%
 
       ;reverse the numbers of the word counts in memory
       GoSub, ReverseWordNums
       
       wDB.Query("INSERT INTO LastState VALUES ('1');")
       
-      SplashTextOff
+      Progress, Off
    }
 
    ;mark the wordlist as completed
@@ -153,9 +136,9 @@ ReverseWordNums:
 IfEqual, LearnMode, Off,
    Return
 
-LearnedWordsCount+=4
+LearnedWordsCount+= (LearnCount - 1)
 
-LearnedWordsTable := wDB.Query("SELECT learnedWord FROM LearnedWords;")
+LearnedWordsTable := wDB.Query("SELECT word FROM Words WHERE count IS NOT NULL;")
 
 wDB.BeginTransaction()
 For each, row in LearnedWordsTable.Rows
@@ -248,7 +231,6 @@ AddWordToList(AddWord,ForceCountNewOnly)
                IfEqual, LearnMode, On
                {
                   wDB.Query("INSERT INTO words VALUES ('" . AddWordIndex . "','" . AddWord . "','" . CountValue . "');")
-                  wDB.Query("INSERT INTO LearnedWords VALUES ('" . AddWord . "');")                  
                } else {
                         wDB.Query("INSERT INTO words (wordindexed,word) VALUES ('" . AddWordIndex . "','" . AddWord . "');")
                      }
@@ -325,7 +307,6 @@ DeleteWordFromList(DeleteWord)
    IfNotEqual, LearnMode, On
       Return
    
-   wDB.Query("DELETE FROM LearnedWords WHERE learnedword = '" . DeleteWord . "';")
    wDB.Query("DELETE FROM words WHERE word = '" . DeleteWord . "';")
       
    Return   
@@ -361,7 +342,7 @@ MaybeUpdateWordlist()
     
    local TempWordList
    local SortWordList
-   local LearnedwordsPos
+   local LearnedWordsPos
    local ParseWords
    Local each
    Local row
@@ -370,20 +351,16 @@ MaybeUpdateWordlist()
    {
       
       wDB.Query("DELETE FROM Words WHERE count IS NULL;")
+      wDB.Query("DELETE FROM Words WHERE count < " . LearnCount . ";")
       
-      IfEqual, LearnMode, Off
-      {
-         SortWordList := wDB.Query("SELECT LearnedWord FROM LearnedWords;")
-      } else {
-         SortWordList := wDB.Query("SELECT LearnedWord FROM LearnedWords LEFT JOIN Words ON LearnedWords.LearnedWord = Words.Word WHERE Words.count NOT NULL ORDER BY Words.count DESC;")
-         }
+      SortWordList := wDB.Query("SELECT Word FROM Words ORDER BY count DESC;")
       
       for each, row in SortWordList.Rows
       {
          TempWordList .= row[1] . "`r`n"
       }
       
-      IfNotEqual, TempWordList,
+      If ( SortWordList.Count() > 0 )
       {
          StringTrimRight, TempWordList, TempWordList, 2
    
@@ -397,7 +374,7 @@ MaybeUpdateWordlist()
          {
             TempWordList =
             FileRead, ParseWords, %A_ScriptDir%\Wordlist.txt
-            LearnedwordsPos := InStr(ParseWords, "`;LEARNEDWORDS`;",true,1) ;Check for Learned Words
+            LearnedWordsPos := InStr(ParseWords, "`;LEARNEDWORDS`;",true,1) ;Check for Learned Words
             TempWordList := SubStr(ParseWords, 1, LearnedwordsPos - 1) ;Grab all non-learned words out of list
             ParseWords = 
             FileDelete, %A_ScriptDir%\Temp_Wordlist.txt
