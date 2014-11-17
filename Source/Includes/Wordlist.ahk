@@ -7,7 +7,6 @@ ReadWordList()
    WordListDone = 0
    
    Local ParseWords
-   Local LearnedWordsTable
    Local TempAddToLearned
    Local each
    Local row
@@ -40,25 +39,21 @@ ReadWordList()
    {
       wDB.Query("DROP TABLE Words;")
       wDB.Query("DROP INDEX WordIndex;")
-      wDB.Query("DROP TABLE LearnedWords;")
       wDB.Query("DROP TABLE LastState;")
       
       IF not wDB.Query("CREATE TABLE Words (wordindexed TEXT, word TEXT UNIQUE, count INTEGER);")
-      ;IF not wDB.Query("CREATE TABLE Words (wordindexed TEXT, word TEXT UNIQUE, count INTEGER);")
       {
          msgbox Cannot Create Table - fatal error...
          ExitApp
       }
    
       IF not wDB.Query("CREATE INDEX WordIndex ON Words (wordindexed);")
-      ;IF not wDB.Query("CREATE INDEX WordIndex ON Words (wordindexed);")
       {
          msgbox Cannot Create Index - fatal error...
          ExitApp
       }
    
       IF not wDB.Query("CREATE TABLE LastState (tableconverted INTEGER);")
-      ;IF not wDB.Query("CREATE TABLE LearnedWords (learnedword TEXT UNIQUE);")
       {
          MsgBox Cannot Create Table - fatal error...
          ExitApp
@@ -115,7 +110,7 @@ ReadWordList()
       Progress, 50, Please wait..., Converting wordlist, %A_ScriptName%
 
       ;reverse the numbers of the word counts in memory
-      GoSub, ReverseWordNums
+      ReverseWordNums()
       
       wDB.Query("INSERT INTO LastState VALUES ('1');")
       
@@ -128,32 +123,38 @@ ReadWordList()
 }
 
 ;------------------------------------------------------------------------
-   
-; This sub will reverse the read numbers since now we know the total number of words
-ReverseWordNums:
 
-;We don't need to deal with any counters if LearnMode is off
-IfEqual, LearnMode, Off,
-   Return
-
-LearnedWordsCount+= (LearnCount - 1)
-
-LearnedWordsTable := wDB.Query("SELECT word FROM Words WHERE count IS NOT NULL;")
-
-wDB.BeginTransaction()
-For each, row in LearnedWordsTable.Rows
+ReverseWordNums()
 {
-   WhereQuery := "WHERE word = '" . row[1] . "'"
-   wDB.Query("UPDATE words SET count = (SELECT " . LearnedWordsCount . " - count FROM words " . WhereQuery . ") " . WhereQuery . ";")
+   ; This function will reverse the read numbers since now we know the total number of words
+   Global
+   Local LearnedWordsTable
+   Local each
+   Local row
+   Local WhereQuery
+   
+
+   ;We don't need to deal with any counters if LearnMode is off
+   IfEqual, LearnMode, Off,
+      Return
+
+   LearnedWordsCount+= (LearnCount - 1)
+
+   LearnedWordsTable := wDB.Query("SELECT word FROM Words WHERE count IS NOT NULL;")
+
+   wDB.BeginTransaction()
+   For each, row in LearnedWordsTable.Rows
+   {
+      WhereQuery := "WHERE word = '" . row[1] . "'"
+      wDB.Query("UPDATE words SET count = (SELECT " . LearnedWordsCount . " - count FROM words " . WhereQuery . ") " . WhereQuery . ";")
+   }
+   wDB.EndTransaction()
+
+   LearnedWordsCount = 
+
+   Return
+   
 }
-wDB.EndTransaction()
-
-each=
-row=
-LearnedWordsTable =
-LearnedWordsCount = 
-
-Return
 
 ;------------------------------------------------------------------------
 

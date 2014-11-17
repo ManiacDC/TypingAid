@@ -342,9 +342,6 @@ RecomputeMatches()
 ;------------------------------------------------------------------------
 
 ~LButton:: 
-;make sure we are in decimal format in case ConvertWordToAscii was interrupted
-IfEqual, A_FormatInteger, H
-   SetFormat,Integer,D
 ; Update last click position in case Caret is not detectable
 ;  and update the Last Window Clicked in
 MouseGetPos, MouseX, MouseY, MouseWin_ID
@@ -371,10 +368,6 @@ CheckForCaretMove:
    ;If we aren't using the DetectMouseClickMoveScheme, skip out
    IfNotEqual, DetectMouseClickMove, On
       Return
-      
-   ;make sure we are in decimal format in case ConvertWordToAscii was interrupted
-   IfEqual, A_FormatInteger, H
-      SetFormat,Integer,D
    
    IfEqual, MouseButtonClick, LButton
    {
@@ -488,9 +481,6 @@ Return
 CheckWord(Key)
 {
    global
-   ;make sure we are in decimal format in case ConvertWordToAscii was interrupted
-   IfEqual, A_FormatInteger, H
-      SetFormat,Integer,D
    Local ATitle
    Local WordIndex
    Local KeyAgain
@@ -611,9 +601,6 @@ CheckWord(Key)
 EvaluateUpDown(Key)
 {
    global 
-   ;make sure we are in decimal format in case ConvertWordToAscii was interrupted
-   IfEqual, A_FormatInteger, H
-      SetFormat,Integer,D
    IfEqual, ArrowKeyMethod, Off
    {
       SendKey(Key)
@@ -803,11 +790,7 @@ ReturnLineWrong()
 ;------------------------------------------------------------------------
 
 AddSelectedWordToList()
-{
-   ;make sure we are in decimal format in case ConvertWordToAscii was interrupted
-   IfEqual, A_FormatInteger, H
-      SetFormat,Integer,D
-      
+{      
    ClipboardSave := ClipboardAll
    Clipboard =
    Sleep, 100
@@ -823,9 +806,6 @@ AddSelectedWordToList()
 DeleteSelectedWordFromList()
 {
    global
-   ;make sure we are in decimal format in case ConvertWordToAscii was interrupted
-   IfEqual, A_FormatInteger, H
-      SetFormat,Integer,D
    
    IfNotEqual, singlematch%MatchPos%, ;only continue if singlematch is not empty
    {
@@ -841,9 +821,6 @@ DeleteSelectedWordFromList()
 
 ; This is to blank all vars related to matches, ListBox and (optionally) word 
 clearallvars: 
-   ;make sure we are in decimal format in case ConvertWordToAscii was interrupted
-   IfEqual, A_FormatInteger, H
-      SetFormat,Integer,D
    CloseListBox()
    Ifequal,clearword,1
    {
@@ -937,9 +914,6 @@ MaybeFixFileEncoding(File,Encoding)
 ;------------------------------------------------------------------------
    
 SaveScript:
-;make sure we are in decimal format in case ConvertWordToAscii was interrupted
-IfEqual, A_FormatInteger, H
-   SetFormat,Integer,D
 
 ; Close the ListBox if it's open
 CloseListBox()
