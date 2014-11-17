@@ -275,14 +275,19 @@ RecomputeMatches()
 {
    ; This function will take the given word, and will recompile the list of matches and redisplay the wordlist.
    global
-   
-   Local Matches
-   Local SuppressMatchingWordQuery
    Local each
+   Local LimitTotalMatches
+   Local Matches
+   Local Normalize
+   Local NormalizeTable
+   Local OrderByQuery
+   Local SuppressMatchingWordQuery
    Local row
    Local ValueType
    Local Values
+   Local WhereQuery
    Local WordMatch
+   Local WordLen
 
    SavePriorMatchPosition()
 
@@ -295,6 +300,8 @@ RecomputeMatches()
       IfLess, ListBoxRows, 10
          LimitTotalMatches = %ListBoxRows%
       else LimitTotalMatches = 10
+   } else {
+      LimitTotalMatches = 200
    }
    
    StringUpper, WordMatch, Word   
@@ -309,16 +316,27 @@ RecomputeMatches()
             }
    }
    
-   Matches := wDB.Query("SELECT word FROM Words WHERE wordindexed GLOB '" . WordMatch . "*' " . SuppressMatchingWordQuery . " ORDER BY CASE WHEN count IS NULL then ROWID else 'z' end, count DESC, Word LIMIT 200;")
+   WhereQuery := " WHERE wordindexed GLOB '" . WordMatch . "*' " . SuppressMatchingWordQuery
+   
+   NormalizeTable := wDB.Query("SELECT min(count) AS normalize FROM Words" . WhereQuery . "AND count IS NOT NULL LIMIT " . LimitTotalMatches . ";")
+   
+   for each, row in NormalizeTable.Rows
+   {
+      Normalize := row[1]
+   }
+   
+   IfEqual, Normalize,
+   {
+      Normalize := 0
+   }
+   
+   WordLen := StrLen(Word)
+   OrderByQuery := " ORDER BY CASE WHEN count IS NULL then ROWID else 'z' end, CASE WHEN count IS NOT NULL then ( (count - " . Normalize . ") * ( 1 - ( '0.75' / (LENGTH(word) - " . WordLen . ")))) end DESC, Word"
+   
+   Matches := wDB.Query("SELECT word FROM Words" . WhereQuery . OrderByQuery . " LIMIT " . LimitTotalMatches . ";")
    
    for each, row in Matches.Rows
-   {
-      IfEqual, ArrowKeyMethod, Off
-      {
-         IfGreaterOrEqual, number, %LimitTotalMatches%
-            break
-      }
-      
+   {      
       number++
       singlematch := row[1]
       singlematch%number% = %singlematch%
