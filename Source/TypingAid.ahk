@@ -144,7 +144,7 @@ Loop
       GetIncludedActiveWindow()
    
    ;Get one key at a time 
-   Input, chr, L1 V, {BS}%TerminatingEndKeys%
+   Input, chr, L1 V I, {BS}%TerminatingEndKeys%
    EndKey := ErrorLevel
    
    ProcessKey(chr,EndKey)

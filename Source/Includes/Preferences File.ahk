@@ -89,7 +89,7 @@ ReadPreferences()
       DftLearnMode,LearnMode,Settings,LearnMode,On
       DftLearnCount,LearnCount,Settings,LearnCount,5
       DftLearnLength,LearnLength,Settings,LearnLength,%SpaceVar%
-      DftDoNotLearnStrings,DoNotLearnStrings,Settings,DoNotLearnStrings, %SpaceVar%
+      DftDoNotLearnStrings,DoNotLearnStrings,Settings,DoNotLearnStrings,%SpaceVar%
       DftArrowKeyMethod,ArrowKeyMethod,Settings,ArrowKeyMethod,First
       DftDisabledAutoCompleteKeys,DisabledAutoCompleteKeys,Settings,DisabledAutoCompleteKeys,%SpaceVar%
       DftDetectMouseClickMove,DetectMouseClickMove,Settings,DetectMouseClickMove,On
