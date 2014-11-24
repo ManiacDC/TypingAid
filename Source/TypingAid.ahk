@@ -318,7 +318,7 @@ RecomputeMatches()
    
    WhereQuery := " WHERE wordindexed GLOB '" . WordMatch . "*' " . SuppressMatchingWordQuery
    
-   NormalizeTable := wDB.Query("SELECT min(count) AS normalize FROM Words" . WhereQuery . "AND count IS NOT NULL LIMIT " . LimitTotalMatches . ";")
+   NormalizeTable := wDB.Query("SELECT MIN(count) AS normalize FROM Words" . WhereQuery . "AND count IS NOT NULL LIMIT " . LimitTotalMatches . ";")
    
    for each, row in NormalizeTable.Rows
    {
