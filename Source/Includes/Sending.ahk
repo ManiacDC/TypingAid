@@ -39,7 +39,7 @@ SendWord(WordIndex)
 SendFull(SendValue,BackSpaceLen)
 {
    global SendMethod
-   global A_id
+   global Active_id
    global NoBackSpace
    global AutoSpace
    
@@ -101,9 +101,9 @@ SendFull(SendValue,BackSpaceLen)
                      {
                         SendEvent, %sending% ; First do the backspaces, Then send word via clipboard
                      } Else {                      
-                              ControlGetFocus, ActiveControl, ahk_id %A_id%
+                              ControlGetFocus, ActiveControl, ahk_id %Active_id%
                               IfNotEqual, ActiveControl,
-                                 ControlSend, %ActiveControl%, %sending%, ahk_id %A_id%
+                                 ControlSend, %ActiveControl%, %sending%, ahk_id %Active_id%
                            }
                   }
          }

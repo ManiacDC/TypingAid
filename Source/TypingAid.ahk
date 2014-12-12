@@ -17,7 +17,7 @@
 
 ;    CONFIGURATIONS 
 
-
+#NoTrayIcon
 ;disable hotkeys until setup is complete
 Suspend, On 
 #NoEnv
@@ -26,6 +26,32 @@ ListLines Off
 ;Set the Coordinate Modes before any threads can be executed
 CoordMode, Caret, Screen
 CoordMode, Mouse, Screen
+
+If A_Is64bitOS
+{
+   IF (A_PtrSize = 4)
+   {
+      IF A_IsCompiled
+      {
+         SplitPath, A_ScriptName,,,ScriptExtension,ScriptNoExtension,
+         
+         ScriptPath64 := A_ScriptDir . "\" . ScriptNoExtension . "64." . ScriptExtension
+         
+         IfExist, %ScriptPath64%
+         {
+            Run, %ScriptPath64%, %A_WorkingDir%
+            ExitApp
+         }
+      }
+   }
+}
+
+Menu, Tray, Icon
+
+ScriptExtension=
+ScriptNoExtension=
+ScriptPath64=
+      
 
 OnExit, SaveScript
 
@@ -141,10 +167,17 @@ Loop
 
    ;If the active window has changed, wait for a new one
    IF !( ReturnWinActive() ) 
+   {
+      Critical, Off
       GetIncludedActiveWindow()
+   } else {    
+            Critical, Off
+         }
    
    ;Get one key at a time 
    Input, chr, L1 V I, {BS}%TerminatingEndKeys%
+   
+   Critical
    EndKey := ErrorLevel
    
    ProcessKey(chr,EndKey)
@@ -173,7 +206,7 @@ ProcessKey(chr,EndKey)
          Return
    
    ;If we have no window activated for typing, we don't want to do anything with the typed character
-   IfEqual, A_id,
+   IfEqual, Active_id,
    {
       GetIncludedActiveWindow()
       Return
@@ -186,14 +219,14 @@ ProcessKey(chr,EndKey)
       Return
    }
    
-   IfEqual, A_id, %Helper_id%
+   IfEqual, Active_id, %Helper_id%
    {
       Return
    }
    
    ;If we haven't typed anywhere, set this as the last window typed in
    IfEqual, LastInput_Id,
-      LastInput_Id = %A_id%
+      LastInput_Id = %Active_id%
    
    IfNotEqual, DetectMouseClickMove, On
    {
@@ -203,7 +236,7 @@ ProcessKey(chr,EndKey)
       if ( OldCaretY != HCaretY() )
       {
          ;Don't do anything if we aren't in the original window and aren't starting a new word
-         IfNotEqual, LastInput_Id, %A_id%
+         IfNotEqual, LastInput_Id, %Active_id%
             Return
             
          ; add the word if switching lines
@@ -221,7 +254,7 @@ ProcessKey(chr,EndKey)
    ifequal, EndKey, Endkey:BackSpace
    {
       ;Don't do anything if we aren't in the original window and aren't starting a new word
-      IfNotEqual, LastInput_Id, %A_id%
+      IfNotEqual, LastInput_Id, %Active_id%
          Return
       
       StringLen, len, Word
@@ -238,12 +271,12 @@ ProcessKey(chr,EndKey)
          {
             ; If active window has different window ID from the last input,
             ;learn and blank word, then assign number pressed to the word
-            IfNotEqual, LastInput_Id, %A_id%
+            IfNotEqual, LastInput_Id, %Active_id%
             {
                AddWordToList(Word,0)
                Gosub, clearallvars
                word = %chr%
-               LastInput_Id = %A_id%
+               LastInput_Id = %Active_id%
                Return
             }
          
@@ -258,7 +291,7 @@ ProcessKey(chr,EndKey)
                   }
          } else {
                   ;Don't do anything if we aren't in the original window and aren't starting a new word
-                  IfNotEqual, LastInput_Id, %A_id%
+                  IfNotEqual, LastInput_Id, %Active_id%
                      Return
                      
                   AddWordToList(Word,0)
@@ -273,8 +306,13 @@ ProcessKey(chr,EndKey)
       Return
    }
    
-   RecomputeMatches()
+   SetTimer, RecomputeMatchesTimer, -1
 }
+
+RecomputeMatchesTimer:
+   Thread, NoTimers
+   RecomputeMatches()
+   Return
 
 RecomputeMatches()
 {

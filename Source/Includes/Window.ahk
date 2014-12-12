@@ -33,8 +33,8 @@ GetIncludedActiveWindow()
    IfEqual, A_FormatInteger, H
       SetFormat,Integer,D
    global Helper_id
-   global A_id
-   global A_Title
+   global Active_id
+   global Active_Title
    global LastActiveIdBeforeHelper
    global ListBox_ID
    global MouseWin_ID
@@ -51,10 +51,11 @@ GetIncludedActiveWindow()
          IfNotEqual, MouseWin_ID,
             IfEqual, MouseWin_ID, %ListBox_ID% 
             {
-               WinActivate, ahk_id %A_ID%
+               WinActivate, ahk_id %Active_id%
                Return
             }
          
+         ;Force unload of Keyboard Hook
          Input
          Suspend, On
          CloseListBox()
@@ -70,6 +71,7 @@ GetIncludedActiveWindow()
          Break
       If CheckForActive(ActiveProcess,ActiveTitle)
          Break
+      ;Force unload of Keyboard Hook
       Input
       Suspend, On
       CloseListBox()
@@ -84,8 +86,8 @@ GetIncludedActiveWindow()
 
    IfEqual, ActiveID, %ListBox_ID%
    {
-      A_id :=  ActiveId
-      A_Title := ActiveTitle
+      Active_id :=  ActiveId
+      Active_Title := ActiveTitle
       Return
    }
    
@@ -100,8 +102,8 @@ GetIncludedActiveWindow()
       LastActiveIdBeforeHelper = %ActiveId%
       
    } else {
-            IfNotEqual, A_id, %Helper_id%
-               LastActiveIdBeforeHelper = %A_id%               
+            IfNotEqual, Active_id, %Helper_id%
+               LastActiveIdBeforeHelper = %Active_id%               
          }
    
    global LastInput_Id
@@ -116,8 +118,8 @@ GetIncludedActiveWindow()
    } else {
             CloseListBox()
          }
-   A_id :=  ActiveId
-   A_Title := ActiveTitle
+   Active_id :=  ActiveId
+   Active_Title := ActiveTitle
    Return
 }
 
@@ -166,11 +168,11 @@ CheckForActive(ActiveProcess,ActiveTitle)
       
 ReturnWinActive()
 {
-   global A_id
-   global A_Title
+   global Active_id
+   global Active_Title
    WinGet, Temp_id, ID, A
    WinGetTitle, Temp_Title, ahk_id %Temp_id%
-   Last_Title := A_Title
+   Last_Title := Active_Title
    ; remove all asterisks, dashes, and spaces from title in case saved value changes
    StringReplace, Last_Title, Last_Title,*,,All
    StringReplace, Temp_Title, Temp_Title,*,,All
@@ -178,5 +180,5 @@ ReturnWinActive()
    StringReplace, Temp_Title, Temp_Title,%A_Space%,,All
    StringReplace, Last_Title, Last_Title,-,,All
    StringReplace, Temp_Title, Temp_Title,-,,All
-   Return, (( A_id == Temp_id ) && ( Last_Title == Temp_Title ))
+   Return, (( Active_id == Temp_id ) && ( Last_Title == Temp_Title ))
 }
