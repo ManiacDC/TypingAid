@@ -252,6 +252,13 @@ ShowListBox()
       }
    
       ForceWithinMonitorBounds(ListBoxPosX,ListBoxPosY,ListBoxActualSizeH,ListBoxActualSizeW,Rows,ListBoxOffset)
+      
+      ; In rare scenarios, the Cursor may not have been detected. In these cases, we just won't show the ListBox.
+      IF (!(ListBoxPosX) || !(ListBoxPosY))
+      {
+         return
+      }
+      
       Gui, %ListBoxGui%: Show, NoActivate X%ListBoxPosX% Y%ListBoxPosY% H%ListBoxActualSizeH% W%ListBoxActualSizeW%, Word List Appears Here.
       Gui, %ListBoxGui%: +LastFound +AlwaysOnTop
       IfEqual, ListBox_ID,
