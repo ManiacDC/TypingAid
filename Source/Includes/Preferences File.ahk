@@ -14,7 +14,7 @@ MaybeWriteHelperWindowPos()
 
 ;------------------------------------------------------------------------
 
-ReadPreferences()
+ReadPreferences(RestoreDefaults = false)
 {
    global
    Local Prefs
@@ -123,7 +123,8 @@ ReadPreferences()
       IF ( DftValue = "%A_Space%" )
          DftValue := A_Space
       
-      IniRead, %NormalVariable%, %Prefs%, %IniSection%, %IniKey%, %A_Space%
+      IF !(RestoreDefaults)
+         IniRead, %NormalVariable%, %Prefs%, %IniSection%, %IniKey%, %A_Space%
       
       IF DftVariable
       { 
@@ -132,232 +133,6 @@ ReadPreferences()
             %NormalVariable% := %DftVariable%
       }
    }
-   
-   IfEqual, LearnLength,
-      LearnLength := Wlen +2
-   
-   IfExist, %LastState%
-   {
-      IniRead, XY, %LastState%, HelperWindow, XY, %A_Space%
-   }
-   
-   If !(FileExist(Prefs) || FileExist(Defaults))
-   {
-      INI= 
-               ( 
-[IncludePrograms]
-;
-;IncludeProgramExecutables is a list of executable (.exe) files that TypingAid should be enabled for.
-;If one the executables matches the current program, TypingAid is enabled for that program.
-; ex: IncludeProgramExecutables=notepad.exe|iexplore.exe
-IncludeProgramExecutables=%DftIncludeProgramExecutables%
-;
-;
-;IncludeProgramTitles is a list of strings (separated by | ) to find in the title of the window you want TypingAid enabled for.
-;If one of the strings is found in the title, TypingAid is enabled for that window.
-; ex: IncludeProgramTitles=Notepad|Internet Explorer
-IncludeProgramTitles=%DftIncludeProgramTitles%
-;
-;
-[ExcludePrograms]
-;
-;ExcludeProgramExecutables is a list of executable (.exe) files that TypingAid should be disabled for.
-;If one the executables matches the current program, TypingAid is disabled for that program.
-; ex: ExcludeProgramExecutables=notepad.exe|iexplore.exe
-ExcludeProgramExecutables=%DftExcludeProgramExecutables%
-;
-;
-;ExcludeProgramTitles is a list of strings (separated by | ) to find in the title of the window you want TypingAid disabled for.
-;If one of the strings is found in the title, TypingAid is disabled for that window.
-; ex: ExcludeProgramTitles=Notepad|Internet Explorer
-ExcludeProgramTitles=%DftExcludeProgramTitles%
-;
-;
-[Settings]
-;
-;Length is the minimum number of characters that need to be typed before the program shows a List of words.
-;Generally, the higher this number the better the performance will be.
-;For example, if you need to autocomplete "as soon as possible" in the word list, set this to 2, type 'as' and a list will appear.
-Length=%DftWlen%
-;
-;
-;NumPresses is the number of times the number hotkey must be tapped for the word to be selected, either 1 or 2.
-NumPresses=%DftNumPresses%
-;
-;
-;LearnMode defines whether or not the script should learn new words as you type them, either On or Off.
-LearnMode=%DftLearnMode%
-;
-;
-;LearnCount defines the number of times you have to type a word within a single session for it to be learned permanently.
-LearnCount=%DftLearnCount%
-;
-;
-;LearnLength is the minimum number of characters in a word for it to be learned. This must be at least Length+1.
-LearnLength=%DftLearnLength%
-;
-;
-;DoNotLearnStrings is a comma separated list of strings. Any words which contain any of these strings will not be learned.
-;This can be used to prevent the program from learning passwords or other critical information.
-;For example, if you have ord98 in DoNotLearnStrings, password987 will not be learned.
-; ex: DoNotLearnStrings=ord98,fr21
-DoNotLearnStrings=%DftDoNotLearnStrings%
-;
-;
-;ArrowKeyMethod is the way the arrow keys are handled when a list is shown.
-;Options are:
-;  Off - you can only use the number keys
-;  First - resets the selection cursor to the beginning whenever you type a new character
-;  LastWord - keeps the selection cursor on the prior selected word if it's still in the list, else resets to the beginning
-;  LastPosition - maintains the selection cursor's position
-ArrowKeyMethod=%DftArrowKeyMethod%
-;
-;
-;DisabledAutoCompleteKeys is used to disable certain hotkeys from autocompleting the selected item in the list.
-;Place the character listed for each key you want to disable in the list.
-; ex: DisabledAutoCompleteKeys=ST
-;will disable Ctrl+Space and Tab.
-;  E = Ctrl + Enter
-;  S = Ctrl + Space
-;  T = Tab
-;  R = Right Arrow
-;  N = Number Keys
-;  U = Enter
-DisabledAutoCompleteKeys=%DftDisabledAutoCompleteKeys%
-;
-;
-;DetectMouseClickMove is used to detect when the cursor is moved with the mouse.
-; On - TypingAid will not work when used with an On-Screen keyboard.
-; Off - TypingAid will not detect when the cursor is moved within the same line using the mouse, and scrolling the text will clear the list.
-DetectMouseClickMove=%DftDetectMouseClickMove%
-;
-;
-;NoBackSpace is used to make TypingAid not backspace any of the previously typed characters
-;(ie, do not change the case of any previously typed characters).
-;  On - characters you have already typed will not be changed
-;  Off - characters you have already typed will be backspaced and replaced with the case of the word you have chosen.
-NoBackSpace=%DftNoBackSpace%
-;
-;
-;AutoSpace is used to automatically add a space to the end of an autocompleted word.
-; On - Add a space to the end of the autocompleted word.
-; Off - Do not add a space to the end of the autocompleted word.
-AutoSpace=%DftAutoSpace%
-;
-;
-;SuppressMatchingWord is used to suppress a word from the Word list if it matches the typed word.
-;  If NoBackspace=On, then the match is case in-sensitive.
-;  If NoBackspace=Off, then the match is case-sensitive.
-; On - Suppress matching words from the word list.
-; Off - Do not suppress matching words from the word list.
-SuppressMatchingWord=%DftSuppressMatchingWord%
-;
-;
-;SendMethod is used to change the way the program sends the keys to the screen, this is included for compatibility reasons.
-;Try changing this only when you encounter a problem with key sending during autocompletion.
-;  1 = Fast method that reliably buffers key hits while sending. HAS BEEN KNOWN TO NOT FUNCTION ON SOME MACHINES.
-;      (Might not work with characters that cannot be typed using the current keyboard layout.)
-;  2 = Fastest method with unreliable keyboard buffering while sending. Has been known to not function on some machines.
-;  3 = Slowest method, will not buffer or accept keyboard input while sending. Most compatible method.
-;The options below use the clipboard to copy and paste the data to improve speed, but will leave an entry in any clipboard 
-;history tracking routines you may be running. Data on the clipboard *will* be preserved prior to autocompletion.
-;  1C = Same as 1 above.
-;  2C = Same as 2 above, doesn't work on some machines.
-;  3C = Same as 3 above.
-;  4C = Alternate method.
-SendMethod=%DftSendMethod%
-;
-;
-;TerminatingCharacters is a list of characters (EndKey) which will signal the program that you are done typing a word.
-;You probably need to change this only when you want to recognize and type accented (diacritic) or Unicode characters
-;or if you are using this with certain programming languages.
-;
-;For support of special characters, remove the key that is used to type the diacritic symbol (or the character) from the right hand side. 
-;For example, if on your keyboard layout, " is used before typing ë, ; is used to type ñ, remove them from the right hand side.
-;
-;After this, TypingAid can recognize the special character. The side-effect is that, it cannot complete words typed after 
-;the symbol, (e.g. "word... ) If you need to complete a word after a quotation mark, first type two quotation marks "" then 
-;press left and type the word in the middle.
-;
-;If unsure, below is a setting for you to copy and use directly:
-;
-;Universal setting that works for many languages with accented or Unicode characters:
-;{enter}{space}{bs}{esc}{tab}{Home}{End}{PgUp}{PdDn}{Up}{Dn}{Left}{Right}¿?¡!()$
-;
-;Default setting:
-;%DftTerminatingCharacters%
-;
-; More information on how to configure TerminatingCharacters:
-;A list of keys may be found here:
-; http://www.autohotkey.com/docs/KeyList.htm
-;For more details on how to format the list of characters please see the EndKeys section (paragraphs 2,3,4) of:
-; http://www.autohotkey.com/docs/commands/Input.htm
-TerminatingCharacters=%DftTerminatingCharacters%
-;
-;
-;ForceNewWordCharacters is a comma separated list of characters which forces the program to start a new word whenever
-;one of those characters is typed. Any words which begin with one of these characters will never be learned (even
-;if learning is enabled). If you were typing a word when you hit one of these characters that word will be learned
-;if learning is enabled.
-;Change this only if you know what you are doing, it is probably only useful for certain programming languages.
-; ex: ForceNewWordCharacters=@,:,#
-ForceNewWordCharacters=%DftForceNewWordCharacters%
-;
-;
-[ListBoxSettings]
-;
-;ListBoxOffset is the number of pixels below the top of the caret (vertical blinking line) to display the list.
-ListBoxOffset=%DftListBoxOffSet%
-;
-;
-;ListBoxFontFixed controls whether a fixed or variable character font width is used.
-;(ie, in fixed width, "i" and "w" take the same number of pixels)
-ListBoxFontFixed=%DftListBoxFontFixed%
-;
-;
-;ListBoxFontOverride is used to specify a font for the List Box to use. The default for Fixed is Courier,
-;and the default for Variable is Tahoma.
-ListBoxFontOverride=%DftListBoxFontOverride%
-;
-;
-;ListBoxFontSize controls the size of the font in the list.
-ListBoxFontSize=%DftListBoxFontSize%
-;
-;
-;ListBoxCharacterWidth is the width (in pixels) of one character in the List Box.
-;This number should only need to be changed if the box containing the list is not the correct width.
-;Some things which may cause this to need to be changed would include:
-; 1. Changing the Font DPI in Windows
-; 2. Changing the ListBoxFontFixed setting
-; 3. Changing the ListBoxFontSize setting
-;Leave this blank to let TypingAid try to compute the width.
-ListBoxCharacterWidth=%DftListBoxCharacterWidth%
-;
-;
-;ListBoxOpacity is how transparent (see-through) the ListBox should be. Use a value of 255 to make it so the
-;ListBox is fully Opaque, or use a value of 0 to make it so the ListBox cannot be seen at all.
-ListBoxOpacity=%DftListBoxOpacity%
-;
-;
-;ListBoxRows is the maximum number of rows to show in the ListBox. This value can range from 3 to 30.
-ListBoxRows=%DftListBoxRows%
-;
-;
-[HelperWindow]
-;
-;HelperWindowProgramExecutables is a list of executable (.exe) files that the HelperWindow should be automatically enabled for.
-;If one the executables matches the current program, the HelperWindow will pop up automatically for that program.
-; ex: HelperWindowProgramExecutables=notepad.exe|iexplore.exe
-HelperWindowProgramExecutables=%DftHelperWindowProgramExecutables%
-;
-;
-;HelperWindowProgramTitles is a list of strings (separated by | ) to find in the title of the window that the HelperWindow should be automatically enabled for.
-;If one of the strings is found in the title, the HelperWindow will pop up automatically for that program.
-; ex: HelperWindowProgramTitles=Notepad|Internet Explorer
-HelperWindowProgramTitles=%DftHelperWindowProgramTitles%
-               )
-               FileAppendDispatch(INI, Prefs, "UTF-16")
-         }
    
    ; Legacy support for old Preferences File
    IfNotEqual, Etitle,
@@ -376,6 +151,9 @@ HelperWindowProgramTitles=%DftHelperWindowProgramTitles%
    {
       Wlen = %DftWlen%
    }
+   
+   IfEqual, LearnLength,
+      LearnLength := Wlen +2
    
    if NumPresses not in 1,2
       NumPresses = %DftNumPresses%
@@ -434,8 +212,7 @@ HelperWindowProgramTitles=%DftHelperWindowProgramTitles%
                SendMethod = 2C   
             }
    }
-         
-      
+   
    IfEqual, TerminatingCharacters,
       TerminatingCharacters = %DftTerminatingCharacters%
    
@@ -471,8 +248,152 @@ HelperWindowProgramTitles=%DftHelperWindowProgramTitles%
       ListBoxRows = %DftListBoxRows%
    else IfLess, ListBoxRows, 3
             ListBoxRows = 3
-         else IfGreater, ListBoxRows, 30
-                  ListBoxRows = 30
+         else IfGreater, ListBoxRows, 
+   
+   IF RestoreDefaults
+      Return
+   
+   IfExist, %LastState%
+   {    
+      IniRead, XY, %LastState%, HelperWindow, XY, %A_Space%
+   }
+   
+   ConstructHelpStrings()
+   
+   If !(FileExist(Prefs) || FileExist(Defaults))
+   {
+      INI= 
+               ( 
+[IncludePrograms]
+;
+%hIncludeProgramExecutables%
+; ex: IncludeProgramExecutables=notepad.exe|iexplore.exe
+IncludeProgramExecutables=%DftIncludeProgramExecutables%
+;
+;
+%hIncludeProgramTitles%
+; ex: IncludeProgramTitles=Notepad|Internet Explorer
+IncludeProgramTitles=%DftIncludeProgramTitles%
+;
+;
+[ExcludePrograms]
+;
+%hExcludeProgramExecutables%
+; ex: ExcludeProgramExecutables=notepad.exe|iexplore.exe
+ExcludeProgramExecutables=%DftExcludeProgramExecutables%
+;
+;
+%hExcludeProgramTitles%
+; ex: ExcludeProgramTitles=Notepad|Internet Explorer
+ExcludeProgramTitles=%DftExcludeProgramTitles%
+;
+;
+[Settings]
+;
+%hLength%
+Length=%DftWlen%
+;
+;
+%hNumPresses%
+NumPresses=%DftNumPresses%
+;
+;
+%hLearnMode%
+LearnMode=%DftLearnMode%
+;
+;
+%hLearnCount%
+LearnCount=%DftLearnCount%
+;
+;
+%hLearnLength%
+LearnLength=%DftLearnLength%
+;
+;
+%hDoNotLearnStrings%
+; ex: DoNotLearnStrings=ord98,fr21
+DoNotLearnStrings=%DftDoNotLearnStrings%
+;
+;
+%hArrowKeyMethod%
+ArrowKeyMethod=%DftArrowKeyMethod%
+;
+;
+%hDisabledAutoCompleteKeys%
+DisabledAutoCompleteKeys=%DftDisabledAutoCompleteKeys%
+;
+;
+%hDetectMouseClickMove%
+DetectMouseClickMove=%DftDetectMouseClickMove%
+;
+;
+%hNoBackSpace%
+NoBackSpace=%DftNoBackSpace%
+;
+;
+%hAutoSpace%
+AutoSpace=%DftAutoSpace%
+;
+;
+%hSuppressMatchingWord%
+SuppressMatchingWord=%DftSuppressMatchingWord%
+;
+;
+%hSendMethod%
+SendMethod=%DftSendMethod%
+;
+;
+%hTerminatingCharacters%
+TerminatingCharacters=%DftTerminatingCharacters%
+;
+;
+%hForceNewWordCharacters%
+ForceNewWordCharacters=%DftForceNewWordCharacters%
+;
+;
+[ListBoxSettings]
+;
+%hListBoxOffset%
+ListBoxOffset=%DftListBoxOffSet%
+;
+;
+%hListBoxFontFixed%
+ListBoxFontFixed=%DftListBoxFontFixed%
+;
+;
+%hListBoxFontOverride%
+ListBoxFontOverride=%DftListBoxFontOverride%
+;
+;
+%hListBoxFontSize%
+ListBoxFontSize=%DftListBoxFontSize%
+;
+;
+%hListBoxCharacterWidth%
+ListBoxCharacterWidth=%DftListBoxCharacterWidth%
+;
+;
+%hListBoxOpacity%
+ListBoxOpacity=%DftListBoxOpacity%
+;
+;
+%hListBoxRows%
+ListBoxRows=%DftListBoxRows%
+;
+;
+[HelperWindow]
+;
+%hHelperWindowProgramExecutables%
+; ex: HelperWindowProgramExecutables=notepad.exe|iexplore.exe
+HelperWindowProgramExecutables=%DftHelperWindowProgramExecutables%
+;
+;
+%hHelperWindowProgramTitles%
+; ex: HelperWindowProgramTitles=Notepad|Internet Explorer
+HelperWindowProgramTitles=%DftHelperWindowProgramTitles%
+               )
+               FileAppendDispatch(INI, Prefs, "UTF-16")
+         }
          
    Return
 }
@@ -512,4 +433,263 @@ ParseTerminatingCharacters()
    
    TerminatingCharacters := TempCharacters
    TerminatingEndKeys := TempEndKeys
+}
+
+SavePreferences()
+{
+   ;Settings that require a script restart
+   ;LearnMode
+   ; what does toggling learnmode and learncount do to the stored learned words in the SQL version?
+   
+   ;items that require re-init
+   InitializeHotKeys()
+   ;ArrowKeyMethod
+   ;DisabledAutoCompleteKeys
+   
+   ;hide/show listbox? disable/enable hotkeys?
+   ;hide listbox when menu gui open
+}
+
+ConstructHelpStrings()
+{
+   global
+   
+hIncludeProgramExecutables=
+(
+;IncludeProgramExecutables is a list of executable (.exe) files that TypingAid should be enabled for.
+;If one the executables matches the current program, TypingAid is enabled for that program.
+)
+
+hIncludeProgramTitles=
+(
+;IncludeProgramTitles is a list of strings (separated by | ) to find in the title of the window you want TypingAid enabled for.
+;If one of the strings is found in the title, TypingAid is enabled for that window.
+)
+
+hExcludeProgramExecutables=
+(
+;ExcludeProgramExecutables is a list of executable (.exe) files that TypingAid should be disabled for.
+;If one the executables matches the current program, TypingAid is disabled for that program.
+)
+
+hExcludeProgramTitles=
+(
+;ExcludeProgramTitles is a list of strings (separated by | ) to find in the title of the window you want TypingAid disabled for.
+;If one of the strings is found in the title, TypingAid is disabled for that window.
+)
+
+hLength=
+(
+;Length is the minimum number of characters that need to be typed before the program shows a List of words.
+;Generally, the higher this number the better the performance will be.
+;For example, if you need to autocomplete "as soon as possible" in the word list, set this to 2, type 'as' and a list will appear.
+)
+
+hNumPresses=
+(
+;NumPresses is the number of times the number hotkey must be tapped for the word to be selected, either 1 or 2.
+)
+
+hLearnMode=
+(
+;LearnMode defines whether or not the script should learn new words as you type them, either On or Off.
+)
+
+hLearnCount=
+(
+;LearnCount defines the number of times you have to type a word within a single session for it to be learned permanently.
+)
+
+hLearnLength=
+(
+;LearnLength is the minimum number of characters in a word for it to be learned. This must be at least Length+1.
+)
+
+hDoNotLearnStrings=
+(
+;DoNotLearnStrings is a comma separated list of strings. Any words which contain any of these strings will not be learned.
+;This can be used to prevent the program from learning passwords or other critical information.
+;For example, if you have ord98 in DoNotLearnStrings, password987 will not be learned.
+)
+
+hArrowKeyMethod=
+(
+;ArrowKeyMethod is the way the arrow keys are handled when a list is shown.
+;Options are:
+;  Off - you can only use the number keys
+;  First - resets the selection cursor to the beginning whenever you type a new character
+;  LastWord - keeps the selection cursor on the prior selected word if it's still in the list, else resets to the beginning
+;  LastPosition - maintains the selection cursor's position
+)
+
+hDisabledAutoCompleteKeys=
+(
+;DisabledAutoCompleteKeys is used to disable certain hotkeys from autocompleting the selected item in the list.
+;Place the character listed for each key you want to disable in the list.
+; ex: DisabledAutoCompleteKeys=ST
+;will disable Ctrl+Space and Tab.
+;  E = Ctrl + Enter
+;  S = Ctrl + Space
+;  T = Tab
+;  R = Right Arrow
+;  N = Number Keys
+;  U = Enter
+)
+
+hDetectMouseClickMove=
+(
+;DetectMouseClickMove is used to detect when the cursor is moved with the mouse.
+; On - TypingAid will not work when used with an On-Screen keyboard.
+; Off - TypingAid will not detect when the cursor is moved within the same line using the mouse, and scrolling the text will clear the list.
+)
+
+hNoBackSpace=
+(
+;NoBackSpace is used to make TypingAid not backspace any of the previously typed characters
+;(ie, do not change the case of any previously typed characters).
+;  On - characters you have already typed will not be changed
+;  Off - characters you have already typed will be backspaced and replaced with the case of the word you have chosen.
+)
+
+hAutoSpace=
+(
+;AutoSpace is used to automatically add a space to the end of an autocompleted word.
+; On - Add a space to the end of the autocompleted word.
+; Off - Do not add a space to the end of the autocompleted word.
+)
+
+hSuppressMatchingWord=
+(
+;SuppressMatchingWord is used to suppress a word from the Word list if it matches the typed word.
+;  If NoBackspace=On, then the match is case in-sensitive.
+;  If NoBackspace=Off, then the match is case-sensitive.
+; On - Suppress matching words from the word list.
+; Off - Do not suppress matching words from the word list.
+)
+
+hSendMethod=
+(
+;SendMethod is used to change the way the program sends the keys to the screen, this is included for compatibility reasons.
+;Try changing this only when you encounter a problem with key sending during autocompletion.
+;  1 = Fast method that reliably buffers key hits while sending. HAS BEEN KNOWN TO NOT FUNCTION ON SOME MACHINES.
+;      (Might not work with characters that cannot be typed using the current keyboard layout.)
+;  2 = Fastest method with unreliable keyboard buffering while sending. Has been known to not function on some machines.
+;  3 = Slowest method, will not buffer or accept keyboard input while sending. Most compatible method.
+;The options below use the clipboard to copy and paste the data to improve speed, but will leave an entry in any clipboard 
+;history tracking routines you may be running. Data on the clipboard *will* be preserved prior to autocompletion.
+;  1C = Same as 1 above.
+;  2C = Same as 2 above, doesn't work on some machines.
+;  3C = Same as 3 above.
+;  4C = Alternate method.
+)
+
+hTerminatingCharacters=
+(
+;TerminatingCharacters is a list of characters (EndKey) which will signal the program that you are done typing a word.
+;You probably need to change this only when you want to recognize and type accented (diacritic) or Unicode characters
+;or if you are using this with certain programming languages.
+;
+;For support of special characters, remove the key that is used to type the diacritic symbol (or the character) from the right hand side. 
+;For example, if on your keyboard layout, " is used before typing ë, ; is used to type ñ, remove them from the right hand side.
+;
+;After this, TypingAid can recognize the special character. The side-effect is that, it cannot complete words typed after 
+;the symbol, (e.g. "word... ) If you need to complete a word after a quotation mark, first type two quotation marks "" then 
+;press left and type the word in the middle.
+;
+;If unsure, below is a setting for you to copy and use directly:
+;
+;Universal setting that works for many languages with accented or Unicode characters:
+;{enter}{space}{bs}{esc}{tab}{Home}{End}{PgUp}{PdDn}{Up}{Dn}{Left}{Right}¿?¡!()$
+;
+;Default setting:
+;%DftTerminatingCharacters%
+;
+; More information on how to configure TerminatingCharacters:
+;A list of keys may be found here:
+; http://www.autohotkey.com/docs/KeyList.htm
+;For more details on how to format the list of characters please see the EndKeys section (paragraphs 2,3,4) of:
+; http://www.autohotkey.com/docs/commands/Input.htm
+)
+
+hForceNewWordCharacters=
+(
+;ForceNewWordCharacters is a comma separated list of characters which forces the program to start a new word whenever
+;one of those characters is typed. Any words which begin with one of these characters will never be learned (even
+;if learning is enabled). If you were typing a word when you hit one of these characters that word will be learned
+;if learning is enabled.
+;Change this only if you know what you are doing, it is probably only useful for certain programming languages.
+; ex: ForceNewWordCharacters=@,:,#
+)
+
+hListBoxOffset=
+(
+;ListBoxOffset is the number of pixels below the top of the caret (vertical blinking line) to display the list.
+)
+
+hListBoxFontFixed=
+(
+;ListBoxFontFixed controls whether a fixed or variable character font width is used.
+;(ie, in fixed width, "i" and "w" take the same number of pixels)
+)
+
+hListBoxFontOverride=
+(
+;ListBoxFontOverride is used to specify a font for the List Box to use. The default for Fixed is Courier,
+;and the default for Variable is Tahoma.
+)
+
+hListBoxFontSize=
+(
+;ListBoxFontSize controls the size of the font in the list.
+)
+
+hListBoxCharacterWidth=
+(
+;ListBoxCharacterWidth is the width (in pixels) of one character in the List Box.
+;This number should only need to be changed if the box containing the list is not the correct width.
+;Some things which may cause this to need to be changed would include:
+; 1. Changing the Font DPI in Windows
+; 2. Changing the ListBoxFontFixed setting
+; 3. Changing the ListBoxFontSize setting
+;Leave this blank to let TypingAid try to compute the width.
+)
+
+hListBoxOpacity=
+(
+;ListBoxOpacity is how transparent (see-through) the ListBox should be. Use a value of 255 to make it so the
+;ListBox is fully Opaque, or use a value of 0 to make it so the ListBox cannot be seen at all.
+)
+
+hListBoxRows=
+(
+;ListBoxRows is the maximum number of rows to show in the ListBox. This value can range from 3 to 30.
+)
+
+hHelperWindowProgramExecutables=
+(
+;HelperWindowProgramExecutables is a list of executable (.exe) files that the HelperWindow should be automatically enabled for.
+;If one the executables matches the current program, the HelperWindow will pop up automatically for that program.
+)
+
+hHelperWindowProgramTitles=
+(
+;HelperWindowProgramTitles is a list of strings (separated by | ) to find in the title of the window that the HelperWindow should be automatically enabled for.
+;If one of the strings is found in the title, the HelperWindow will pop up automatically for that program.
+)
+
+hFullHelpString =
+(
+%hIncludeProgramExecutables% `r`n`r`n %hIncludeProgramTitles% `r`n`r`n %hExcludeProgramExecutables% `r`n`r`n %hExcludeProgramTitles%
+
+%hLength% `r`n`r`n %hNumPresses% `r`n`r`n %hLearnMode% `r`n`r`n %hLearnCount% `r`n`r`n %hLearnLength% `r`n`r`n %hDoNotLearnStrings%
+
+%hArrowKeyMethod% `r`n`r`n %hDisabledAutoCompleteKeys% `r`n`r`n %hDetectMouseClickMove% `r`n`r`n %hNoBackSpace% `r`n`r`n %hAutoSpace%
+
+%hSuppressMatchingWord% `r`n`r`n %hSendMethod% `r`n`r`n %hTerminatingCharacters% `r`n`r`n %hForceNewWordCharacters% `r`n`r`n %hListBoxOffset%
+
+%hListBoxFontFixed% `r`n`r`n %hListBoxFontOverride% `r`n`r`n %hListBoxFontSize% `r`n`r`n %hListBoxCharacterWidth% `r`n`r`n %hListBoxOpacity%
+
+%hListBoxRows% `r`n`r`n %hHelperWindowProgramExecutables% `r`n`r`n %hHelperWindowProgramTitles%
+)
+
 }

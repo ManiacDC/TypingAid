@@ -80,17 +80,6 @@ InitializeListBox()
 
 BlockInput, Send
 
-IfEqual, A_IsUnicode, 1
-{
-   ; Need 4 characters in Unicode mode
-   AsciiPrefix = 000
-   AsciiTrimLength = -3
-} else {
-         ; Need 2 characters in Ascii mode
-         AsciiPrefix = 0
-         AsciiTrimLength = -1
-      }
-
 ;Read in the WordList
 ReadWordList()
 
@@ -112,40 +101,7 @@ IfNotEqual, LearnMode, On
    HotKey, $^+c, Off
 }
 
-IfEqual, ArrowKeyMethod, Off
-{
-   Hotkey, $^Enter, Off
-   Hotkey, $^Space, Off
-   Hotkey, $Tab, Off
-   Hotkey, $Right, Off
-   Hotkey, $Up, Off
-   Hotkey, $Down, Off
-   Hotkey, $PgUp, Off
-   Hotkey, $PgDn, Off
-} else {
-         EnabledKeyboardHotKeys .= "$Up" . DelimiterChar
-         EnabledKeyboardHotKeys .= "$Down" . DelimiterChar
-         EnabledKeyboardHotKeys .= "$PgUp" . DelimiterChar
-         EnabledKeyboardHotKeys .= "$PgDn" . DelimiterChar
-         If DisabledAutoCompleteKeys contains E
-            Hotkey, $^Enter, Off
-         else EnabledKeyboardHotKeys .= "$^Enter" . DelimiterChar
-         If DisabledAutoCompleteKeys contains S
-            HotKey, $^Space, Off
-         else EnabledKeyboardHotKeys .= "$^Space" . DelimiterChar
-         If DisabledAutoCompleteKeys contains T
-            HotKey, $Tab, Off
-         else EnabledKeyboardHotKeys .= "$Tab" . DelimiterChar
-         If DisabledAutoCompleteKeys contains R
-            HotKey, $Right, Off
-         else EnabledKeyboardHotKeys .= "$Right" . DelimiterChar
-         If DisabledAutoCompleteKeys contains U
-            HotKey, $Enter, Off
-         else EnabledKeyboardHotKeys .= "$Enter" . DelimiterChar
-      }
-
-; remove last ascii 2
-StringTrimRight, EnabledKeyboardHotKeys, EnabledKeyboardHotKeys, 1
+InitializeHotKeys()
 
 DisableKeyboardHotKeys()
    
@@ -467,6 +423,46 @@ CheckForCaretMove:
    
    
 ;------------------------------------------------------------------------
+
+InitializeHotKeys()
+{
+   global
+   IfEqual, ArrowKeyMethod, Off
+   {
+      Hotkey, $^Enter, Off
+      Hotkey, $^Space, Off
+      Hotkey, $Tab, Off
+      Hotkey, $Right, Off
+      Hotkey, $Up, Off
+      Hotkey, $Down, Off
+      Hotkey, $PgUp, Off
+      Hotkey, $PgDn, Off
+   } else {
+            EnabledKeyboardHotKeys .= "$Up" . DelimiterChar
+            EnabledKeyboardHotKeys .= "$Down" . DelimiterChar
+            EnabledKeyboardHotKeys .= "$PgUp" . DelimiterChar
+            EnabledKeyboardHotKeys .= "$PgDn" . DelimiterChar
+            If DisabledAutoCompleteKeys contains E
+               Hotkey, $^Enter, Off
+            else EnabledKeyboardHotKeys .= "$^Enter" . DelimiterChar
+            If DisabledAutoCompleteKeys contains S
+               HotKey, $^Space, Off
+            else EnabledKeyboardHotKeys .= "$^Space" . DelimiterChar
+            If DisabledAutoCompleteKeys contains T
+               HotKey, $Tab, Off
+            else EnabledKeyboardHotKeys .= "$Tab" . DelimiterChar
+            If DisabledAutoCompleteKeys contains R
+               HotKey, $Right, Off
+            else EnabledKeyboardHotKeys .= "$Right" . DelimiterChar
+            If DisabledAutoCompleteKeys contains U
+               HotKey, $Enter, Off
+            else EnabledKeyboardHotKeys .= "$Enter" . DelimiterChar
+         }
+
+   ; remove last ascii 2
+   StringTrimRight, EnabledKeyboardHotKeys, EnabledKeyboardHotKeys, 1
+   
+}
 
 EnableKeyboardHotKeys()
 {
