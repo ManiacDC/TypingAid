@@ -23,7 +23,7 @@ AHK Keyword Wordlist:
 [url=https://github.com/ManiacDC/TypingAid/raw/master/Wordlists/WordList%20AHK.txt]Wordlist AHK.txt[/url] (Thanks [url=http://www.autohotkey.com/board/topic/49517-typingaid-v219-word-autocompletion-utility/page-22#entry425973]tidbit[/url].)
 
 [b]Screenshots:[/b]
-[img=https://github.com/ManiacDC/TypingAid/raw/master/Images/TypingAidListBox.png]
+[img]https://github.com/ManiacDC/TypingAid/raw/master/Images/TypingAidListBox.png[/img]
 
 [b][url=https://github.com/ManiacDC/TypingAid/raw/master/Changelog.txt]Change Log[/url][/b]
 
@@ -70,7 +70,6 @@ Customizable features include:
 [/LIST]
 [b]Unicode Support:[/b]
 Full (untested) for UTF-8 character set.
-[url=http://www.autohotkey.net/~Lexikos/AutoHotkey_L/]AHK_L[/url] is required.
 
 [b][url=https://github.com/ManiacDC/TypingAid/issues?q=is%3Aopen+is%3Aissue]Known Issues[/url][/b]
 
