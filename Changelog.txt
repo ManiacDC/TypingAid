@@ -1,3 +1,9 @@
+*2.19.9 12/18/2014
+** Fixed bug when creating TerminatingCharacters when generating preferences file. Broken TerminatingCharacters will be repaired if not already modified.
+** Added "Threading" during the input loop to cause less missed keys
+** Auto-launch 64 bit exe if present and launching a compiled script (name 64 bit script "<scriptname>64.exe")
+** Fixed some poorly named variables
+
 *2.19.8 11/24/2014
 ** Fixed bug with generation of preferences file
 ** Fixed sent characters being detected when SendMethod=3

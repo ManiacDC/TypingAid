@@ -35,6 +35,7 @@ ReadPreferences(RestoreDefaults = false)
    Local IniSection
    Local IniKey
    Local DftValue
+   Local BrokenTerminatingCharacters
    
    Local DftIncludeProgramExecutables
    Local DftIncludeProgramTitles
@@ -53,7 +54,7 @@ ReadPreferences(RestoreDefaults = false)
    Local DftAutoSpace
    Local DftSuppressMatchingWord
    Local DftSendMethod
-   Local DftTerminatingCharacters
+   ;DftTerminatingCharacters should be global so it works in the help strings
    Local DftForceNewWordCharacters
    Local DftListBoxOffSet
    Local DftListBoxFontFixed
@@ -72,8 +73,20 @@ ReadPreferences(RestoreDefaults = false)
    MaybeFixFileEncoding(Prefs,"UTF-16")
    MaybeFixFileEncoding(Defaults,"UTF-16")
    MaybeFixFileEncoding(LastState,"UTF-16")
-      
+   
    DftTerminatingCharacters = {enter}{space}{esc}{tab}{Home}{End}{PgUp}{PgDn}{Up}{Down}{Left}{Right}.;`,¿?¡!'"()[]{}{}}{{}``~`%$&*-+=\/><^|@#:
+   
+   
+   ; There was a bug in TypingAid 2.19.7 that broke terminating characters for new preference files, this code repairs it
+   BrokenTerminatingCharacters = {enter}{space}{esc}{tab}{Home}{End}{PgUp}{PgDn}{Up}{Down}{Left}{Right}.;
+   IfExist, %Prefs%
+   {
+      IniRead, MaybeFixTerminatingCharacters, %Prefs%, Settings, TerminatingCharacters, %A_Space%
+      IF (MaybeFixTerminatingCharacters == BrokenTerminatingCharacters)
+      {
+         IniWrite, %DftTerminatingCharacters%, %Prefs%, Settings, TerminatingCharacters
+      }
+   }      
    
    SpaceVar := "%A_Space%"
    
@@ -97,7 +110,7 @@ ReadPreferences(RestoreDefaults = false)
       DftAutoSpace,AutoSpace,Settings,AutoSpace,Off
       DftSuppressMatchingWord,SuppressMatchingWord,Settings,SuppressMatchingWord,Off
       DftSendMethod,SendMethod,Settings,SendMethod,1
-      DftTerminatingCharacters,TerminatingCharacters,Settings,TerminatingCharacters,%DftTerminatingCharacters%
+      DftTerminatingCharacters,TerminatingCharacters,Settings,TerminatingCharacters,`%DftTerminatingCharacters`%
       DftForceNewWordCharacters,ForceNewWordCharacters,Settings,ForceNewWordCharacters,%SpaceVar%
       DftListBoxOffSet,ListBoxOffset,ListBoxSettings,ListBoxOffset,14
       DftListBoxFontFixed,ListBoxFontFixed,ListBoxSettings,ListBoxFontFixed,Off
@@ -109,7 +122,7 @@ ReadPreferences(RestoreDefaults = false)
       DftHelperWindowProgramExecutables,HelperWindowProgramExecutables,HelperWindow,HelperWindowProgramExecutables,%SpaceVar%
       DftHelperWindowProgramTitles,HelperWindowProgramTitles,HelperWindow,HelperWindowProgramTitles,%SpaceVar%
       ,XY,HelperWindow,XY,%SpaceVar%
-    )
+   )
     
    Loop, Parse, IniValues, `n, `r%A_Space%
    {
@@ -119,7 +132,12 @@ ReadPreferences(RestoreDefaults = false)
       IniSection := CurrentIniValues3
       IniKey := CurrentIniValues4
       DftValue := CurrentIniValues5
-   
+      
+      IF (DftValue == "%DftTerminatingCharacters%")
+      {
+         DftValue := DftTerminatingCharacters
+      }
+
       IF ( DftValue = "%A_Space%" )
          DftValue := A_Space
       
