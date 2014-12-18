@@ -3,9 +3,9 @@ TypingAid is a simple, compact, and handy auto-completion utility.
 It is customizable enough to be useful for regular typing and for programming.
 
 [b]Download:[/b]
-[url=https://github.com/ManiacDC/TypingAid/releases/download/v2.19.8/TypingAid.exe]TypingAid v2.19.8 Precompiled Executable[/url]
-[url=https://github.com/ManiacDC/TypingAid/releases/download/v2.19.8/TypingAid64.exe]TypingAid v2.19.8 64-bit Precompiled Executable[/url]
-[url=https://github.com/ManiacDC/TypingAid/archive/v2.19.8.zip]TypingAid v2.19.8 AHK Script[/url]
+[url=https://github.com/ManiacDC/TypingAid/releases/download/v2.19.9/TypingAid.exe]TypingAid v2.19.9 Precompiled Executable[/url]
+[url=https://github.com/ManiacDC/TypingAid/releases/download/v2.19.9/TypingAid64.exe]TypingAid v2.19.9 64-bit Precompiled Executable[/url]
+[url=https://github.com/ManiacDC/TypingAid/archive/v2.19.9.zip]TypingAid v2.19.9 AHK Script[/url]
 
 As of version 2.19.7.0, the script is no longer compatible with AHK Basic. Please get the newest version from [url]http://www.ahkscript.org[/url].
 
