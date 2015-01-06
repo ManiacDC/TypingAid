@@ -4,7 +4,7 @@ InitializeListBox()
 {
    global
    
-   Gui, %ListBoxGui%: -Caption +AlwaysOnTop +ToolWindow +Delimiter%DelimiterChar%
+   Gui, ListBoxGui: -Caption +AlwaysOnTop +ToolWindow +Delimiter%DelimiterChar%
    
    Local ListBoxFont
    IfNotEqual, ListBoxFontOverride,
@@ -15,12 +15,12 @@ InitializeListBox()
          else ListBoxFont = Tahoma
       }
       
-   Gui, %ListBoxGui%:Font, s%ListBoxFontSize%, %ListBoxFont%
+   Gui, ListBoxGui:Font, s%ListBoxFontSize%, %ListBoxFont%
 
    Loop, %ListBoxRows%
    {
       GuiControl, -Redraw, ListBox%A_Index%
-      Gui, %ListBoxGui%: Add, ListBox, vListBox%A_Index% R%A_Index% X0 Y0 GListBoxClick
+      Gui, ListBoxGui: Add, ListBox, vListBox%A_Index% R%A_Index% X0 Y0 GListBoxClick
    }
    Return
 }
@@ -45,7 +45,7 @@ CloseListBox()
    global ListBox_ID
    IfNotEqual, ListBox_ID,
    {
-      Gui, %ListBoxGui%: Hide
+      Gui, ListBoxGui: Hide
       ListBox_ID = 
       DisableKeyboardHotKeys()
    }
@@ -231,24 +231,24 @@ ShowListBox()
       { 
          IfEqual, A_Index, %Rows%
          {
-            GuiControl, %ListBoxGui%: -Redraw, ListBox%A_Index%
-            GuiControl, %ListBoxGui%: Move, ListBox%A_Index%, w%ListBoxSizeX%
-            GuiControl, %ListBoxGui%: ,ListBox%A_Index%, %DelimiterChar%%match%
+            GuiControl, ListBoxGui: -Redraw, ListBox%A_Index%
+            GuiControl, ListBoxGui: Move, ListBox%A_Index%, w%ListBoxSizeX%
+            GuiControl, ListBoxGui: ,ListBox%A_Index%, %DelimiterChar%%match%
             MatchEnd := MatchStart + (ListBoxRows - 1)
             IfNotEqual, MatchPos,
             {
-               GuiControl, %ListBoxGui%: Choose, ListBox%A_Index%, %MatchEnd%
-               GuiControl, %ListBoxGui%: Choose, ListBox%A_Index%, %MatchPos%
+               GuiControl, ListBoxGui: Choose, ListBox%A_Index%, %MatchEnd%
+               GuiControl, ListBoxGui: Choose, ListBox%A_Index%, %MatchPos%
             }
-            GuiControl, %ListBoxGui%: +AltSubmit +Redraw, ListBox%A_Index%
-            GuiControl, %ListBoxGui%: Show, ListBox%A_Index%
-            GuiControlGet, ListBoxActualSize, %ListBoxGui%: Pos, ListBox%A_Index%
+            GuiControl, ListBoxGui: +AltSubmit +Redraw, ListBox%A_Index%
+            GuiControl, ListBoxGui: Show, ListBox%A_Index%
+            GuiControlGet, ListBoxActualSize, ListBoxGui: Pos, ListBox%A_Index%
             Continue
          }
       
-         GuiControl, %ListBoxGui%: Hide, ListBox%A_Index%
-         GuiControl, %ListBoxGui%: -Redraw, ListBox%A_Index%
-         GuiControl, %ListBoxGui%: , ListBox%A_Index%, %DelimiterChar%
+         GuiControl, ListBoxGui: Hide, ListBox%A_Index%
+         GuiControl, ListBoxGui: -Redraw, ListBox%A_Index%
+         GuiControl, ListBoxGui: , ListBox%A_Index%, %DelimiterChar%
       }
    
       ForceWithinMonitorBounds(ListBoxPosX,ListBoxPosY,ListBoxActualSizeH,ListBoxActualSizeW,Rows,ListBoxOffset)
@@ -259,8 +259,8 @@ ShowListBox()
          return
       }
       
-      Gui, %ListBoxGui%: Show, NoActivate X%ListBoxPosX% Y%ListBoxPosY% H%ListBoxActualSizeH% W%ListBoxActualSizeW%, Word List Appears Here.
-      Gui, %ListBoxGui%: +LastFound +AlwaysOnTop
+      Gui, ListBoxGui: Show, NoActivate X%ListBoxPosX% Y%ListBoxPosY% H%ListBoxActualSizeH% W%ListBoxActualSizeW%, Word List Appears Here.
+      Gui, ListBoxGui: +LastFound +AlwaysOnTop
       IfEqual, ListBox_ID,
       {
          EnableKeyboardHotKeys()   

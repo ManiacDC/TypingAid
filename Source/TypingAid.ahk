@@ -46,6 +46,10 @@ If A_Is64bitOS
    }
 }
 
+Menu, Tray, NoStandard
+Menu, Tray, add, Settings, Configuration
+Menu, Tray, Standard
+;Menu, tray, icon, includes\typewriter.icl, 4
 Menu, Tray, Icon
 
 ScriptExtension=
@@ -70,11 +74,6 @@ Helper_id =
 HelperManual = 
 DelimiterChar := Chr(2)
 AutoTrim, Off 
-
-;Gui Init Code
-ListBoxGui=1
-HelperGui=2
-MenuGui=3
 
 InitializeListBox()
 
@@ -819,7 +818,7 @@ EvaluateUpDown(Key)
       Local Rows
       Rows := GetRows()
       IfNotEqual, MatchPos,
-         GuiControl, %ListBoxGui%: Choose, ListBox%Rows%, %MatchPos%
+         GuiControl, ListBoxGui: Choose, ListBox%Rows%, %MatchPos%
    } else {
             RebuildMatchList()
             ShowListBox()
@@ -964,6 +963,10 @@ MaybeFixFileEncoding(File,Encoding)
 }
 
 ;------------------------------------------------------------------------
+
+Configuration:
+GoSub, LaunchSettings
+Return
    
 SaveScript:
 
@@ -991,6 +994,7 @@ ExitApp
 #Include %A_ScriptDir%\Includes\Helper.ahk
 #Include %A_ScriptDir%\Includes\Preferences File.ahk
 #Include %A_ScriptDir%\Includes\Sending.ahk
+#Include %A_ScriptDir%\Includes\Settings.ahk
 #Include %A_ScriptDir%\Includes\Window.ahk
 #Include %A_ScriptDir%\Includes\Wordlist.ahk
 #Include <DBA>

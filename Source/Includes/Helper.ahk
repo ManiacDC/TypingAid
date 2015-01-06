@@ -104,21 +104,20 @@ MaybeOpenOrCloseHelperWindowManual()
 MaybeCreateHelperWindow()
 {
    Global Helper_id
-   global HelperGui
    ;Don't open a new Helper Window if One is already open
    IfNotEqual, Helper_id,
       Return
       
    Global XY
-   Gui, %HelperGui%:+Owner -MinimizeBox -MaximizeBox +AlwaysOnTop
-   Gui, %HelperGui%:+LabelHelper_
-   Gui, %HelperGui%:Add, Text,,List appears here 
+   Gui, HelperGui:+Owner -MinimizeBox -MaximizeBox +AlwaysOnTop
+   Gui, HelperGui:+LabelHelper_
+   Gui, HelperGui:Add, Text,,List appears here 
    IfNotEqual, XY, 
    {
       StringSplit, Pos, XY, `, 
-      Gui, %HelperGui%:Show, X%Pos1% Y%Pos2% NoActivate
+      Gui, HelperGui:Show, X%Pos1% Y%Pos2% NoActivate
    } else {
-            Gui, %HelperGui%:Show, NoActivate
+            Gui, HelperGui:Show, NoActivate
          }
    WinGet, Helper_id, ID,,List appears here 
    WinSet, Transparent, 125, ahk_id %Helper_id%
@@ -163,7 +162,6 @@ HelperWindowClosed()
 MaybeSaveHelperWindowPos()
 {
    global Helper_id
-   global HelperGui
    IfNotEqual, Helper_id, 
    {
       global XY
@@ -172,7 +170,7 @@ MaybeSaveHelperWindowPos()
       XY = %hX%`,%hY%
       XYSaved = 1
       Helper_id = 
-      Gui, %HelperGui%:Hide
+      Gui, HelperGui:Hide
    }
    Return
 }
