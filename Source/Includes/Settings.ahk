@@ -18,37 +18,42 @@ Words should be stored in a file named 'Wordlist.txt' which should be located in
 
 In addition to being able to use the number keys to select a word, you can select words from the drop-down via the Up/Down arrows. Hitting Up on the first item will bring you to the last and hitting Down on the last item will bring you to the first. Hitting Page Up will bring you up 10 items, or to the first item. Hitting Page Down will bring you down 10 items, or to the last item. You can hit Tab, Right Arrow, Ctrl-Space, or Ctrl-Enter to autocomplete the selected word. This feature can be disabled or have some of its behavior modified via the Preferences file.
 
-The script will learn words as you type them if LearnMode=On in the preferences file. If you type a word more than 5 times (or as defined in the preferences.ini file) in a single session the word will be added to the wordlist.txt file. Learned words are stored below the predefined words in the wordlist under a keyword called ;LEARNEDWORDS;. Learned words will always appear below predefined words, but will be ranked and ordered among other learned words based on the frequency you type them. You can permanently learn a word by highlighting a word and hitting Ctrl-Shift-C (this works even if LearnMode=Off). If you want to remove any learned words from your list you must manually remove them.
-When LearnMode=On, entries in the wordlist file and learned words are limited to a length of 123 (or 61 when using Unicode AHK) characters due to internal workings.
+The script will learn words as you type them if LearnMode=On in the preferences file. If you type a word more than 5 times (or as defined in the preferences.ini file) in a single session the word will be permanently added to the list of learnedd words. Learned words will always appear below predefined words, but will be ranked and ordered among other learned words based on the frequency you type them. You can permanently learn a word by highlighting a word and hitting Ctrl-Shift-C (this works even if LearnMode=Off). You may use Ctrl-Shift-Del to remove the currently selected Learned Word.
+Learned words are stored in the WordlistLearned.db sqlite3 database. Learned words are backed up in WordlistLearned.txt. To modify the list of Learned words manually, delete the WordlistLearned.db database, then manually edit the WordlistLearned.txt file. On the next launch of the script, the WordlistLearned.db database will be rebuilt.
 
 The script will automatically create a file named preferences.ini in the script directory. This file allows for customization of the script.
+To allow for distribution of standardized preferences, a Defaults.ini may be distributed with the same format as Preferences.ini. If the Defaults.ini is present, Preferences.ini will not be created. A user may override the Defaults.ini by manually creating a Preferences.ini.
+
 Customizable features include (see also detailed description below)
 
-    * List of programs for which you want TypingAid enabled.
-    * List of programs for which you do not want TypingAid enabled.
-    * Number of characters before the list of words appears.
-    * Number of times you must press a number hotkey to select the associated word (options are 1 and 2, 2 has had minimal testing).
-    * Enable or disable learning mode.
-    * Number of times you must type a word before it is permanently learned.
-    * Number of characters a word needs to have in order to be learned.
-    * Enable, disable, or customize the arrow key's functionality.
-    * Disable certain keys for autocompleting a word selected via the arrow keys.
-    * Enable or disable the resetting of the List Box on a mouseclick.
-    * Change the method used to send the word to the screen.
-    * List of characters which terminate a word.
-    * List of characters which terminate a word and start a new word.
-    * List of programs for which you want the Helper Window to automatically open.
-    * Number of pixels below the caret to display the List Box.
-    * List Box Default Font of fixed (Courier New) or variable (Tahoma) width.
-    * List Box Default Font override.
-    * List Box Font Size.
-    * List Box Character Width to override the computed character width.
-    * List Box Opacity setting to set the transparency of the List Box.
-    * List Box Rows to define the number of items to show in the list at once.
+	* List of programs for which you want TypingAid enabled.
+	* List of programs for which you do not want TypingAid enabled.
+	* Number of characters before the list of words appears.
+	* Number of times you must press a number hotkey to select the associated word (options are 1 and 2, 2 has had minimal testing).
+	* Enable or disable learning mode.
+	* Number of times you must type a word before it is permanently learned.
+	* Number of characters a word needs to have in order to be learned.
+	* List of strings which will prevent any word which contains one of these strings from being learned.
+	* Enable, disable, or customize the arrow key's functionality.
+	* Disable certain keys for autocompleting a word selected via the arrow keys.
+	* Enable or disable the resetting of the List Box on a mouseclick.
+	* Change whether the script simply completes or actually replaces the word (capitalization change based on the wordlist file)
+	* Change whether a space should be automatically added after the autocompleted word or not.
+	* Change whether the typed word should appear in the word list or not.
+	* Change the method used to send the word to the screen.
+	* List of characters which terminate a word.
+	* List of characters which terminate a word and start a new word.
+	* List of programs for which you want the Helper Window to automatically open.
+	* Number of pixels below the caret to display the List Box.
+	* List Box Default Font of fixed (Courier New) or variable (Tahoma) width.
+	* List Box Default Font override.
+	* List Box Font Size.
+	* List Box Character Width to override the computed character width.
+	* List Box Opacity setting to set the transparency of the List Box.
+	* List Box Rows to define the number of items to show in the list at once.
 
 Unicode Support:
 Full (untested) for UTF-8 character set.
-Unicode AutoHotKey is required. 
 )
 
 fontlist:=Writer_enumFonts() ; see note at function for credit
@@ -58,20 +63,20 @@ fontlist:=Writer_enumFonts() ; see note at function for credit
 ; The following part was copied from AGU`s script.
 ; http://www.autohotkey.com/forum/viewtopic.php?p=37633#37633
 ; Begin
-  ; Retrieve scripts PID
-  Process, Exist
-  pid_this := ErrorLevel
+; Retrieve scripts PID
+Process, Exist
+pid_this := ErrorLevel
  
-  ; Retrieve unique ID number (HWND/handle)
-  WinGet, hw_gui, ID, ahk_class AutoHotkeyGUI ahk_pid %pid_this%
+; Retrieve unique ID number (HWND/handle)
+WinGet, hw_gui, ID, ahk_class AutoHotkeyGUI ahk_pid %pid_this%
  
-  ; Call "HandleMessage" when script receives WM_SETCURSOR message
-  WM_SETCURSOR = 0x20
-  OnMessage( WM_SETCURSOR, "HandleMessage" )
+; Call "HandleMessage" when script receives WM_SETCURSOR message
+WM_SETCURSOR = 0x20
+OnMessage( WM_SETCURSOR, "HandleMessage" )
  
-  ; Call "HandleMessage" when script receives WM_MOUSEMOVE message
-  WM_MOUSEMOVE = 0x200
-  OnMessage( WM_MOUSEMOVE, "HandleMessage" )
+; Call "HandleMessage" when script receives WM_MOUSEMOVE message
+WM_MOUSEMOVE = 0x200
+OnMessage( WM_MOUSEMOVE, "HandleMessage" )
 ; End
 ; ---
 
@@ -206,14 +211,15 @@ Gui, MenuGui:Add, GroupBox, x%Group3of3BoxX% y%RowY% w%ThreeColGroupWidth% h%Row
 _SendMethodOptionsText=1 - Default (Type)|2 - Fast (Type)|3 - Slow (Type)|4 - Default (Paste)|5 - Fast (Paste)|6 - Slow (Paste)|7 - Alternate method
 _SendMethodOptionsCode=1|2|3|1C|2C|3C|4C
 Loop, parse, _SendMethodOptionsCode, |
-   If (SendMethod = A_LoopField)
-      _SendCount:=A_Index
+	If (SendMethod = A_LoopField)
+		_SendCount:=A_Index
+
 Loop, parse, _SendMethodOptionsText, |
-    {
-      _SendMethodOptions .= A_LoopField "|"
-     If (A_Index = _SendCount)
-      _SendMethodOptions .= "|"
-    }   
+{
+	_SendMethodOptions .= A_LoopField "|"
+    If (A_Index = _SendCount)
+		_SendMethodOptions .= "|"
+}   
 Gui, MenuGui:Add, DDL, x%Group3of3EditX% y%RowEditY% w%ThreeColEditWidth% r5 v_SendMethodC altsubmit, %_SendMethodOptions%
 Gui, MenuGui:Font, cGreen
 Gui, MenuGui:Add, Text, x%Group3of3HelpX% y%RowHelpY% vhSendMethod gHelpMe, %GuiHelpIcon%
@@ -239,18 +245,18 @@ CheckedN=Checked
 CheckedU=Checked
 Loop, parse, DisabledAutoCompleteKeys
 {
-   If (A_LoopField = "E")
-      CheckedE =
-   If (A_LoopField = "S")
-      CheckedS =
+	If (A_LoopField = "E")
+		CheckedE =
+	If (A_LoopField = "S")
+		CheckedS =
     If (A_LoopField = "T")
-      CheckedT =
+		CheckedT =
     If (A_LoopField = "R")
-      CheckedR =
+		CheckedR =
     If (A_LoopField = "N")
-      CheckedN =
+		CheckedN =
     If (A_LoopField = "U")
-      CheckedU =
+		CheckedU =
 }
 
 CheckmarkIndent := TwoColEditWidth/3 + EditIndentX
@@ -269,15 +275,16 @@ Gui, MenuGui:Font, cBlack
 Gui, MenuGui:Add, GroupBox, x%Group2of2BoxX% y%RowY% w%TwoColGroupWidth% h%RowHeight% , Wordlist row highlighting
 _ArrowKeyMethodOptionsText=Off - only use the number keys|First - reset selected word to the beginning|LastWord - keep last word selected|LastPosition - keep the last cursor position
 Loop, parse, _ArrowKeyMethodOptionsText, |
-   {
+{
     _ArrowKeyMethodOptions .= A_LoopField "|"
     StringSplit, Split, A_LoopField, -
     Split1=%Split1% ; autotrim
     If (Split1 = ArrowKeyMethod)
-     {
-      _ArrowKeyMethodOptions .= "|"
-     }   
-   }
+    {
+		_ArrowKeyMethodOptions .= "|"
+	}   
+}
+
 Gui, MenuGui:Add, DDL, x%Group2of2EditX% y%RowEditY% w%TwoColEditWidth% r5 vArrowKeyMethod altsubmit, %_ArrowKeyMethodOptions%
 Gui, MenuGui:Font, cGreen
 Gui, MenuGui:Add, Text, x%Group2of2HelpX% y%RowHelpY% vhArrowKeyMethod gHelpMe, %GuiHelpIcon%
@@ -526,7 +533,24 @@ RowY := SeparatorY + 30
 RowHelpY := RowY - HelpIndentY
 RowEditY := RowY + EditIndentY
 
-Gui, MenuGui:Add, Edit, ReadOnly x%Group1BoxX% y%RowY% w%OneColGroupWidth% h%TabHeightEdit%, %hIntro% `r`n`r`n %hIncludeProgramExecutables% `r`n`r`n %hIncludeProgramTitles% `r`n`r`n %hExcludeProgramExecutables% `r`n`r`n %hExcludeProgramTitles% `r`n`r`n %hLength% `r`n`r`n %hNumPresses% `r`n`r`n %hLearnMode% `r`n`r`n %hLearnCount% `r`n`r`n %hLearnLength% `r`n`r`n %hArrowKeyMethod% `r`n`r`n %hDisabledAutoCompleteKeys% `r`n`r`n %hDetectMouseClickMove% `r`n`r`n %hNoBackSpace% `r`n`r`n %hAutoSpace% `r`n`r`n %hSendMethod% `r`n`r`n %hTerminatingCharacters% `r`n`r`n %hForceNewWordCharacters% `r`n`r`n %hListBoxOffset% `r`n`r`n %hListBoxFontFixed% `r`n`r`n %hListBoxFontOverride% `r`n`r`n %hListBoxFontSize% `r`n`r`n %hListBoxCharacterWidth% `r`n`r`n %hListBoxOpacity% `r`n`r`n %hListBoxRows% `r`n`r`n %hHelperWindowProgramExecutables% `r`n`r`n %hHelperWindowProgramTitles% `r`n`r`n 
+hHelpText = %hIntro%`r`n`r`n%hIncludeProgramExecutables%`r`n`r`n%hIncludeProgramTitles%`r`n`r`n%hExcludeProgramExecutables%`r`n`r`n%hExcludeProgramTitles%`r`n`r`n%hLength%`r`n`r`n%hNumPresses%`r`n`r`n%hLearnMode%`r`n`r`n%hLearnCount%`r`n`r`n%hLearnLength%`r`n`r`n%hArrowKeyMethod%`r`n`r`n%hDisabledAutoCompleteKeys%`r`n`r`n%hDetectMouseClickMove%`r`n`r`n%hNoBackSpace%`r`n`r`n%hAutoSpace%`r`n`r`n%hSendMethod%`r`n`r`n%hTerminatingCharacters%`r`n`r`n%hForceNewWordCharacters%`r`n`r`n%hListBoxOffset%`r`n`r`n%hListBoxFontFixed%`r`n`r`n%hListBoxFontOverride%`r`n`r`n%hListBoxFontSize%`r`n`r`n%hListBoxCharacterWidth%`r`n`r`n%hListBoxOpacity%`r`n`r`n%hListBoxRows%`r`n`r`n%hHelperWindowProgramExecutables%`r`n`r`n%hHelperWindowProgramTitles%
+
+Loop, Parse, hHelpText,`n, `r
+{
+	IF ( SubStr(A_LoopField, 1,1) = ";")
+	{
+		hModHelpText .= SubStr(A_LoopField,2) . "`r`n"
+	} else
+	{
+		hModHelpText .= A_LoopField . "`r`n"
+	}
+}
+
+Gui, MenuGui:Add, Edit, ReadOnly x%Group1BoxX% y%RowY% w%OneColGroupWidth% h%TabHeightEdit%, %hModHelpText%
+
+hModHelpText =
+hHelpText =
+hIntro =
 
 
 Gui, MenuGui:tab, 
@@ -546,7 +570,7 @@ Gui, MenuGui:Font, cBlack bold
 Gui, MenuGui:Add, Text, x%Group2of2EditX% Yp-10 gVisitForum, TypingAid
 Gui, MenuGui:Font, cBlack normal
 
-Gui, MenuGui:Add, Text, xp+70 Yp gVisitForum, is free software, support forum at
+Gui, MenuGui:Add, Text, xp+60 Yp gVisitForum, is free software, support forum at
 Gui, MenuGui:Font, cGreen 
 Gui, MenuGui:Add, Text, x%Group2of2EditX% Yp+%TextRowY% vVisitForum gVisitForum, www.autohotkey.com (click here)
 Gui, MenuGui:Font, cBlack 
@@ -674,8 +698,16 @@ Gui, MenuGui:Destroy
 Return
 
 HelpMe:
-StringReplace, _help, %A_GuiControl%, `;,,All
-; MsgBox %_help%
+Loop, Parse, %A_GuiControl%,`r`n
+{
+	IF ( SubStr(A_LoopField, 1,1) = ";")
+	{
+		_help .= SubStr(A_LoopField,2) . "`r`n"
+	} else
+	{
+		_help .= A_LoopField . "`r`n"
+	}
+}
 MsgBox , 32 , TypingAid Help, %_help%
 _help=
 Return
@@ -685,42 +717,61 @@ Return
 ; http://www.autohotkey.com/forum/viewtopic.php?p=37696#37696
 HandleMessage( p_w, p_l, p_m, p_hw )
 {
-   Global WM_SETCURSOR, WM_MOUSEMOVE
-   Static URL_hover, h_cursor_hand, h_old_cursor, Old_GuiControl
+	Global WM_SETCURSOR, WM_MOUSEMOVE
+	Static Help_Hover, h_cursor_help, URL_Hover, h_cursor_hand, h_old_cursor, Old_GuiControl
    
-   if ( p_m = WM_SETCURSOR )
-   {
-      if ( URL_hover)
-         return, true
-   }
-   else if ( p_m = WM_MOUSEMOVE )
-   {
-     
-     
-      if A_GuiControl in hIncludeProgramExecutables,hIncludeProgramTitles,hExcludeProgramExecutables,hExcludeProgramTitles,hLength,hNumPresses,hLearnMode,hLearnCount,hLearnLength,hArrowKeyMethod,hDisabledAutoCompleteKeys,hDetectMouseClickMove,hNoBackSpace,hAutoSpace,hSendMethod,hTerminatingCharacters,hForceNewWordCharacters,hListBoxOffset,hListBoxFontFixed,hListBoxFontOverride,hListBoxFontSize,hListBoxCharacterWidth,hListBoxOpacity,hListBoxRows,hHelperWindowProgramExecutables,hHelperWindowProgramTitles,VisitForum
-       {
-          if URL_hover=
-         {
-            h_cursor_hand := DllCall( "LoadCursor", "uint", 0, "uint", 32651 ) 
-            URL_hover = true
-       Gui, Font, cBlue        ;;; xyz
-       GuiControl, Font, %A_GuiControl% ;;; xyz
-       Old_GuiControl = %A_GuiControl%
-         }
-         h_old_cursor := DllCall( "SetCursor", "uint", h_cursor_hand )
-      }
-      else
-      {
-         if ( URL_hover )
-         {
-            DllCall( "SetCursor", "uint", h_old_cursor )
-            URL_hover=
-         Gui, Font, cGreen     ;;; xyz
-         GuiControl, Font, %Old_GuiControl% ;;; xyz
-         Old_GuiControl=
-         }
-      }
-   }
+	if ( p_m = WM_SETCURSOR )
+	{
+		if ( Help_Hover)
+			return, true
+	}
+	else if ( p_m = WM_MOUSEMOVE )
+	{
+		if A_GuiControl in hIncludeProgramExecutables,hIncludeProgramTitles,hExcludeProgramExecutables,hExcludeProgramTitles,hLength,hNumPresses,hLearnMode,hLearnCount,hLearnLength,hArrowKeyMethod,hDisabledAutoCompleteKeys,hDetectMouseClickMove,hNoBackSpace,hAutoSpace,hSendMethod,hTerminatingCharacters,hForceNewWordCharacters,hListBoxOffset,hListBoxFontFixed,hListBoxFontOverride,hListBoxFontSize,hListBoxCharacterWidth,hListBoxOpacity,hListBoxRows,hHelperWindowProgramExecutables,hHelperWindowProgramTitles
+		{
+			if !(Help_Hover)
+			{
+				IF !(h_cursor_help)
+				{
+					h_cursor_help := DllCall( "LoadImage", ptr, 0, uint, 32651 , uint, 2, int, 0, int, 0, uint, 0x8000 ) 
+				}
+				old_cursor := DllCall( "SetCursor", "uint", h_cursor_help )
+				Help_Hover = true
+				URL_Hover = 
+				Gui, Font, cBlue        ;;; xyz
+				GuiControl, Font, %A_GuiControl% ;;; xyz
+				Old_GuiControl = %A_GuiControl%
+			}
+		} else if (A_GuiControl = "VisitForum")
+		{	
+			if !(URLHover)
+			{
+				IF !(h_cursor_hand)
+				{
+					h_cursor_hand := DllCall( "LoadImage", ptr, 0, uint, 32649 , uint, 2, int, 0, int, 0, uint, 0x8000 ) 
+				}
+				old_cursor := DllCall( "SetCursor", "uint", h_cursor_hand )
+				URL_Hover = true
+				Help_Hover =
+				Gui, Font, cBlue        ;;; xyz
+				GuiControl, Font, %A_GuiControl% ;;; xyz
+				Old_GuiControl = %A_GuiControl%
+			}
+				
+		} else if (Help_Hover || URL_Hover)
+		{
+			DllCall( "SetCursor", "uint", h_old_cursor )
+			Help_Hover=
+			URL_Hover=
+			Gui, Font, cGreen     ;;; xyz
+			GuiControl, Font, %Old_GuiControl% ;;; xyz
+			h_old_cursor=
+		}
+		IF !(h_old_cursor)
+		{
+			h_old_cursor := old_cursor
+		}
+	}
 }
 
 
@@ -728,29 +779,29 @@ GetList:
 ;Gui, MenuGui:Hide
 RunningList=
 If (GetExe = 1) ; get list of active processes
+{
+	WinGet, id, list,,, Program Manager
+	Loop, %id%
 	{
-	 WinGet, id, list,,, Program Manager
-	 Loop, %id%
-		{
-	     tmptitle=
-		 tmpid := id%A_Index%
-	     WinGet, tmptitle, ProcessName, ahk_id %tmpid%
-		 If (tmptitle <> "")
+	    tmptitle=
+		tmpid := id%A_Index%
+		WinGet, tmptitle, ProcessName, ahk_id %tmpid%
+		If (tmptitle <> "")
 			RunningList .= tmptitle "|"
-	    }
 	}
+}
 Else If (GetExe = 0) ; get list of active window titles
+{
+	WinGet, id, list,,, Program Manager
+	Loop, %id%
 	{
-	 WinGet, id, list,,, Program Manager
-	 Loop, %id%
-		{
-	     tmptitle=
-		 tmpid := id%A_Index%
-	     WinGetTitle, tmptitle, ahk_id %tmpid%
-		 If (tmptitle <> "")
+		tmptitle=
+		tmpid := id%A_Index%
+	    WinGetTitle, tmptitle, ahk_id %tmpid%
+		If (tmptitle <> "")
 			RunningList .= tmptitle "|"
-		}
-	}	
+	}
+}	
 GetExe=0
 	
 Sort,RunningList, D| U	
@@ -780,41 +831,41 @@ WinActivate, TypingAid Settings
 StringReplace, List, List, `n, |, All
 
 If (TitleType=1)
-	{
+{
 	IncludeProgramTitles:=List
 	GuiControl, MenuGui:Text, Edit2, 
 	GuiControl, MenuGui:Text, Edit2, %IncludeProgramTitles%
-	}
+}
 Else If (TitleType=2)
-	{
+{
 	ExcludeProgramTitles:=List
 	GuiControl, MenuGui:Text, Edit3, 
 	GuiControl, MenuGui:Text, Edit3, %ExcludeProgramTitles%
-	}
+}
 Else If (TitleType=3)
-	{
+{
 	IncludeProgramExecutables:=List
 	GuiControl, MenuGui:Text, Edit4, 
 	GuiControl, MenuGui:Text, Edit4, %IncludeProgramExecutables%
-	}
+}
 Else If (TitleType=4)
-	{
+{
 	ExcludeProgramExecutables:=List
 	GuiControl, MenuGui:Text, Edit5, 
 	GuiControl, MenuGui:Text, Edit5, %ExcludeProgramExecutables%
-	}
+}
 Else If (TitleType=5)
-	{
+{
 	HelperWindowProgramTitles:=List
 	GuiControl, MenuGui:Text, Edit6, 
 	GuiControl, MenuGui:Text, Edit6, %HelperWindowProgramTitles%
-	}	
+}	
 Else If (TitleType=6)
-	{
+{
 	HelperWindowProgramExecutables:=List
 	GuiControl, MenuGui:Text, Edit7, 
 	GuiControl, MenuGui:Text, Edit7, %HelperWindowProgramExecutables%
-	}	
+}	
 		
 	
 Return
@@ -856,7 +907,8 @@ Gui, MenuGui:Show
 Return
 
 ; copied from font explorer http://www.autohotkey.com/forum/viewtopic.php?t=57501&highlight=font
-Writer_enumFonts() {
+Writer_enumFonts()
+{
 
 	hDC := DllCall("GetDC", "Uint", 0) 
 	DllCall("EnumFonts", "Uint", hDC, "Uint", 0, "Uint", RegisterCallback("Writer_enumFontsProc", "F"), "Uint", 0) 
@@ -865,7 +917,8 @@ Writer_enumFonts() {
 	return Writer_enumFontsProc(0, 0, 0, 0)
 }
 
-Writer_enumFontsProc(lplf, lptm, dwType, lpData) {
+Writer_enumFontsProc(lplf, lptm, dwType, lpData)
+{
 	static s
 	
 	ifEqual, lplf, 0, return s
