@@ -232,7 +232,7 @@ ReadPreferences(RestoreDefaults = false)
    }
    
    IfEqual, TerminatingCharacters,
-      TerminatingCharacters = %DftTerminatingCharacters%
+      TerminatingCharacters := DftTerminatingCharacters
    
    ParseTerminatingCharacters()
    
@@ -419,19 +419,23 @@ HelperWindowProgramTitles=%DftHelperWindowProgramTitles%
 ParseTerminatingCharacters()
 {
    global TerminatingCharacters
+   global TerminatingCharactersParsed
    global TerminatingEndKeys
    
    Loop, Parse, TerminatingCharacters
    {
       IfEqual, OpenWord, 1
       {
-         If ( A_LoopField == "{" )
-         {
-            TempCharacters .= A_LoopField
-         } else If ( A_LoopField == "}" )
+         If ( A_LoopField == "}" )
          {
             OpenWord =
-            TempEndKeys .= "{" . Word . "}"
+            IF !(Word)
+               TempCharacters .= "{}"
+            else If ( Word = "{" || Word = "}")
+               TempCharacters .= Word
+            else
+               TempEndKeys .= "{" . Word . "}"
+            
             Word =
          } else 
          {
@@ -449,7 +453,7 @@ ParseTerminatingCharacters()
       IfNotEqual, Word,
          TempCharacters .= Word
    
-   TerminatingCharacters := TempCharacters
+   TerminatingCharactersParsed := TempCharacters
    TerminatingEndKeys := TempEndKeys
 }
 

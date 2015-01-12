@@ -218,7 +218,7 @@ ProcessKey(chr,EndKey)
                   StringTrimRight, Word, Word, 1
                 }     
       }
-   } else if ( ( EndKey == "Max" ) && !(InStr(TerminatingCharacters, chr)) )
+   } else if ( ( EndKey == "Max" ) && !(InStr(TerminatingCharactersParsed, chr)) )
          {
             ; If active window has different window ID from the last input,
             ;learn and blank word, then assign number pressed to the word
@@ -965,6 +965,7 @@ MaybeFixFileEncoding(File,Encoding)
 ;------------------------------------------------------------------------
 
 Configuration:
+Menu, Tray, Disable, Settings
 GoSub, LaunchSettings
 Return
    

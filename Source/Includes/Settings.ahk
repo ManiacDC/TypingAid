@@ -646,6 +646,7 @@ Esc::
 MenuGuiGuiClose:
 Cancel:
 Gui, MenuGui:Destroy
+Menu, Tray, Enable, Settings
 ;ExitApp
 Return
 
@@ -694,6 +695,7 @@ Gui, MenuGui:Destroy
 ;	 Break
 ;	}
 ;ExitApp
+Menu, Tray, Enable, Settings
 Return
 
 HelpMe:
