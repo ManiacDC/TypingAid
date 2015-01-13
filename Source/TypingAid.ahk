@@ -46,10 +46,23 @@ If A_Is64bitOS
    }
 }
 
+;; Tray menu
+;Name=TypingAid v2.15
+; I would like to see an icon here, see also active/inactive below
+;Menu, tray, NoStandard
+;Menu, tray, tip, %Name% - active
+;Menu, tray, add, Restart, Restart
+;Menu, tray, add, Edit Wordlist, EditWordList
+;Menu, tray, add, Settings, Configuration
+;Menu, tray, add, Pause %Name%, PauseProgram
+;Menu, tray, add, Exit, SaveScript
+; End Tray menu
+
 Menu, Tray, NoStandard
 Menu, Tray, add, Settings, Configuration
 Menu, Tray, Standard
-;Menu, tray, icon, includes\typewriter.icl, 4
+;Initialize Tray Icon
+SuspendOn()
 Menu, Tray, Icon
 
 ScriptExtension=
@@ -553,7 +566,7 @@ CheckWord(Key)
    }
    
    IfEqual, NumPresses, 2
-      Suspend, On
+      SuspendOn()
 
    ; If active window has different window ID from before the input, blank word 
    ; (well, assign the number pressed to the word) 
@@ -562,7 +575,7 @@ CheckWord(Key)
       SendCompatible(Key,0)
       ProcessKey(Key,"")
       IfEqual, NumPresses, 2
-         Suspend, Off
+         SuspendOff()
       Return 
    } 
    
@@ -571,7 +584,7 @@ CheckWord(Key)
       SendCompatible(Key,0)
       ProcessKey(Key,"") 
       IfEqual, NumPresses, 2
-         Suspend, Off
+         SuspendOff()
       Return 
    } 
 
@@ -582,7 +595,7 @@ CheckWord(Key)
          SendCompatible(Key,0)
          ProcessKey(Key,"")
          IfEqual, NumPresses, 2
-            Suspend, Off
+            SuspendOff()
          Return 
       }
    }
@@ -592,7 +605,7 @@ CheckWord(Key)
       SendCompatible(Key,0)
       ProcessKey(Key,"")
       IfEqual, NumPresses, 2
-         Suspend, Off
+         SuspendOff()
       Return 
    }
       
@@ -601,7 +614,7 @@ CheckWord(Key)
       SendCompatible(Key,0)
       ProcessKey(Key,"")
       IfEqual, NumPresses, 2
-         Suspend, Off
+         SuspendOff()
       Return 
    }
 
@@ -614,7 +627,7 @@ CheckWord(Key)
       {
          SendCompatible(Key,0)
          ProcessKey(Key,"")
-         Suspend, off
+         SuspendOff()
          Return
       }
 
@@ -624,7 +637,7 @@ CheckWord(Key)
          SendCompatible(Key . KeyAgain,0)
          ProcessKey(Key,"")
          ProcessKey(KeyAgain,"")
-         Suspend, off
+         SuspendOff()
          Return
       }
    
@@ -635,14 +648,14 @@ CheckWord(Key)
          SendCompatible(Key . KeyAgain,0)
          ProcessKey(Key,"")
          ProcessKey(KeyAgain,"")
-         Suspend, Off
+         SuspendOff()
          Return
       }
    }
 
    SendWord(WordIndex)
    IfEqual, NumPresses, 2
-      Suspend, Off
+      SuspendOff()
    Return 
 }
 
@@ -870,6 +883,32 @@ DeleteSelectedWordFromList()
 
 ;------------------------------------------------------------------------
 
+SuspendOn()
+{
+   Suspend, On
+   If A_IsCompiled
+   {
+      Menu, tray, Icon, %A_ScriptName%,3,1
+   } else
+   {
+      Menu, tray, icon, TypingAid-Inactive.ico, ,1
+   }
+}
+
+SuspendOff()
+{
+   Suspend, Off
+   If A_IsCompiled
+   {
+      Menu, tray, Icon, %A_ScriptName%,1,1
+   } else
+   {
+      Menu, tray, icon, TypingAid-Active.ico, ,1
+   }
+}   
+
+;------------------------------------------------------------------------
+
 ; This is to blank all vars related to matches, ListBox and (optionally) word 
 clearallvars: 
    CloseListBox()
@@ -974,7 +1013,7 @@ SaveScript:
 ; Close the ListBox if it's open
 CloseListBox()
 
-Suspend, On
+SuspendOn()
 
 ;Change the cleanup performance speed
 SetBatchLines, 20ms

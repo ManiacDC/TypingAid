@@ -51,7 +51,7 @@ GetIncludedActiveWindow()
          
          ;Force unload of Keyboard Hook
          Input
-         Suspend, On
+         SuspendOn()
          CloseListBox()
          MaybeSaveHelperWindowPos()
          ;Wait for an active window, then check again
@@ -67,7 +67,7 @@ GetIncludedActiveWindow()
          Break
       ;Force unload of Keyboard Hook
       Input
-      Suspend, On
+      SuspendOn()
       CloseListBox()
       MaybeSaveHelperWindowPos()
       SetTitleMatchMode, 3 ; set the title match mode to exact so we can detect a window title change
@@ -90,7 +90,7 @@ GetIncludedActiveWindow()
    {
       ; Check to see if we need to reopen the helper window
       MaybeOpenOrCloseHelperWindow(ActiveProcess,ActiveTitle,ActiveId)
-      Suspend, Off
+      SuspendOff()
       ;Set the process priority back to High
       Process, Priority,,High
       LastActiveIdBeforeHelper = %ActiveId%
