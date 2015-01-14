@@ -80,7 +80,6 @@ ReadPreferences()
 SetTitleMatchMode, 2
 
 ;setup code
-clearword=1
 MouseX = 0 
 MouseY = 0 
 Helper_id = 
@@ -205,7 +204,7 @@ ProcessKey(chr,EndKey)
             
          ; add the word if switching lines
          AddWordToList(Word,0)
-         Gosub,clearallvars
+         ClearAllVars(true)
          Word = %chr%
          Return         
       } 
@@ -226,7 +225,7 @@ ProcessKey(chr,EndKey)
       { 
          ifequal, len, 1   
          { 
-            Gosub,clearallvars
+            ClearAllVars(true)
          } else {
                   StringTrimRight, Word, Word, 1
                 }     
@@ -238,7 +237,7 @@ ProcessKey(chr,EndKey)
             IfNotEqual, LastInput_Id, %Active_id%
             {
                AddWordToList(Word,0)
-               Gosub, clearallvars
+               ClearAllVars(true)
                word = %chr%
                LastInput_Id = %Active_id%
                Return
@@ -247,7 +246,7 @@ ProcessKey(chr,EndKey)
             if chr in %ForceNewWordCharacters%
             {
                AddWordToList(Word,0)
-               Gosub, clearallvars
+               ClearAllVars(true)
                Word = %chr%
                Return
             } else { 
@@ -259,7 +258,7 @@ ProcessKey(chr,EndKey)
                      Return
                      
                   AddWordToList(Word,0)
-                  Gosub, clearallvars   
+                  ClearAllVars(true)
                   Return
                 }
                 
@@ -353,8 +352,7 @@ RecomputeMatches()
    ;If no match then clear Tip 
    IfEqual, number, 0
    {
-      clearword=0 
-      Gosub,clearallvars 
+      ClearAllVars(false)
       Return 
    } 
    
@@ -417,16 +415,12 @@ CheckForCaretMove:
    {
       IfNotEqual, Word, 
       {
-         if ( OldCaretY != HCaretY() )
+         if (( OldCaretY != HCaretY() ) || (OldCaretX != HCaretX() ))
          {
             ; add the word if switching lines
             AddWordToList(Word,0)
-            Gosub,clearallvars
-         } else if (OldCaretX != HCaretX() )
-               {
-                  AddWordToList(Word,0)
-                  Gosub,clearallvars
-               }
+            ClearAllVars(true)
+         }
       }
    }
 
@@ -686,23 +680,21 @@ EvaluateUpDown(Key)
    if ( ReturnWinActive() = )
    {
       SendKey(Key)
-      clearword=0
-      Gosub, ClearAllVars
+      ClearAllVars(false)
       Return
    }
 
    if ReturnLineWrong()
    {
       SendKey(Key)
-      GoSub, ClearAllVars
+      ClearAllVars(true)
       Return
    }   
    
    IfEqual, Word, ; only continue if word is not empty
    {
       SendKey(Key)
-      ClearWord = 0
-      GoSub, ClearAllVars
+      ClearAllVars(false)
       Return
    }
    
@@ -910,9 +902,11 @@ SuspendOff()
 ;------------------------------------------------------------------------
 
 ; This is to blank all vars related to matches, ListBox and (optionally) word 
-clearallvars: 
+ClearAllVars(ClearWord)
+{
+   global
    CloseListBox()
-   Ifequal,clearword,1
+   Ifequal,ClearWord,1
    {
       word =
       OldCaretY=
@@ -931,9 +925,9 @@ clearallvars:
    key= 
    match= 
    MatchPos=
-   MatchStart=
-   clearword=1 
+   MatchStart= 
    Return
+}
 
 ;------------------------------------------------------------------------
 
@@ -1004,7 +998,6 @@ MaybeFixFileEncoding(File,Encoding)
 ;------------------------------------------------------------------------
 
 Configuration:
-Menu, Tray, Disable, Settings
 GoSub, LaunchSettings
 Return
    

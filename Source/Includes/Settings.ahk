@@ -2,6 +2,9 @@
 ; by HugoV / Maniac
 
 LaunchSettings:
+Menu, Tray, Disable, Settings
+InSettings := true
+ClearAllVars(True)
 ReadPreferences()
 ConstructGui()
 Return
@@ -632,6 +635,9 @@ IfMsgBox Yes
 Return
 
 Restore: ; this could be changed to not restart TA
+; will need to load defaults
+; re-fresh gui
+; re-load preferences if canceling
 ;FileDelete, Preferences.ini
 ;WinClose, \TypingAid
 ;Loop, TypingAid*.ahk
@@ -646,11 +652,13 @@ Esc::
 MenuGuiGuiClose:
 Cancel:
 Gui, MenuGui:Destroy
+InSettings := false
 Menu, Tray, Enable, Settings
 ;ExitApp
 Return
 
 Save:
+; should only save preferences.ini if different from defaults
 ;Gui, MenuGui:Submit
 Gui, MenuGui:Destroy
 
@@ -695,6 +703,7 @@ Gui, MenuGui:Destroy
 ;	 Break
 ;	}
 ;ExitApp
+InSettings := false
 Menu, Tray, Enable, Settings
 Return
 

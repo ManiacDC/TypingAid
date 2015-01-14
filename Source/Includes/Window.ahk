@@ -26,9 +26,9 @@ Winchanged:
 
 GetIncludedActiveWindow()
 {
-   global Helper_id
    global Active_id
    global Active_Title
+   global Helper_id
    global LastActiveIdBeforeHelper
    global ListBox_ID
    global MouseWin_ID
@@ -124,6 +124,10 @@ CheckForActive(ActiveProcess,ActiveTitle)
    global ExcludeProgramTitles
    global IncludeProgramExecutables
    global IncludeProgramTitles
+   global InSettings
+   
+   If InSettings
+      Return,
    
    Loop, Parse, ExcludeProgramExecutables, |
    {
@@ -164,6 +168,11 @@ ReturnWinActive()
 {
    global Active_id
    global Active_Title
+   global InSettings
+   
+   IF InSettings
+      Return,
+   
    WinGet, Temp_id, ID, A
    WinGetTitle, Temp_Title, ahk_id %Temp_id%
    Last_Title := Active_Title

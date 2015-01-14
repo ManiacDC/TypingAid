@@ -29,8 +29,7 @@ SendWord(WordIndex)
    ; Update Typed Count
    UpdateWordCount(sending,0)
    SendFull(sending, StrLen(Word))   
-   clearword=1 
-   Gosub, clearallvars
+   ClearAllVars(true)
    Return
 }  
 
