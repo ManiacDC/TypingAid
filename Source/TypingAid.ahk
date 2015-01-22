@@ -46,6 +46,10 @@ If A_Is64bitOS
    }
 }
 
+ScriptExtension=
+ScriptNoExtension=
+ScriptPath64=
+
 ;; Tray menu
 ;Name=TypingAid v2.15
 ; I would like to see an icon here, see also active/inactive below
@@ -64,10 +68,6 @@ Menu, Tray, Standard
 ;Initialize Tray Icon
 SuspendOn()
 Menu, Tray, Icon
-
-ScriptExtension=
-ScriptNoExtension=
-ScriptPath64=
       
 
 OnExit, SaveScript
@@ -117,7 +117,7 @@ InitializeHotKeys()
 DisableKeyboardHotKeys()
    
 ;Find the ID of the window we are using
-GetIncludedActiveWindow()  
+GetIncludedActiveWindow()
 
 ; Set a timer to check for a changed window
 SetTimer, Winchanged, 100

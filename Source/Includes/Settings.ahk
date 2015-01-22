@@ -6,6 +6,7 @@ Menu, Tray, Disable, Settings
 InSettings := true
 ClearAllVars(True)
 ReadPreferences()
+Menu_OldValues := LearnCount . DelimiterChar . LearnLength . DelimiterChar . LearnMode
 ConstructGui()
 Return
 
@@ -21,6 +22,7 @@ ConstructGui()
    Global hExcludeProgramExecutables, hExcludeProgramTitles, hIncludeProgramExecutables, hIncludeProgramTitles, hHelperWindowProgramExecutables, hHelperWindowProgramTitles
    Global ListBoxCharacterWidth, ListBoxFontFixed, ListBoxFontOverride, ListBoxFontSize, ListBoxOffset, ListBoxOpacity, ListBoxRows
    Global hListBoxCharacterWidth, hListBoxFontFixed, hListBoxFontOverride, hListBoxFontSize, hListBoxOffset, hListBoxOpacity, hListBoxRows
+   Global Menu_LearnCount, Menu_LearnLength, Menu_LearnMode
    Global Menu_ArrowKeyMethodOptionsText, Menu_CaseCorrection, Menu_SendMethodOptionsCode, Menu_SendMethodC
    Global MenuCtrlEnter, MenuCtrlSpace, MenuEnter, MenuNumberKeys, MenuRightArrow, MenuTab
    Global MenuAdvGuiHeight, MenuGuiWidth
@@ -101,31 +103,31 @@ ConstructGui()
 
    Gui, MenuGui:Tab, 1 ; General Settings
 
-   Gui, MenuGui:Add, GroupBox, x%MenuGroup1BoxX% y%MenuRowY% w%MenuThreeColGroupWidth% h%MenuRowHeight% , Learn new words as you type
+   Gui, MenuGui:Add, GroupBox, x%MenuGroup1BoxX% y%MenuRowY% w%MenuThreeColGroupWidth% h%MenuRowHeight% , Learn new words as you type*
    Menu_LearnModeOptions=|On|Off|
    StringReplace, Menu_LearnModeOptions, Menu_LearnModeOptions, |%LearnMode%|,|%LearnMode%||
    StringTrimLeft, Menu_LearnModeOptions, Menu_LearnModeOptions, 1
-   Gui, MenuGui:Add, DDL, x%MenuGroup1EditX% y%MenuRowEditY% r5 vLearnMode, %Menu_LearnModeOptions%
+   Gui, MenuGui:Add, DDL, x%MenuGroup1EditX% y%MenuRowEditY% r5 vMenu_LearnMode, %Menu_LearnModeOptions%
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup1of3HelpX% y%MenuRowHelpY% vhLearnMode gHelpMe, %MenuGuiHelpIcon%
    Gui, MenuGui:Font, cBlack
 
 
-   Gui, MenuGui:Add, GroupBox, x%MenuGroup2of3BoxX% y%MenuRowY% w%MenuThreeColGroupWidth% h%MenuRowHeight% , Minimum length of word to learn
+   Gui, MenuGui:Add, GroupBox, x%MenuGroup2of3BoxX% y%MenuRowY% w%MenuThreeColGroupWidth% h%MenuRowHeight% , Minimum length of word to learn*
    Menu_LearnLengthOptions=|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|
    StringReplace,  Menu_LearnLengthOptions, Menu_LearnLengthOptions, |%LearnLength%|,|%LearnLength%||
    StringTrimLeft, Menu_LearnLengthOptions, Menu_LearnLengthOptions, 1
-   Gui, MenuGui:Add, DDL, x%MenuGroup2of3EditX% y%MenuRowEditY% r5 vLearnLength, %Menu_LearnLengthOptions%
+   Gui, MenuGui:Add, DDL, x%MenuGroup2of3EditX% y%MenuRowEditY% r5 vMenu_LearnLength, %Menu_LearnLengthOptions%
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup2of3HelpX% y%MenuRowHelpY% vhLearnLength gHelpMe, %MenuGuiHelpIcon%
    Gui, MenuGui:Font, cBlack
    
 
-   Gui, MenuGui:Add, GroupBox, x%MenuGroup3of3BoxX% y%MenuRowY% w%MenuThreeColGroupWidth% h%MenuRowHeight%, Add to wordlist after X times
+   Gui, MenuGui:Add, GroupBox, x%MenuGroup3of3BoxX% y%MenuRowY% w%MenuThreeColGroupWidth% h%MenuRowHeight%, Add to wordlist after X times*
    Menu_LearnCountOptions=|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|
    StringReplace,  Menu_LearnCountOptions, Menu_LearnCountOptions, |%LearnCount%|,|%LearnCount%||
    StringTrimLeft, Menu_LearnCountOptions, Menu_LearnCountOptions, 1
-   Gui, MenuGui:Add, DDL, x%MenuGroup3of3EditX% y%MenuRowEditY% r5 vLearnCount, %Menu_LearnCountOptions%
+   Gui, MenuGui:Add, DDL, x%MenuGroup3of3EditX% y%MenuRowEditY% r5 vMenu_LearnCount, %Menu_LearnCountOptions%
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup3of3HelpX% y%MenuRowHelpY% vhLearnCount gHelpMe, %MenuGuiHelpIcon%
    Gui, MenuGui:Font, cBlack
@@ -278,6 +280,13 @@ ConstructGui()
 
    ;NumPresses
    ;
+   
+   MenuRowY := MenuTabHeight-20
+   MenuRowHelpY := MenuRowY - MenuHelpIndentY
+   MenuRowEditY := MenuRowY + MenuEditIndentY
+
+   Gui, MenuGui:Add, Text, x%MenuGroup1BoxX%           y%MenuRowY%     w%MenuOneColGroupWidth% , *Changing these values requires a restart of TypingAid
+   
 
    Gui, MenuGui:Tab, 2 ; listbox ---------------------------------------------------------
 
@@ -547,7 +556,8 @@ Full (untested) for UTF-8 character set.
    Gui, MenuGui:Font, cGreen 
    Gui, MenuGui:Add, Text, x%MenuGroup2of2EditX% Yp+%MenuTextMenuRowY% gVisitForum, www.autohotkey.com (click here)
    Gui, MenuGui:Font, cBlack 
-
+   
+   Gui, Menugui:+OwnDialogs
    Gui, MenuGui:Show, h%MenuGuiHeight% w%MenuGuiWidth%, TypingAid Settings
    Return
 }
@@ -634,19 +644,39 @@ IfMsgBox Yes
 	Run, http://www.autohotkey.com/board/topic/49517-ahk-11typingaid-v2198-word-autocompletion-utility/
 Return
 
-Restore: ; this could be changed to not restart TA
-; will need to load defaults
-; re-fresh gui
-; re-load preferences if canceling
-;FileDelete, Preferences.ini
-;WinClose, \TypingAid
-;Loop, TypingAid*.ahk
-;	{
-;	 Run %A_LoopFileName%
-;	 Break
-;	}
-;Reload
-Return
+Restore:
+; If Learn settings have changed, we need to reload the script. Otherwise, we can just go through the normal save process.
+ReadPreferences("RestoreDefaults")
+IF (Menu_OldValues <> (LearnCount . DelimiterChar . LearnLength . DelimiterChar . LearnMode))
+{
+   MsgBox, 1, Restore Defaults, Restoring Defaults will change Learn settings.`r`nChanging Learn settings requires a script restart. Continue?
+   IfMsgBox, Cancel
+   {
+      ReadPreferences(,"RestorePreferences")
+      return
+   }
+   try {
+      FileCopy, %PrefsFile%, %PrefsFile%-%A_Now%.bak, 1
+      FileDelete, %PrefsFile%
+   } catch {
+      MsgBox,,Restore Defaults,Unable to back up preferences! Canceling...
+      ReadPreferences(,"RestorePreferences")
+      return
+   }
+   Reload
+   return
+} else {
+      try {
+         FileCopy, %PrefsFile%, %PrefsFile%-%A_Now%.bak, 1
+         FileDelete, %PrefsFile%
+      } catch {
+         MsgBox,,Restore Defaults,Unable to back up preferences! Canceling...
+         ReadPreferences(,"RestorePreferences")
+         return
+      }
+      Save()
+}
+return
 
 Esc::
 MenuGuiGuiClose:
@@ -654,13 +684,43 @@ Cancel:
 Gui, MenuGui:Destroy
 InSettings := false
 Menu, Tray, Enable, Settings
-;ExitApp
 Return
 
 Save:
 ; should only save preferences.ini if different from defaults
-;Gui, MenuGui:Submit
+Gui, MenuGui:Submit
+IF (Menu_OldValues <> (Menu_LearnCount . DelimiterChar . Menu_LearnLength . DelimiterChar . Menu_LearnMode))
+{   
+   MsgBox, 1, Save, Saving will change Learn settings.`r`nChanging Learn settings requires a script restart. Continue?
+   IfMsgBox, Cancel
+   {
+      ReadPreferences(,"RestorePreferences")
+      Gui, MenuGui:Destroy
+      return
+   }
+   SaveSettings()
+   Reload
+} else {
+   SaveSettings()
+   Save()
+}
 Gui, MenuGui:Destroy
+Return
+
+SaveSettings()
+{
+   
+   SavePreferences()
+}
+
+Save()
+{
+   ValidatePreferences()
+   InitializeHotKeys()
+   DestroyListBox()
+   InitializeListBox()
+   
+   ;other settings that begin with Menu_?
 
 ;Loop, parse, Menu_SendMethodOptionsCode, | ; get sendmethod
 ;   If (Menu_SendMethodC = A_Index)
@@ -706,6 +766,8 @@ Gui, MenuGui:Destroy
 InSettings := false
 Menu, Tray, Enable, Settings
 Return
+
+}   
 
 HelpMe:
 Loop, Parse, %A_GuiControl%,`r`n

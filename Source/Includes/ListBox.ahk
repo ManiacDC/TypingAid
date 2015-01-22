@@ -41,7 +41,6 @@ ListBoxChooseItem()
 
 CloseListBox()
 {
-   global ListBoxGui
    global ListBox_ID
    IfNotEqual, ListBox_ID,
    {
@@ -49,6 +48,15 @@ CloseListBox()
       ListBox_ID = 
       DisableKeyboardHotKeys()
    }
+   Return
+}
+
+DestroyListBox()
+{
+   global ListBox_ID
+   ListBox_ID =
+   Gui, ListBoxGui:Destroy
+   DisableKeyboardHotKeys()
    Return
 }
 

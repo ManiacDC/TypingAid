@@ -14,10 +14,13 @@ MaybeWriteHelperWindowPos()
 
 ;------------------------------------------------------------------------
 
-ReadPreferences(RestoreDefaults = false)
+ReadPreferences(RestoreDefaults = false,RestorePreferences = false)
 {
    global
-   Local Prefs
+   
+   Local Etitle
+   
+   ;PrefsFile is global so it works in Settings.ahk
    Local INI
    Local Defaults
    Local LastState
@@ -41,36 +44,36 @@ ReadPreferences(RestoreDefaults = false)
    Local DftIncludeProgramTitles
    Local DftExcludeProgramExecutables
    Local DftExcludeProgramTitles
-   Local DftWlen
-   Local DftNumPresses
-   Local DftLearnMode
-   Local DftLearnCount
+   ;DftWlen should be global so it works in ValidatePreferences
+   ;DftNumPresses should be global so it works in ValidatePreferences
+   ;DftLearnMode should be global so it works in ValidatePreferences
+   ;DftLearnCount should be global so it works in ValidatePreferences
    Local DftLearnLength
    Local DftDoNotLearnStrings
-   Local DftArrowKeyMethod
+   ;DftArrowKeyMethod should be global so it works in ValidatePreferences
    Local DftDisabledAutoCompleteKeys
-   Local DftDetectMouseClickMove
-   Local DftNoBackSpace
-   Local DftAutoSpace
+   ;DftDetectMouseClickMove should be globabl so it works in ValidatePreferences
+   ;DftNoBackSpace should be global so it works in ValidatePreferences
+   ;DftAutoSpace should be global so it works in ValidatePreferences
    Local DftSuppressMatchingWord
-   Local DftSendMethod
-   ;DftTerminatingCharacters should be global so it works in the help strings
+   ;DftSendMethod should be global so it works in ValidatePreferences
+   ;DftTerminatingCharacters should be global so it works in the help strings and ValidatePreferences
    Local DftForceNewWordCharacters
-   Local DftListBoxOffSet
-   Local DftListBoxFontFixed
+   ;DftListBoxOffSet should be global so it works in ValidatePreferences
+   ;DftListBoxFontFixed should be global so it works in ValidatePreferences
    Local DftListBoxFontOverride
-   Local DftListBoxFontSize
-   Local DftListBoxCharacterWidth
-   Local DftListBoxOpacity
-   Local DftListBoxRows
+   ;DftListBoxFontSize should be global so it works in ValidatePreferences
+   ;DftListBoxCharacterWidth should be global so it works in ValidatePreferences
+   ;DftListBoxOpacity should be global so it works in ValidatePreferences
+   ;DftListBoxRows should be global so it works in ValidatePreferences
    Local DftHelperWindowProgramExecutables
    Local DftHelperWindowProgramTitles
    
-   Prefs = %A_ScriptDir%\Preferences.ini
+   PrefsFile = %A_ScriptDir%\Preferences.ini
    Defaults = %A_ScriptDir%\Defaults.ini
    LastState = %A_ScriptDir%\LastState.ini
    
-   MaybeFixFileEncoding(Prefs,"UTF-16")
+   MaybeFixFileEncoding(PrefsFile,"UTF-16")
    MaybeFixFileEncoding(Defaults,"UTF-16")
    MaybeFixFileEncoding(LastState,"UTF-16")
    
@@ -79,12 +82,12 @@ ReadPreferences(RestoreDefaults = false)
    
    ; There was a bug in TypingAid 2.19.7 that broke terminating characters for new preference files, this code repairs it
    BrokenTerminatingCharacters = {enter}{space}{esc}{tab}{Home}{End}{PgUp}{PgDn}{Up}{Down}{Left}{Right}.;
-   IfExist, %Prefs%
+   IfExist, %PrefsFile%
    {
-      IniRead, MaybeFixTerminatingCharacters, %Prefs%, Settings, TerminatingCharacters, %A_Space%
+      IniRead, MaybeFixTerminatingCharacters, %PrefsFile%, Settings, TerminatingCharacters, %A_Space%
       IF (MaybeFixTerminatingCharacters == BrokenTerminatingCharacters)
       {
-         IniWrite, %DftTerminatingCharacters%, %Prefs%, Settings, TerminatingCharacters
+         IniWrite, %DftTerminatingCharacters%, %PrefsFile%, Settings, TerminatingCharacters
       }
    }      
    
@@ -142,7 +145,7 @@ ReadPreferences(RestoreDefaults = false)
          DftValue := A_Space
       
       IF !(RestoreDefaults)
-         IniRead, %NormalVariable%, %Prefs%, %IniSection%, %IniKey%, %A_Space%
+         IniRead, %NormalVariable%, %PrefsFile%, %IniSection%, %IniKey%, %A_Space%
       
       IF DftVariable
       { 
@@ -151,6 +154,8 @@ ReadPreferences(RestoreDefaults = false)
             %NormalVariable% := %DftVariable%
       }
    }
+   
+   ValidatePreferences()
    
    ; Legacy support for old Preferences File
    IfNotEqual, Etitle,
@@ -165,110 +170,7 @@ ReadPreferences(RestoreDefaults = false)
       Etitle=      
    }
    
-   if Wlen is not integer
-   {
-      Wlen = %DftWlen%
-   }
-   
-   IfEqual, LearnLength,
-      LearnLength := Wlen +2
-   
-   if NumPresses not in 1,2
-      NumPresses = %DftNumPresses%
-   
-   If LearnMode not in On,Off
-      LearnMode = %DftLearnMode%
-   
-   If LearnCount is not Integer
-      LearnCount = %DftLearnCount%
-      
-   If LearnLength is not Integer
-   {
-      LearnLength := Wlen + 2
-   } else {
-            If ( LearnLength < ( Wlen + 1 ) )
-               LearnLength := Wlen + 1
-         }
-   
-   if DisabledAutoCompleteKeys contains N
-      NumKeyMethod = Off
-   
-   IfNotEqual, ArrowKeyMethod, Off
-      If DisabledAutoCompleteKeys contains E
-         If DisabledAutoCompleteKeys contains S
-            If DisabledAutoCompleteKeys contains T
-               If DisabledAutoCompleteKeys contains R
-                  ArrowKeyMethod = Off
-   
-   If ArrowKeyMethod not in First,Off,LastWord,LastPosition
-   {
-      ArrowKeyMethod = %DftArrowKeyMethod%       
-   }
-   
-   If DetectMouseClickMove not in On,Off
-      DetectMouseClickMove = %DftDetectMouseClickMove%
-   
-   If NoBackSpace not in On,Off
-      NoBackSpace = %DftNoBackSpace%
-      
-   If AutoSpace not in On,Off
-      AutoSpace = %DftAutoSpace%
-   
-   if SendMethod not in 1,2,3,1C,2C,3C,4C
-      SendMethod = %DftSendMethod%
-   
-   ;SendPlay does not work when not running as Administrator, switch to SendInput
-   If not A_IsAdmin
-   {
-      IfEqual, SendMethod, 1
-      {
-         SendMethod = 2
-      }
-      
-      else IfEqual, SendMethod, 1C
-            {
-               SendMethod = 2C   
-            }
-   }
-   
-   IfEqual, TerminatingCharacters,
-      TerminatingCharacters := DftTerminatingCharacters
-   
-   ParseTerminatingCharacters()
-   
-   if ListBoxOffset is not Integer
-      ListBoxOffset = %DftListBoxOffSet%
-      
-   if ListBoxFontFixed not in On,Off
-      ListBoxFontFixed = %DftListBoxFontFixed%
-   
-   If ListBoxFontSize is not Integer
-      ListBoxFontSize = %DftListBoxFontSize%
-   else {
-         IfLess, ListBoxFontSize, 2
-            ListBoxFontSize = 2
-      }
-   
-   if ListBoxCharacterWidth is not Integer
-      ListBoxCharacterWidth = %DftListBoxCharacterWidth%
-         
-   IfEqual, ListBoxCharacterWidth,
-      ListBoxCharacterWidth := Ceil(ListBoxFontSize * 0.8 )
-      
-   If ListBoxOpacity is not Integer
-      ListBoxOpacity = %DftListBoxOpacity%
-   else IfLess, ListBoxOpacity, 0
-            ListBoxOpacity = 0
-         else IfGreater, ListBoxOpacity, 255
-                  ListBoxOpacity = 255
-                  
-   If ListBoxRows is not Integer
-      ListBoxRows = %DftListBoxRows%
-   else IfLess, ListBoxRows, 3
-            ListBoxRows = 3
-         else IfGreater, ListBoxRows, 
-   
-   IF RestoreDefaults
+   IF ( RestoreDefaults || RestorePreferences )
       Return
    
    IfExist, %LastState%
@@ -278,7 +180,7 @@ ReadPreferences(RestoreDefaults = false)
    
    ConstructHelpStrings()
    
-   If !(FileExist(Prefs) || FileExist(Defaults))
+   If !(FileExist(PrefsFile) || FileExist(Defaults))
    {
       INI= 
                ( 
@@ -410,9 +312,120 @@ HelperWindowProgramExecutables=%DftHelperWindowProgramExecutables%
 ; ex: HelperWindowProgramTitles=Notepad|Internet Explorer
 HelperWindowProgramTitles=%DftHelperWindowProgramTitles%
                )
-               FileAppendDispatch(INI, Prefs, "UTF-16")
+               FileAppendDispatch(INI, PrefsFile, "UTF-16")
          }
          
+   Return
+}
+
+ValidatePreferences()
+{
+   
+   global
+   
+   if Wlen is not integer
+   {
+      Wlen := DftWlen
+   }
+   
+   IfEqual, LearnLength,
+      LearnLength := Wlen +2
+   
+   if NumPresses not in 1,2
+      NumPresses := DftNumPresses
+   
+   If LearnMode not in On,Off
+      LearnMode := DftLearnMode
+   
+   If LearnCount is not Integer
+      LearnCount := DftLearnCount
+      
+   If LearnLength is not Integer
+   {
+      LearnLength := Wlen + 2
+   } else {
+            If ( LearnLength < ( Wlen + 1 ) )
+               LearnLength := Wlen + 1
+         }
+   
+   if DisabledAutoCompleteKeys contains N
+      NumKeyMethod = Off
+   
+   IfNotEqual, ArrowKeyMethod, Off
+      If DisabledAutoCompleteKeys contains E
+         If DisabledAutoCompleteKeys contains S
+            If DisabledAutoCompleteKeys contains T
+               If DisabledAutoCompleteKeys contains R
+                  If DisabledAutoCompleteKeys contains U
+                     ArrowKeyMethod = Off
+   
+   If ArrowKeyMethod not in First,Off,LastWord,LastPosition
+   {
+      ArrowKeyMethod := DftArrowKeyMethod
+   }
+   
+   If DetectMouseClickMove not in On,Off
+      DetectMouseClickMove := DftDetectMouseClickMove
+   
+   If NoBackSpace not in On,Off
+      NoBackSpace := DftNoBackSpace
+      
+   If AutoSpace not in On,Off
+      AutoSpace := DftAutoSpace
+   
+   if SendMethod not in 1,2,3,1C,2C,3C,4C
+      SendMethod := DftSendMethod
+   
+   ;SendPlay does not work when not running as Administrator, switch to SendInput
+   If not A_IsAdmin
+   {
+      IfEqual, SendMethod, 1
+      {
+         SendMethod = 2
+      } else IfEqual, SendMethod, 1C
+            {
+               SendMethod = 2C   
+            }
+   }
+   
+   IfEqual, TerminatingCharacters,
+      TerminatingCharacters := DftTerminatingCharacters
+   
+   ParseTerminatingCharacters()
+   
+   if ListBoxOffset is not Integer
+      ListBoxOffset := DftListBoxOffSet
+      
+   if ListBoxFontFixed not in On,Off
+      ListBoxFontFixed := DftListBoxFontFixed
+   
+   If ListBoxFontSize is not Integer
+      ListBoxFontSize := DftListBoxFontSize
+   else {
+         IfLess, ListBoxFontSize, 2
+            ListBoxFontSize = 2
+      }
+   
+   if ListBoxCharacterWidth is not Integer
+      ListBoxCharacterWidth := DftListBoxCharacterWidth
+         
+   IfEqual, ListBoxCharacterWidth,
+      ListBoxCharacterWidth := Ceil(ListBoxFontSize * 0.8 )
+      
+   If ListBoxOpacity is not Integer
+      ListBoxOpacity := DftListBoxOpacity
+   else IfLess, ListBoxOpacity, 0
+            ListBoxOpacity = 0
+         else IfGreater, ListBoxOpacity, 255
+                  ListBoxOpacity = 255
+                  
+   If ListBoxRows is not Integer
+      ListBoxRows := DftListBoxRows
+   IfLess, ListBoxRows, 3
+      ListBoxRows = 3
+   else IfGreater, ListBoxRows, 30
+      ListBoxRows = 30
+            
    Return
 }
 
@@ -459,17 +472,9 @@ ParseTerminatingCharacters()
 
 SavePreferences()
 {
-   ;Settings that require a script restart
-   ;LearnMode
-   ; what does toggling learnmode and learncount do to the stored learned words in the SQL version?
-   
-   ;items that require re-init
-   InitializeHotKeys()
-   ;ArrowKeyMethod
-   ;DisabledAutoCompleteKeys
-   
-   ;hide/show listbox? disable/enable hotkeys?
-   ;hide listbox when menu gui open
+   ValidatePreferences()
+   ;do stuff
+   Return
 }
 
 ConstructHelpStrings()

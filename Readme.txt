@@ -69,7 +69,7 @@ Customizable features include:
 [*]List Box Rows to define the number of items to show in the list at once.[/*]
 [/LIST]
 [b]Unicode Support:[/b]
-Full (untested) for UTF-8 character set.
+Full support for UTF-8 character set.
 
 [b][url=https://github.com/ManiacDC/TypingAid/issues?q=is%3Aopen+is%3Aissue]Known Issues[/url][/b]
 
