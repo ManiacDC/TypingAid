@@ -433,6 +433,9 @@ CheckForCaretMove:
 InitializeHotKeys()
 {
    global
+   
+   EnabledKeyboardHotKeys =
+   
    IfEqual, ArrowKeyMethod, Off
    {
       Hotkey, $^Enter, Off

@@ -5,7 +5,6 @@ LaunchSettings:
 Menu, Tray, Disable, Settings
 InSettings := true
 ClearAllVars(True)
-ReadPreferences()
 Menu_OldValues := LearnCount . DelimiterChar . LearnLength . DelimiterChar . LearnMode
 ConstructGui()
 Return
@@ -24,7 +23,7 @@ ConstructGui()
    Global hListBoxCharacterWidth, hListBoxFontFixed, hListBoxFontOverride, hListBoxFontSize, hListBoxOffset, hListBoxOpacity, hListBoxRows
    Global Menu_LearnCount, Menu_LearnLength, Menu_LearnMode
    Global Menu_ArrowKeyMethodOptionsText, Menu_CaseCorrection, Menu_SendMethodOptionsCode, Menu_SendMethodC
-   Global MenuCtrlEnter, MenuCtrlSpace, MenuEnter, MenuNumberKeys, MenuRightArrow, MenuTab
+   Global Menu_CtrlEnter, Menu_CtrlSpace, Menu_Enter, Menu_NumberKeys, Menu_RightArrow, Menu_Tab
    Global MenuAdvGuiHeight, MenuGuiWidth
    Global Wlen
    Global WM_SETCURSOR, WM_MOUSEMOVE
@@ -211,12 +210,12 @@ ConstructGui()
    }
 
    MenuCheckmarkIndent := MenuTwoColEditWidth/3 + MenuEditIndentX
-   Gui, MenuGui:Add, Checkbox, x%MenuGroup1EditX% yp+%MenuTextMenuRowY% vMenuCtrlEnter  %Menu_CheckedE%, Ctrl + Enter
-   Gui, MenuGui:Add, Checkbox, xp%MenuCheckmarkIndent% yp vMenuTab        %Menu_CheckedT%, Tab
-   Gui, MenuGui:Add, Checkbox, xp%MenuCheckmarkIndent% yp vMenuRightArrow %Menu_CheckedR%, Right Arrow
-   Gui, MenuGui:Add, Checkbox, x%MenuGroup1EditX% yp+%MenuTextMenuRowY% vMenuCtrlSpace  %Menu_CheckedS%, Ctrl + Space
-   Gui, MenuGui:Add, Checkbox, xp%MenuCheckmarkIndent% yp vMenuNumberKeys %Menu_CheckedN%, Number Keys
-   Gui, MenuGui:Add, Checkbox, xp%MenuCheckmarkIndent% yp vMenuEnter %Menu_CheckedU%, Enter
+   Gui, MenuGui:Add, Checkbox, x%MenuGroup1EditX% yp+%MenuTextMenuRowY% vMenu_CtrlEnter  %Menu_CheckedE%, Ctrl + Enter
+   Gui, MenuGui:Add, Checkbox, xp%MenuCheckmarkIndent% yp vMenu_Tab        %Menu_CheckedT%, Tab
+   Gui, MenuGui:Add, Checkbox, xp%MenuCheckmarkIndent% yp vMenu_RightArrow %Menu_CheckedR%, Right Arrow
+   Gui, MenuGui:Add, Checkbox, x%MenuGroup1EditX% yp+%MenuTextMenuRowY% vMenu_CtrlSpace  %Menu_CheckedS%, Ctrl + Space
+   Gui, MenuGui:Add, Checkbox, xp%MenuCheckmarkIndent% yp vMenu_NumberKeys %Menu_CheckedN%, Number Keys
+   Gui, MenuGui:Add, Checkbox, xp%MenuCheckmarkIndent% yp vMenu_Enter %Menu_CheckedU%, Enter
 
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup1of2HelpX% y%MenuRowHelpY% vhDisabledAutoCompleteKeys gHelpMe, %MenuGuiHelpIcon%
@@ -328,7 +327,6 @@ ConstructGui()
    MenuRowEditY := MenuRowY + MenuEditIndentY
 
 
-
    Gui, MenuGui:Add, GroupBox, x%MenuGroup1BoxX% y%MenuRowY% w%MenuThreeColGroupWidth% h%MenuRowHeight% , List opacity
    Gui, MenuGui:Add, Edit, xp+10 yp+20 w%MenuThreeColEditWidth%, %ListBoxOpacity%
    Gui, MenuGui:Add, UpDown, xp+10 yp+20 w%MenuThreeColEditWidth% vListBoxOpacity Range0-255, %ListBoxOpacity%
@@ -349,7 +347,7 @@ ConstructGui()
    MenuFontList := "|" . MenuFontList . "|"
    sort, MenuFontList, D|
    If (MenuListBoxFont = "") or (MenuListBoxFont = " ")
-	  StringReplace, MenuFontList, MenuFontList, |Courier New|, |Courier New||
+	  StringReplace, MenuFontList, MenuFontList, |%ListBoxFontOverride%|, |%ListBoxFontOverride%||
    Gui, MenuGui:Add, DDL, x%MenuGroup3of3EditX% y%MenuRowEditY% r10 w200 vListBoxFontOverride, %MenuFontList%
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup3of3HelpX% y%MenuRowHelpY% vhListBoxFontOverride gHelpMe, %MenuGuiHelpIcon%
@@ -709,63 +707,59 @@ Return
 
 SaveSettings()
 {
+   Global Menu_ArrowKeyMethodOptionsText, Menu_CaseCorrection, Menu_SendMethodOptionsCode, Menu_SendMethodC
+   Global Menu_CtrlEnter, Menu_CtrlSpace, Menu_Enter, Menu_NumberKeys, Menu_RightArrow, Menu_Tab
+   Global ArrowKeyMethod, DisabledAutoCompleteKeys, NoBackSpace, SendMethod
+  
+   Loop, parse, Menu_SendMethodOptionsCode, | ; get sendmethod
+   {
+      If (Menu_SendMethodC = A_Index)
+         SendMethod:=A_LoopField
+   }
+   
+   DisabledAutoCompleteKeys=
+   If (Menu_CtrlEnter = 0)
+      DisabledAutoCompleteKeys .= "E"
+   If (Menu_Tab = 0)
+      DisabledAutoCompleteKeys .= "T"
+   If (Menu_CtrlSpace = 0)
+      DisabledAutoCompleteKeys .= "S"
+   If (Menu_RightArrow = 0)
+      DisabledAutoCompleteKeys .= "R"
+   If (Menu_NumberKeys = 0)
+      DisabledAutoCompleteKeys .= "N"
+   If (Menu_Enter = 0)
+      DisabledAutoCompleteKeys .= "U"
+
+   Loop, parse, Menu_ArrowKeyMethodOptionsText, |
+   {
+      StringSplit, Split, A_LoopField, -
+      Split1 := Trim(Split1)
+      If (ArrowKeyMethod = A_Index)
+      {
+         ArrowKeyMethod := Split1
+      }   
+   }
+
+   If (Menu_CaseCorrection = "on")
+      NoBackSpace=Off
+   Else If (Menu_CaseCorrection = "off")
+      NoBackSpace=On
    
    SavePreferences()
 }
 
 Save()
 {
+   global InSettings
    ValidatePreferences()
    InitializeHotKeys()
    DestroyListBox()
    InitializeListBox()
    
-   ;other settings that begin with Menu_?
-
-;Loop, parse, Menu_SendMethodOptionsCode, | ; get sendmethod
-;   If (Menu_SendMethodC = A_Index)
-;      SendMethod:=A_LoopField
-
-;DisabledAutoCompleteKeys=
-;If (MenuCtrlEnter = 0)
-;   DisabledAutoCompleteKeys .= "E"
-;If (MenuTab = 0)
-;   DisabledAutoCompleteKeys .= "T"
-;If (MenuCtrlSpace = 0)
-;   DisabledAutoCompleteKeys .= "S"
-;If (MenuRightArrow = 0)
-;   DisabledAutoCompleteKeys .= "R"
-;If (MenuNumberKeys = 0)
-;   DisabledAutoCompleteKeys .= "N"
-;If (MenuEnter = 0)
-;   DisabledAutoCompleteKeys .= "U"
-
-;If (Menu_CaseCorrection = "on")
-;	NoBackSpace=Off
-;Else If (Menu_CaseCorrection = "off")
-;	NoBackSpace=On
-
-;Loop, parse, Menu_ArrowKeyMethodOptionsText, |
-;   {
-;    StringSplit, Split, A_LoopField, -
-;    Split1 := Trim(Split1)
-;    If (ArrowKeyMethod = A_Index)
-;     {
-;      ArrowKeyMethod := Split1
-;     }   
-;   }
-   
-;SavePreferences()
-;WinClose, \TypingAid
-;Loop, TypingAid*.ahk
-;	{
-;	 Run %A_LoopFileName%
-;	 Break
-;	}
-;ExitApp
-InSettings := false
-Menu, Tray, Enable, Settings
-Return
+   InSettings := false
+   Menu, Tray, Enable, Settings
+   Return
 
 }   
 
@@ -933,20 +927,26 @@ Return
 ; copied from font explorer http://www.autohotkey.com/forum/viewtopic.php?t=57501&highlight=font
 Writer_enumFonts()
 {
-
-	hDC := DllCall("GetDC", "Uint", 0) 
-	DllCall("EnumFonts", "Uint", hDC, "Uint", 0, "Uint", RegisterCallback("Writer_enumFontsProc", "F"), "Uint", 0) 
-	DllCall("ReleaseDC", "Uint", 0, "Uint", hDC)
+   Writer_enumFontsProc(0, 0, 0, 0,"Clear")
+   hDC := DllCall("GetDC", "Uint", 0) 
+   DllCall("EnumFonts", "Uint", hDC, "Uint", 0, "Uint", RegisterCallback("Writer_enumFontsProc", "F"), "Uint", 0) 
+   DllCall("ReleaseDC", "Uint", 0, "Uint", hDC)
 	
-	return Writer_enumFontsProc(0, 0, 0, 0)
+   return Writer_enumFontsProc(0, 0, 0, 0, "ReturnS")
 }
 
-Writer_enumFontsProc(lplf, lptm, dwType, lpData)
+Writer_enumFontsProc(lplf, lptm, dwType, lpData, Action = 0)
 {
-	static s
+   static s
+   
+   ifEqual, Action, Clear
+   {
+      s=
+      return
+   }
 	
-	ifEqual, lplf, 0, return s
+   ifEqual, Action, ReturnS, return s
 
-	s .= DllCall("MulDiv", "Int", lplf+28, "Int",1, "Int", 1, "str") "|"
-	return 1
+   s .= DllCall("MulDiv", "Int", lplf+28, "Int",1, "Int", 1, "str") "|"
+   return 1
 }
