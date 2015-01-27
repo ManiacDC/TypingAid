@@ -287,7 +287,7 @@ CheckValid(Word)
       Return
    }
    
-   IF ( StrLen(Word) <= wlen ) ; don't add the word if it's not longer than the minimum length
+   IF ( StrLen(Word) <= Length ) ; don't add the word if it's not longer than the minimum length
    {
       Return
    }

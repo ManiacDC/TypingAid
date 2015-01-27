@@ -5,7 +5,8 @@ LaunchSettings:
 Menu, Tray, Disable, Settings
 InSettings := true
 ClearAllVars(True)
-Menu_OldValues := LearnCount . DelimiterChar . LearnLength . DelimiterChar . LearnMode
+Menu_RestartValues := LearnCount . DelimiterChar . LearnLength . DelimiterChar . LearnMode
+Menu_ChangedPrefs := Object()
 ConstructGui()
 Return
 
@@ -25,7 +26,7 @@ ConstructGui()
    Global Menu_ArrowKeyMethodOptionsText, Menu_CaseCorrection, Menu_SendMethodOptionsCode, Menu_SendMethodC
    Global Menu_CtrlEnter, Menu_CtrlSpace, Menu_Enter, Menu_NumberKeys, Menu_RightArrow, Menu_Tab
    Global MenuAdvGuiHeight, MenuGuiWidth
-   Global Wlen
+   Global Length
    Global WM_SETCURSOR, WM_MOUSEMOVE
    
    Menu_CaseCorrection=
@@ -106,7 +107,7 @@ ConstructGui()
    Menu_LearnModeOptions=|On|Off|
    StringReplace, Menu_LearnModeOptions, Menu_LearnModeOptions, |%LearnMode%|,|%LearnMode%||
    StringTrimLeft, Menu_LearnModeOptions, Menu_LearnModeOptions, 1
-   Gui, MenuGui:Add, DDL, x%MenuGroup1EditX% y%MenuRowEditY% r5 vMenu_LearnMode, %Menu_LearnModeOptions%
+   Gui, MenuGui:Add, DDL, x%MenuGroup1EditX% y%MenuRowEditY% r5 vMenu_LearnMode gEditValue, %Menu_LearnModeOptions%
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup1of3HelpX% y%MenuRowHelpY% vhLearnMode gHelpMe, %MenuGuiHelpIcon%
    Gui, MenuGui:Font, cBlack
@@ -116,7 +117,7 @@ ConstructGui()
    Menu_LearnLengthOptions=|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|
    StringReplace,  Menu_LearnLengthOptions, Menu_LearnLengthOptions, |%LearnLength%|,|%LearnLength%||
    StringTrimLeft, Menu_LearnLengthOptions, Menu_LearnLengthOptions, 1
-   Gui, MenuGui:Add, DDL, x%MenuGroup2of3EditX% y%MenuRowEditY% r5 vMenu_LearnLength, %Menu_LearnLengthOptions%
+   Gui, MenuGui:Add, DDL, x%MenuGroup2of3EditX% y%MenuRowEditY% r5 vMenu_LearnLength gEditValue, %Menu_LearnLengthOptions%
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup2of3HelpX% y%MenuRowHelpY% vhLearnLength gHelpMe, %MenuGuiHelpIcon%
    Gui, MenuGui:Font, cBlack
@@ -126,7 +127,7 @@ ConstructGui()
    Menu_LearnCountOptions=|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|
    StringReplace,  Menu_LearnCountOptions, Menu_LearnCountOptions, |%LearnCount%|,|%LearnCount%||
    StringTrimLeft, Menu_LearnCountOptions, Menu_LearnCountOptions, 1
-   Gui, MenuGui:Add, DDL, x%MenuGroup3of3EditX% y%MenuRowEditY% r5 vMenu_LearnCount, %Menu_LearnCountOptions%
+   Gui, MenuGui:Add, DDL, x%MenuGroup3of3EditX% y%MenuRowEditY% r5 vMenu_LearnCount gEditValue, %Menu_LearnCountOptions%
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup3of3HelpX% y%MenuRowHelpY% vhLearnCount gHelpMe, %MenuGuiHelpIcon%
    Gui, MenuGui:Font, cBlack
@@ -140,16 +141,16 @@ ConstructGui()
    Menu_ListBoxRowsOptions=|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|
    StringReplace,  Menu_ListBoxRowsOptions, Menu_ListBoxRowsOptions, |%ListBoxRows%|,|%ListBoxRows%||
    StringTrimLeft, Menu_ListBoxRowsOptions, Menu_ListBoxRowsOptions, 1
-   Gui, MenuGui:Add, DDL, x%MenuGroup1EditX% y%MenuRowEditY% r5 vListBoxRows, %Menu_ListBoxRowsOptions%
+   Gui, MenuGui:Add, DDL, x%MenuGroup1EditX% y%MenuRowEditY% r5 vListBoxRows gEditValue, %Menu_ListBoxRowsOptions%
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup1of3HelpX% y%MenuRowHelpY% vhListBoxRows gHelpMe, %MenuGuiHelpIcon%
    Gui, MenuGui:Font, cBlack
 
    Gui, MenuGui:Add, GroupBox, x%MenuGroup2of3BoxX% y%MenuRowY% w%MenuThreeColGroupWidth% h%MenuRowHeight% , Show wordlist after X characters
    Menu_LengthOptions=|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|
-   StringReplace,  Menu_LengthOptions, Menu_LengthOptions, |%Wlen%|,|%Wlen%||
+   StringReplace,  Menu_LengthOptions, Menu_LengthOptions, |%Length%|,|%Length%||
    StringTrimLeft, Menu_LengthOptions, Menu_LengthOptions, 1
-   Gui, MenuGui:Add, DDL, x%MenuGroup2of3EditX% y%MenuRowEditY% r5 vLength, %Menu_LengthOptions%
+   Gui, MenuGui:Add, DDL, x%MenuGroup2of3EditX% y%MenuRowEditY% r5 vLength gEditValue, %Menu_LengthOptions%
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup2of3HelpX% y%MenuRowHelpY% vhLength gHelpMe, %MenuGuiHelpIcon%
    Gui, MenuGui:Font, cBlack
@@ -170,7 +171,7 @@ ConstructGui()
 	  If (A_Index = Menu_SendCount)
 		 Menu_SendMethodOptions .= "|"
    }   
-   Gui, MenuGui:Add, DDL, x%MenuGroup3of3EditX% y%MenuRowEditY% w%MenuThreeColEditWidth% r5 vMenu_SendMethodC altsubmit, %Menu_SendMethodOptions%
+   Gui, MenuGui:Add, DDL, x%MenuGroup3of3EditX% y%MenuRowEditY% w%MenuThreeColEditWidth% r5 vMenu_SendMethodC gEditValue altsubmit, %Menu_SendMethodOptions%
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup3of3HelpX% y%MenuRowHelpY% vhSendMethod gHelpMe, %MenuGuiHelpIcon%
    Gui, MenuGui:Font, cBlack
@@ -210,12 +211,12 @@ ConstructGui()
    }
 
    MenuCheckmarkIndent := MenuTwoColEditWidth/3 + MenuEditIndentX
-   Gui, MenuGui:Add, Checkbox, x%MenuGroup1EditX% yp+%MenuTextMenuRowY% vMenu_CtrlEnter  %Menu_CheckedE%, Ctrl + Enter
-   Gui, MenuGui:Add, Checkbox, xp%MenuCheckmarkIndent% yp vMenu_Tab        %Menu_CheckedT%, Tab
-   Gui, MenuGui:Add, Checkbox, xp%MenuCheckmarkIndent% yp vMenu_RightArrow %Menu_CheckedR%, Right Arrow
-   Gui, MenuGui:Add, Checkbox, x%MenuGroup1EditX% yp+%MenuTextMenuRowY% vMenu_CtrlSpace  %Menu_CheckedS%, Ctrl + Space
-   Gui, MenuGui:Add, Checkbox, xp%MenuCheckmarkIndent% yp vMenu_NumberKeys %Menu_CheckedN%, Number Keys
-   Gui, MenuGui:Add, Checkbox, xp%MenuCheckmarkIndent% yp vMenu_Enter %Menu_CheckedU%, Enter
+   Gui, MenuGui:Add, Checkbox, x%MenuGroup1EditX% yp+%MenuTextMenuRowY% vMenu_CtrlEnter gEditValue %Menu_CheckedE%, Ctrl + Enter
+   Gui, MenuGui:Add, Checkbox, xp%MenuCheckmarkIndent% yp vMenu_Tab gEditValue %Menu_CheckedT%, Tab
+   Gui, MenuGui:Add, Checkbox, xp%MenuCheckmarkIndent% yp vMenu_RightArrow gEditValue %Menu_CheckedR%, Right Arrow
+   Gui, MenuGui:Add, Checkbox, x%MenuGroup1EditX% yp+%MenuTextMenuRowY% vMenu_CtrlSpace gEditValue %Menu_CheckedS%, Ctrl + Space
+   Gui, MenuGui:Add, Checkbox, xp%MenuCheckmarkIndent% yp vMenu_NumberKeys gEditValue %Menu_CheckedN%, Number Keys
+   Gui, MenuGui:Add, Checkbox, xp%MenuCheckmarkIndent% yp vMenu_Enter gEditValue %Menu_CheckedU%, Enter
 
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup1of2HelpX% y%MenuRowHelpY% vhDisabledAutoCompleteKeys gHelpMe, %MenuGuiHelpIcon%
@@ -235,7 +236,7 @@ ConstructGui()
 	  }   
    }
 
-   Gui, MenuGui:Add, DDL, x%MenuGroup2of2EditX% y%MenuRowEditY% w%MenuTwoColEditWidth% r5 vArrowKeyMethod altsubmit, %Menu_ArrowKeyMethodOptions%
+   Gui, MenuGui:Add, DDL, x%MenuGroup2of2EditX% y%MenuRowEditY% w%MenuTwoColEditWidth% r5 vArrowKeyMethod gEditValue altsubmit, %Menu_ArrowKeyMethodOptions%
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup2of2HelpX% y%MenuRowHelpY% vhArrowKeyMethod gHelpMe, %MenuGuiHelpIcon%
    Gui, MenuGui:Font, cBlack
@@ -253,7 +254,7 @@ ConstructGui()
 	  Menu_CaseCorrection=On
    StringReplace,  Menu_CaseCorrectionOptions, Menu_CaseCorrectionOptions, |%Menu_CaseCorrection%|,|%Menu_CaseCorrection%||
    StringTrimLeft, Menu_CaseCorrectionOptions, Menu_CaseCorrectionOptions, 1
-   Gui, MenuGui:Add, DDL, x%MenuGroup1EditX% y%MenuRowEditY% r5 vMenu_CaseCorrection, %Menu_CaseCorrectionOptions%
+   Gui, MenuGui:Add, DDL, x%MenuGroup1EditX% y%MenuRowEditY% r5 vMenu_CaseCorrection gEditValue, %Menu_CaseCorrectionOptions%
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup1of3HelpX% y%MenuRowHelpY% vhNoBackSpace gHelpMe, %MenuGuiHelpIcon%
    Gui, MenuGui:Font, cBlack
@@ -263,7 +264,7 @@ ConstructGui()
    Menu_DetectMouseClickMoveOptions=|On|Off|
    StringReplace,  Menu_DetectMouseClickMoveOptions, Menu_DetectMouseClickMoveOptions, |%DetectMouseClickMove%|,|%DetectMouseClickMove%||
    StringTrimLeft, Menu_DetectMouseClickMoveOptions, Menu_DetectMouseClickMoveOptions, 1
-   Gui, MenuGui:Add, DDL, x%MenuGroup2of3EditX% y%MenuRowEditY% r5 vDetectMouseClickMove, %Menu_DetectMouseClickMoveOptions%
+   Gui, MenuGui:Add, DDL, x%MenuGroup2of3EditX% y%MenuRowEditY% r5 vDetectMouseClickMove gEditValue, %Menu_DetectMouseClickMoveOptions%
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup2of3HelpX% y%MenuRowHelpY% vhDetectMouseClickMove gHelpMe, %MenuGuiHelpIcon%
    Gui, MenuGui:Font, cBlack
@@ -272,7 +273,7 @@ ConstructGui()
    Menu_AutoSpaceOptions=|On|Off|
    StringReplace,  Menu_AutoSpaceOptions, Menu_AutoSpaceOptions, |%AutoSpace%|,|%AutoSpace%||
    StringTrimLeft, Menu_AutoSpaceOptions, Menu_AutoSpaceOptions, 1
-   Gui, MenuGui:Add, DDL, x%MenuGroup3of3EditX% y%MenuRowEditY% r5 vAutoSpace, %Menu_AutoSpaceOptions%
+   Gui, MenuGui:Add, DDL, x%MenuGroup3of3EditX% y%MenuRowEditY% r5 vAutoSpace gEditValue, %Menu_AutoSpaceOptions%
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup3of3HelpX% y%MenuRowHelpY% vhAutoSpace gHelpMe, %MenuGuiHelpIcon%
    Gui, MenuGui:Font, cBlack
@@ -284,7 +285,7 @@ ConstructGui()
    MenuRowHelpY := MenuRowY - MenuHelpIndentY
    MenuRowEditY := MenuRowY + MenuEditIndentY
 
-   Gui, MenuGui:Add, Text, x%MenuGroup1BoxX%           y%MenuRowY%     w%MenuOneColGroupWidth% , *Changing these values requires a restart of TypingAid
+   Gui, MenuGui:Add, Text, x%MenuGroup1BoxX% y%MenuRowY% w%MenuOneColGroupWidth% , *Changing these values requires a restart of TypingAid
    
 
    Gui, MenuGui:Tab, 2 ; listbox ---------------------------------------------------------
@@ -299,7 +300,7 @@ ConstructGui()
    Menu_ListBoxOffsetOptions=|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|
    StringReplace,  Menu_ListBoxOffsetOptions, Menu_ListBoxOffsetOptions, |%ListBoxOffset%|,|%ListBoxOffset%||
    StringTrimLeft, Menu_ListBoxOffsetOptions, Menu_ListBoxOffsetOptions, 1
-   Gui, MenuGui:Add, DDL, x%MenuGroup1EditX% y%MenuRowEditY% r5 vListBoxOffset, %Menu_ListBoxOffsetOptions%
+   Gui, MenuGui:Add, DDL, x%MenuGroup1EditX% y%MenuRowEditY% r5 vListBoxOffset gEditValue, %Menu_ListBoxOffsetOptions%
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup1of3HelpX% y%MenuRowHelpY% vhListBoxOffset gHelpMe, %MenuGuiHelpIcon%
    Gui, MenuGui:Font, cBlack
@@ -308,7 +309,7 @@ ConstructGui()
    Menu_ListBoxFontFixedOptions=|On|Off|
    StringReplace,  Menu_ListBoxFontFixedOptions, Menu_ListBoxFontFixedOptions, |%ListBoxFontFixed%|,|%ListBoxFontFixed%||
    StringTrimLeft, Menu_ListBoxFontFixedOptions, Menu_ListBoxFontFixedOptions, 1
-   Gui, MenuGui:Add, DDL, x%MenuGroup2of3EditX% y%MenuRowEditY% r5 vListBoxFontFixed, %Menu_ListBoxFontFixedOptions%
+   Gui, MenuGui:Add, DDL, x%MenuGroup2of3EditX% y%MenuRowEditY% r5 vListBoxFontFixed gEditValue, %Menu_ListBoxFontFixedOptions%
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup2of3HelpX% y%MenuRowHelpY% vhListBoxFontFixed gHelpMe, %MenuGuiHelpIcon%
    Gui, MenuGui:Font, cBlack
@@ -317,7 +318,7 @@ ConstructGui()
    Menu_ListBoxFontSizeOptions=|8|9|10|11|12|13|14|15|16|17|18|19|20|
    StringReplace,  Menu_ListBoxFontSizeOptions, Menu_ListBoxFontSizeOptions, |%ListBoxFontSize%|,|%ListBoxFontSize%||
    StringTrimLeft, Menu_ListBoxFontSizeOptions, Menu_ListBoxFontSizeOptions, 1
-   Gui, MenuGui:Add, DDL, x%MenuGroup3of3EditX% y%MenuRowEditY% r5 vListBoxFontSize, %Menu_ListBoxFontSizeOptions%
+   Gui, MenuGui:Add, DDL, x%MenuGroup3of3EditX% y%MenuRowEditY% r5 vListBoxFontSize gEditValue, %Menu_ListBoxFontSizeOptions%
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup3of3HelpX% y%MenuRowHelpY% vhListBoxFontSize gHelpMe, %MenuGuiHelpIcon%
    Gui, MenuGui:Font, cBlack
@@ -329,7 +330,7 @@ ConstructGui()
 
    Gui, MenuGui:Add, GroupBox, x%MenuGroup1BoxX% y%MenuRowY% w%MenuThreeColGroupWidth% h%MenuRowHeight% , List opacity
    Gui, MenuGui:Add, Edit, xp+10 yp+20 w%MenuThreeColEditWidth%, %ListBoxOpacity%
-   Gui, MenuGui:Add, UpDown, xp+10 yp+20 w%MenuThreeColEditWidth% vListBoxOpacity Range0-255, %ListBoxOpacity%
+   Gui, MenuGui:Add, UpDown, xp+10 yp+20 w%MenuThreeColEditWidth% vListBoxOpacity gEditValue Range0-255, %ListBoxOpacity%
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup1of3HelpX% y%MenuRowHelpY% vhListBoxOpacity gHelpMe, %MenuGuiHelpIcon%
    Gui, MenuGui:Font, cBlack
@@ -338,7 +339,7 @@ ConstructGui()
    Menu_ListBoxCharacterWidthOptions=||5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|
    StringReplace,  Menu_ListBoxCharacterWidthOptions, Menu_ListBoxCharacterWidthOptions, |%ListBoxCharacterWidth%|,|%ListBoxCharacterWidth%||
    StringTrimLeft, Menu_ListBoxCharacterWidthOptions, Menu_ListBoxCharacterWidthOptions, 1
-   Gui, MenuGui:Add, DDL, x%MenuGroup2of3EditX% y%MenuRowEditY% r5 vListBoxCharacterWidth, %Menu_ListBoxCharacterWidthOptions%
+   Gui, MenuGui:Add, DDL, x%MenuGroup2of3EditX% y%MenuRowEditY% r5 vListBoxCharacterWidth gEditValue, %Menu_ListBoxCharacterWidthOptions%
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup2of3HelpX% y%MenuRowHelpY% vhListBoxCharacterWidth gHelpMe, %MenuGuiHelpIcon%
    Gui, MenuGui:Font, cBlack
@@ -348,7 +349,7 @@ ConstructGui()
    sort, MenuFontList, D|
    If (MenuListBoxFont = "") or (MenuListBoxFont = " ")
 	  StringReplace, MenuFontList, MenuFontList, |%ListBoxFontOverride%|, |%ListBoxFontOverride%||
-   Gui, MenuGui:Add, DDL, x%MenuGroup3of3EditX% y%MenuRowEditY% r10 w200 vListBoxFontOverride, %MenuFontList%
+   Gui, MenuGui:Add, DDL, x%MenuGroup3of3EditX% y%MenuRowEditY% r10 w200 vListBoxFontOverride gEditValue, %MenuFontList%
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup3of3HelpX% y%MenuRowHelpY% vhListBoxFontOverride gHelpMe, %MenuGuiHelpIcon%
    Gui, MenuGui:Font, cBlack
@@ -366,7 +367,7 @@ ConstructGui()
    MenuRowEditY := MenuRowY + MenuEditIndentY
 
    Gui, MenuGui:Add, GroupBox, x%MenuGroup1BoxX% y%MenuRowY% w%MenuOneColGroupWidth% h%MenuRowHeight% , Window titles you want TypingAid enabled for
-   Gui, MenuGui:Add, Edit, x%MenuGroup1EditX% y%MenuRowEditY% w%MenuOneColEditWidthEdit% vIncludeProgramTitles, %IncludeProgramTitles%
+   Gui, MenuGui:Add, Edit, x%MenuGroup1EditX% y%MenuRowEditY% w%MenuOneColEditWidthEdit% vIncludeProgramTitles gEditValue, %IncludeProgramTitles%
    Gui, MenuGui:Add, Button, x%MenuOneColEditButton% yp w130 gSetEnableTitles, Edit
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup1of1HelpX% y%MenuRowHelpY% vhIncludeProgramTitles gHelpMe, %MenuGuiHelpIcon%
@@ -377,7 +378,7 @@ ConstructGui()
    MenuRowEditY := MenuRowY + MenuEditIndentY
 
    Gui, MenuGui:Add, GroupBox, x%MenuGroup1BoxX% y%MenuRowY% w%MenuOneColGroupWidth% h%MenuRowHeight% , Window titles you want TypingAid disabled for
-   Gui, MenuGui:Add, Edit, x%MenuGroup1EditX% y%MenuRowEditY% w%MenuOneColEditWidthEdit% vExcludeProgramTitles, %ExcludeProgramTitles%
+   Gui, MenuGui:Add, Edit, x%MenuGroup1EditX% y%MenuRowEditY% w%MenuOneColEditWidthEdit% vExcludeProgramTitles gEditValue, %ExcludeProgramTitles%
    Gui, MenuGui:Add, Button, x%MenuOneColEditButton% yp w130 gSetDisableTitles, Edit
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup1of1HelpX% y%MenuRowHelpY% vhExcludeProgramTitles gHelpMe, %MenuGuiHelpIcon%
@@ -388,7 +389,7 @@ ConstructGui()
    MenuRowEditY := MenuRowY + MenuEditIndentY
 
    Gui, MenuGui:Add, GroupBox, x%MenuGroup1BoxX% y%MenuRowY% w%MenuOneColGroupWidth% h%MenuRowHeight% , Processes you want TypingAid enabled for
-   Gui, MenuGui:Add, Edit, x%MenuGroup1EditX% y%MenuRowEditY% w%MenuOneColEditWidthEdit% vIncludeProgramExecutables, %IncludeProgramExecutables%
+   Gui, MenuGui:Add, Edit, x%MenuGroup1EditX% y%MenuRowEditY% w%MenuOneColEditWidthEdit% vIncludeProgramExecutables gEditValue, %IncludeProgramExecutables%
    Gui, MenuGui:Add, Button, x%MenuOneColEditButton% yp w130 gSetEnableProcess, Edit
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup1of1HelpX% y%MenuRowHelpY% vhIncludeProgramExecutables gHelpMe, %MenuGuiHelpIcon%
@@ -399,7 +400,7 @@ ConstructGui()
    MenuRowEditY := MenuRowY + MenuEditIndentY
 
    Gui, MenuGui:Add, GroupBox, x%MenuGroup1BoxX% y%MenuRowY% w%MenuOneColGroupWidth% h%MenuRowHeight% , Processes you want TypingAid disabled for
-   Gui, MenuGui:Add, Edit, x%MenuGroup1EditX% y%MenuRowEditY% w%MenuOneColEditWidthEdit% vExcludeProgramExecutables, %ExcludeProgramExecutables%
+   Gui, MenuGui:Add, Edit, x%MenuGroup1EditX% y%MenuRowEditY% w%MenuOneColEditWidthEdit% vExcludeProgramExecutables gEditValue, %ExcludeProgramExecutables%
    Gui, MenuGui:Add, Button, x%MenuOneColEditButton% yp w130 gSetDisableProcess, Edit
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup1of1HelpX% y%MenuRowHelpY% vhExcludeProgramExecutables gHelpMe, %MenuGuiHelpIcon%
@@ -412,7 +413,7 @@ ConstructGui()
    ;HelperWindowProgramTitles
 
    Gui, MenuGui:Add, GroupBox, x%MenuGroup1BoxX% y%MenuRowY% w%MenuOneColGroupWidth% h%MenuRowHeight% , Window titles you want the helper window enabled for
-   Gui, MenuGui:Add, Edit, x%MenuGroup1EditX% y%MenuRowEditY% w%MenuOneColEditWidthEdit% vHelperWindowProgramTitles, %HelperWindowProgramTitles%
+   Gui, MenuGui:Add, Edit, x%MenuGroup1EditX% y%MenuRowEditY% w%MenuOneColEditWidthEdit% vHelperWindowProgramTitles gEditValue, %HelperWindowProgramTitles%
    Gui, MenuGui:Add, Button, x%MenuOneColEditButton% yp w130 gSetHelpTitles, Edit
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup1of1HelpX% y%MenuRowHelpY% vhHelperWindowProgramTitles gHelpMe, %MenuGuiHelpIcon%
@@ -425,7 +426,7 @@ ConstructGui()
    ;HelperWindowProgramExecutables
 
    Gui, MenuGui:Add, GroupBox, x%MenuGroup1BoxX% y%MenuRowY% w%MenuOneColGroupWidth% h%MenuRowHeight% , Processes you want the helper window enabled for
-   Gui, MenuGui:Add, Edit, x%MenuGroup1EditX% y%MenuRowEditY% w%MenuOneColEditWidthEdit% vHelperWindowProgramExecutables, %HelperWindowProgramExecutables%
+   Gui, MenuGui:Add, Edit, x%MenuGroup1EditX% y%MenuRowEditY% w%MenuOneColEditWidthEdit% vHelperWindowProgramExecutables gEditValue, %HelperWindowProgramExecutables%
    Gui, MenuGui:Add, Button, x%MenuOneColEditButton% yp w130 gSetHelpProcess, Edit
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup1of1HelpX% y%MenuRowHelpY% vhHelperWindowProgramExecutables gHelpMe, %MenuGuiHelpIcon%
@@ -440,7 +441,7 @@ ConstructGui()
    MenuRowEditY := MenuRowY + MenuEditIndentY
 
    Gui, MenuGui:Add, GroupBox, x%MenuGroup1BoxX% y%MenuRowY% w%MenuOneColGroupWidth% h%MenuRowHeight% , Terminating Characters (see http://www.autohotkey.com/docs/KeyList.htm)
-   Gui, MenuGui:Add, Edit, x%MenuGroup1EditX% y%MenuRowEditY% w%MenuOneColEditWidth% vTerminatingCharacters, %TerminatingCharacters%
+   Gui, MenuGui:Add, Edit, x%MenuGroup1EditX% y%MenuRowEditY% w%MenuOneColEditWidth% vTerminatingCharacters gEditValue, %TerminatingCharacters%
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup1of1HelpX% y%MenuRowHelpY% vhTerminatingCharacters gHelpMe, %MenuGuiHelpIcon%
    Gui, MenuGui:Font, cBlack
@@ -450,7 +451,7 @@ ConstructGui()
    MenuRowHelpY := MenuRowY - MenuHelpIndentY
 
    Gui, MenuGui:Add, GroupBox, x%MenuGroup1BoxX% y%MenuRowY% w%MenuOneColGroupWidth% h%MenuRowHeight% , Force New Word Characters (comma separated)
-   Gui, MenuGui:Add, Edit, x%MenuGroup1EditX% y%MenuRowEditY% w%MenuOneColEditWidth% vForceNewWordCharacters, %ForceNewWordCharacters%
+   Gui, MenuGui:Add, Edit, x%MenuGroup1EditX% y%MenuRowEditY% w%MenuOneColEditWidth% vForceNewWordCharacters gEditValue, %ForceNewWordCharacters%
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup1of1HelpX% y%MenuRowHelpY% vhForceNewWordCharacters gHelpMe, %MenuGuiHelpIcon%
    Gui, MenuGui:Font, cBlack
@@ -645,7 +646,7 @@ Return
 Restore:
 ; If Learn settings have changed, we need to reload the script. Otherwise, we can just go through the normal save process.
 ReadPreferences("RestoreDefaults")
-IF (Menu_OldValues <> (LearnCount . DelimiterChar . LearnLength . DelimiterChar . LearnMode))
+IF (Menu_RestartValues <> (LearnCount . DelimiterChar . LearnLength . DelimiterChar . LearnMode))
 {
    MsgBox, 1, Restore Defaults, Restoring Defaults will change Learn settings.`r`nChanging Learn settings requires a script restart. Continue?
    IfMsgBox, Cancel
@@ -686,8 +687,12 @@ Return
 
 Save:
 ; should only save preferences.ini if different from defaults
+Menu_ChangedPrefs["ArrowKeyMethod"] := ArrowKeyMethod
+Menu_ChangedPrefs["DisabledAutoCompleteKeys"] := DisabledAutoCompleteKeys
+Menu_ChangedPrefs["NoBackSpace"] := NoBackSpace
+Menu_ChangedPrefs["SendMethod"] := SendMethod
 Gui, MenuGui:Submit
-IF (Menu_OldValues <> (Menu_LearnCount . DelimiterChar . Menu_LearnLength . DelimiterChar . Menu_LearnMode))
+IF (Menu_RestartValues <> (Menu_LearnCount . DelimiterChar . Menu_LearnLength . DelimiterChar . Menu_LearnMode))
 {   
    MsgBox, 1, Save, Saving will change Learn settings.`r`nChanging Learn settings requires a script restart. Continue?
    IfMsgBox, Cancel
@@ -710,6 +715,9 @@ SaveSettings()
    Global Menu_ArrowKeyMethodOptionsText, Menu_CaseCorrection, Menu_SendMethodOptionsCode, Menu_SendMethodC
    Global Menu_CtrlEnter, Menu_CtrlSpace, Menu_Enter, Menu_NumberKeys, Menu_RightArrow, Menu_Tab
    Global ArrowKeyMethod, DisabledAutoCompleteKeys, NoBackSpace, SendMethod
+   Global Menu_ChangedPrefs
+   
+   Menu_PrefsToSave := Object()
   
    Loop, parse, Menu_SendMethodOptionsCode, | ; get sendmethod
    {
@@ -746,7 +754,16 @@ SaveSettings()
    Else If (Menu_CaseCorrection = "off")
       NoBackSpace=On
    
-   SavePreferences()
+   ; Determine list of preferences to save
+   For key, value in Menu_ChangedPrefs
+   {
+      IF (%key% <> value)
+      {
+         Menu_PrefsToSave.Insert(key)
+      }
+   }
+
+   SavePreferences(Menu_PrefsToSave)
 }
 
 Save()
@@ -762,6 +779,13 @@ Save()
    Return
 
 }   
+
+EditValue:
+IF (A_GuiControl && !(SubStr(A_GuiControl ,1 ,5) == "Menu_") )
+{
+   Menu_ChangedPrefs[A_GuiControl] := %A_GuiControl%
+}
+Return
 
 HelpMe:
 Loop, Parse, %A_GuiControl%,`r`n

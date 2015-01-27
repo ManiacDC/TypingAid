@@ -263,7 +263,7 @@ ProcessKey(chr,EndKey)
                 }
                 
    ;Wait till minimum letters 
-   IF ( StrLen(Word) < wlen )
+   IF ( StrLen(Word) < Length )
    {
       CloseListBox()
       Return

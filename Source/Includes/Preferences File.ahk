@@ -44,7 +44,7 @@ ReadPreferences(RestoreDefaults = false,RestorePreferences = false)
    Local DftIncludeProgramTitles
    Local DftExcludeProgramExecutables
    Local DftExcludeProgramTitles
-   ;DftWlen should be global so it works in ValidatePreferences
+   ;DftLength should be global so it works in ValidatePreferences
    ;DftNumPresses should be global so it works in ValidatePreferences
    ;DftLearnMode should be global so it works in ValidatePreferences
    ;DftLearnCount should be global so it works in ValidatePreferences
@@ -100,7 +100,7 @@ ReadPreferences(RestoreDefaults = false,RestorePreferences = false)
       DftExcludeProgramExecutables,ExcludeProgramExecutables,ExcludePrograms,ExcludeProgramExecutables,%SpaceVar%
       DftExcludeProgramTitles,ExcludeProgramTitles,ExcludePrograms,ExcludeProgramTitles,%SpaceVar%
       ,Title,Settings,Title,%SpaceVar%
-      DftWlen,Wlen,Settings,Length,3
+      DftLength,Length,Settings,Length,3
       DftNumPresses,NumPresses,Settings,NumPresses,1
       DftLearnMode,LearnMode,Settings,LearnMode,On
       DftLearnCount,LearnCount,Settings,LearnCount,5
@@ -211,7 +211,7 @@ ExcludeProgramTitles=%DftExcludeProgramTitles%
 [Settings]
 ;
 %hLength%
-Length=%DftWlen%
+Length=%DftLength%
 ;
 ;
 %hNumPresses%
@@ -323,13 +323,13 @@ ValidatePreferences()
    
    global
    
-   if Wlen is not integer
+   if Length is not integer
    {
-      Wlen := DftWlen
+      Length := DftLength
    }
    
    IfEqual, LearnLength,
-      LearnLength := Wlen +2
+      LearnLength := Length +2
    
    if NumPresses not in 1,2
       NumPresses := DftNumPresses
@@ -342,10 +342,10 @@ ValidatePreferences()
       
    If LearnLength is not Integer
    {
-      LearnLength := Wlen + 2
+      LearnLength := Length + 2
    } else {
-            If ( LearnLength < ( Wlen + 1 ) )
-               LearnLength := Wlen + 1
+            If ( LearnLength < ( Length + 1 ) )
+               LearnLength := Length + 1
          }
    
    if DisabledAutoCompleteKeys contains N
@@ -470,9 +470,23 @@ ParseTerminatingCharacters()
    TerminatingEndKeys := TempEndKeys
 }
 
-SavePreferences()
+SavePreferences(ByRef PrefsToSave)
 {
-   ValidatePreferences()
+   
+   
+   ;for index, element in Menu_PrefsToSave
+   ;{
+   ;   Menu_PrefsToSavez%index% := element . " | " . %element% . " | " . Menu_ChangedPrefs[element]
+   ;}
+   
+   ;Loop, % Menu_PrefsToSave._MaxIndex()
+   ;{
+   ;   Menu_PrefsToSavez%A_LoopField% := Menu_PrefsToSave[A_LoopField]
+   ;}
+   ;ListVars
+   ;Pause
+   
+   ;ValidatePreferences()? what about the fact this changes Terminating Characters
    ;do stuff
    Return
 }
