@@ -23,7 +23,7 @@ ConstructGui()
    Global ListBoxCharacterWidth, ListBoxFontFixed, ListBoxFontOverride, ListBoxFontSize, ListBoxOffset, ListBoxOpacity, ListBoxRows
    Global hListBoxCharacterWidth, hListBoxFontFixed, hListBoxFontOverride, hListBoxFontSize, hListBoxOffset, hListBoxOpacity, hListBoxRows
    Global Menu_LearnCount, Menu_LearnLength, Menu_LearnMode
-   Global Menu_ArrowKeyMethodOptionsText, Menu_CaseCorrection, Menu_SendMethodOptionsCode, Menu_SendMethodC
+   Global Menu_ArrowKeyMethodOptionsText, Menu_CaseCorrection, Menu_ListBoxOpacityUpDown, Menu_SendMethodOptionsCode, Menu_SendMethodC
    Global Menu_CtrlEnter, Menu_CtrlSpace, Menu_Enter, Menu_NumberKeys, Menu_RightArrow, Menu_Tab
    Global MenuAdvGuiHeight, MenuGuiWidth
    Global Length
@@ -329,8 +329,8 @@ ConstructGui()
 
 
    Gui, MenuGui:Add, GroupBox, x%MenuGroup1BoxX% y%MenuRowY% w%MenuThreeColGroupWidth% h%MenuRowHeight% , List opacity
-   Gui, MenuGui:Add, Edit, xp+10 yp+20 w%MenuThreeColEditWidth%, %ListBoxOpacity%
-   Gui, MenuGui:Add, UpDown, xp+10 yp+20 w%MenuThreeColEditWidth% vListBoxOpacity gEditValue Range0-255, %ListBoxOpacity%
+   Gui, MenuGui:Add, Edit, xp+10 yp+20 w%MenuThreeColEditWidth% vListBoxOpacity gEditValue, %ListBoxOpacity%
+   Gui, MenuGui:Add, UpDown, xp+10 yp+20 w%MenuThreeColEditWidth% vMenu_ListBoxOpacityUpDown Range0-255, %ListBoxOpacity%
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup1of3HelpX% y%MenuRowHelpY% vhListBoxOpacity gHelpMe, %MenuGuiHelpIcon%
    Gui, MenuGui:Font, cBlack
@@ -562,31 +562,35 @@ Full (untested) for UTF-8 character set.
 }
 
 SetEnableTitles:
-GetList(1,0,IncludeProgramTitles)
+GetList("IncludeProgramTitles",0,IncludeProgramTitles)
 Return
 
 SetDisableTitles:
-GetList(2,0,ExcludeProgramTitles)
+GetList("ExcludeProgramTitles",0,ExcludeProgramTitles)
 Return
 
 SetEnableProcess:
-GetList(3,1,IncludeProgramExecutables)
+GetList("IncludeProgramExecutables",1,IncludeProgramExecutables)
 Return
 
 SetDisableProcess:
-GetList(4,1,ExcludeProgramExecutables)
+GetList("ExcludeProgramExecutables",1,ExcludeProgramExecutables)
 Return
 
 SetHelpTitles:
-GetList(5,0,HelperWindowProgramTitles)
+GetList("HelperWindowProgramTitles",0,HelperWindowProgramTitles)
 Return
 
 SetHelpProcess:
-GetList(6,1,HelperWindowProgramExecutables)
+GetList("HelperWindowProgramExecutables",1,HelperWindowProgramExecutables)
 Return
 
 GetList(TitleType,GetExe, ByRef ActiveList)
 {
+   global MenuTitleType
+   global InProcessList
+   InProcessList := true
+   MenuTitleType := TitleType
    If (GetExe =1)
    {
 	  WinGet, id, list,,, Program Manager
@@ -677,7 +681,7 @@ IF (Menu_RestartValues <> (LearnCount . DelimiterChar . LearnLength . DelimiterC
 }
 return
 
-Esc::
+MenuGuiGuiEscape:
 MenuGuiGuiClose:
 Cancel:
 Gui, MenuGui:Destroy
@@ -692,6 +696,7 @@ Menu_ChangedPrefs["DisabledAutoCompleteKeys"] := DisabledAutoCompleteKeys
 Menu_ChangedPrefs["NoBackSpace"] := NoBackSpace
 Menu_ChangedPrefs["SendMethod"] := SendMethod
 Gui, MenuGui:Submit
+ListBoxOpacity := Menu_ListBoxOpacityUpDown
 IF (Menu_RestartValues <> (Menu_LearnCount . DelimiterChar . Menu_LearnLength . DelimiterChar . Menu_LearnMode))
 {   
    MsgBox, 1, Save, Saving will change Learn settings.`r`nChanging Learn settings requires a script restart. Continue?
@@ -712,10 +717,12 @@ Return
 
 SaveSettings()
 {
-   Global Menu_ArrowKeyMethodOptionsText, Menu_CaseCorrection, Menu_SendMethodOptionsCode, Menu_SendMethodC
-   Global Menu_CtrlEnter, Menu_CtrlSpace, Menu_Enter, Menu_NumberKeys, Menu_RightArrow, Menu_Tab
-   Global ArrowKeyMethod, DisabledAutoCompleteKeys, NoBackSpace, SendMethod
-   Global Menu_ChangedPrefs
+   Global
+   
+   Local Menu_PrefsToSave
+   Local Split
+   Local key
+   Local value
    
    Menu_PrefsToSave := Object()
   
@@ -866,56 +873,24 @@ HandleMessage( p_w, p_l, p_m, p_hw )
 
 SaveTitleList:
 ControlGet, MenuTitleList, List, , ListBox1
+InProcessList := false
 Gui, ProcessList:Destroy
-;Gui, MenuGui:Show
 Gui, MenuGui:-Disabled  ; enable main window
-WinActivate, TypingAid Settings
+Gui, MenuGui:Show
 StringReplace, MenuTitleList, MenuTitleList, `n, |, All
 
-If (MenuTitleType=1)
-{
-	IncludeProgramTitles:=MenuTitleList
-	GuiControl, MenuGui:Text, Edit2, 
-	GuiControl, MenuGui:Text, Edit2, %IncludeProgramTitles%
-}
-Else If (MenuTitleType=2)
-{
-	ExcludeProgramTitles:=MenuTitleList
-	GuiControl, MenuGui:Text, Edit3, 
-	GuiControl, MenuGui:Text, Edit3, %ExcludeProgramTitles%
-}
-Else If (MenuTitleType=3)
-{
-	IncludeProgramExecutables:=MenuTitleList
-	GuiControl, MenuGui:Text, Edit4, 
-	GuiControl, MenuGui:Text, Edit4, %IncludeProgramExecutables%
-}
-Else If (MenuTitleType=4)
-{
-	ExcludeProgramExecutables:=MenuTitleList
-	GuiControl, MenuGui:Text, Edit5, 
-	GuiControl, MenuGui:Text, Edit5, %ExcludeProgramExecutables%
-}
-Else If (MenuTitleType=5)
-{
-	HelperWindowProgramTitles:=MenuTitleList
-	GuiControl, MenuGui:Text, Edit6, 
-	GuiControl, MenuGui:Text, Edit6, %HelperWindowProgramTitles%
-}	
-Else If (MenuTitleType=6)
-{
-	HelperWindowProgramExecutables:=MenuTitleList
-	GuiControl, MenuGui:Text, Edit7, 
-	GuiControl, MenuGui:Text, Edit7, %HelperWindowProgramExecutables%
-}	
-		
+%MenuTitleType% := MenuTitleList
+GuiControl, MenuGui:Text, %MenuTitleType%, % %MenuTitleType%
 	
 Return
 
+ProcessListGuiEscape:
+ProcessListGuiClose:
 CancelTitle:
+InProcessList := false
 Gui, ProcessList:Destroy
-Gui, MenuGui:-Disabled ; disable main window
-WinActivate, TypingAid Settings
+Gui, MenuGui:-Disabled ; enable main window
+Gui, MenuGui:Show
 Return
 
 ToEdit:
@@ -941,11 +916,6 @@ StringReplace, MenuTitleList, MenuTitleList, |%MenuOutputVar%|, |, all
 StringTrimRight, MenuTitleList, MenuTitleList, 1
 GuiControl, ProcessList:, ListBox1, |
 GuiControl, ProcessList:, ListBox1, %MenuTitleList%
-Return
-
-ProcessListGuiClose:
-Gui, ProcessList:Destroy
-Gui, MenuGui:Show
 Return
 
 ; copied from font explorer http://www.autohotkey.com/forum/viewtopic.php?t=57501&highlight=font
