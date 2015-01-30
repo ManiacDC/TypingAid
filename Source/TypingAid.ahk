@@ -857,7 +857,7 @@ AddSelectedWordToList()
    ClipWait, 0
    IfNotEqual, Clipboard, 
    {
-      AddWordToList(Clipboard,1)
+      AddWordToList(Clipboard,1,"ForceLearn")
    }
    Clipboard = %ClipboardSave%
 }

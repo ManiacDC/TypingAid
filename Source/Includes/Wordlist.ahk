@@ -80,7 +80,7 @@ ReadWordList()
             LegacyLearnedWords=1 ; Set Flag that we need to convert wordlist file
          }
       } else {
-                  AddWordToList(A_LoopField,0)
+               AddWordToList(A_LoopField,0,"ForceLearn")
             }
    }
    ParseWords =
@@ -102,7 +102,7 @@ ReadWordList()
       Loop, Parse, ParseWords, `n, `r
       {
          
-         AddWordToList(A_LoopField,0)
+         AddWordToList(A_LoopField,0,"ForceLearn")
       }
       ParseWords =
       wDB.EndTransaction()
@@ -158,7 +158,7 @@ ReverseWordNums()
 
 ;------------------------------------------------------------------------
 
-AddWordToList(AddWord,ForceCountNewOnly)
+AddWordToList(AddWord,ForceCountNewOnly,ForceLearn=false)
 {
    ;AddWord = Word to add to the list
    ;ForceCountNewOnly = force this word to be permanently learned even if learnmode is off
@@ -185,7 +185,7 @@ AddWordToList(AddWord,ForceCountNewOnly)
                LearnModeTemp = 1
          }
          
-   if !(CheckValid(AddWord))
+   if !(CheckValid(AddWord,ForceLearn))
       return
    
    ifequal, wordlistdone, 1
@@ -261,7 +261,7 @@ AddWordToList(AddWord,ForceCountNewOnly)
    Return
 }
 
-CheckValid(Word)
+CheckValid(Word,ForceLearn=false)
 {
    
    Ifequal, Word,  ;If we have no word to add, skip out.
@@ -269,6 +269,20 @@ CheckValid(Word)
             
    if Word is space ;If Word is only whitespace, skip out.
       Return
+   
+   if ( Substr(Word,1,1) = ";" ) ;If first char is ";", clear word and skip out.
+   {
+      Return
+   }
+   
+   IF ( StrLen(Word) <= Length ) ; don't add the word if it's not longer than the minimum length
+   {
+      Return
+   }
+   
+   ;Anything below this line should not be checked if we want to Force Learning the word (Ctrl-Shift-C or coming from wordlist.txt)
+   If ForceLearn
+      Return, 1
    
    ;if Word does not contain at least one alpha character, skip out.
    IfEqual, A_IsUnicode, 1
@@ -278,16 +292,6 @@ CheckValid(Word)
          return
       }
    } else if ( RegExMatch(Word, "S)[a-zA-Zà-öø-ÿÀ-ÖØ-ß]") = 0 )
-   {
-      Return
-   }
-   
-   if ( Substr(Word,1,1) = ";" ) ;If first char is ";", clear word and skip out.
-   {
-      Return
-   }
-   
-   IF ( StrLen(Word) <= Length ) ; don't add the word if it's not longer than the minimum length
    {
       Return
    }
