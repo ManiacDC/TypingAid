@@ -16,58 +16,67 @@ MaybeWriteHelperWindowPos()
 
 ReadPreferences(RestoreDefaults = false,RestorePreferences = false)
 {
-   global
+   global DftIncludeProgramExecutables
+   global DftIncludeProgramTitles
+   global DftExcludeProgramExecutables
+   global DftExcludeProgramTitles
+   global DftLength
+   global DftNumPresses
+   global DftLearnMode
+   global DftLearnCount
+   global DftLearnLength
+   global DftDoNotLearnStrings
+   global DftArrowKeyMethod
+   global DftDisabledAutoCompleteKeys
+   global DftDetectMouseClickMove
+   global DftNoBackSpace
+   global DftAutoSpace
+   global DftSuppressMatchingWord
+   global DftSendMethod
+   global DftTerminatingCharacters
+   global DftForceNewWordCharacters
+   global DftListBoxOffSet
+   global DftListBoxFontFixed
+   global DftListBoxFontOverride
+   global DftListBoxFontSize
+   global DftListBoxCharacterWidth
+   global DftListBoxOpacity
+   global DftListBoxRows
+   global DftHelperWindowProgramExecutables
+   global DftHelperWindowProgramTitles
    
-   Local Etitle
+   global IncludeProgramExecutables
+   global IncludeProgramTitles
+   global ExcludeProgramExecutables
+   global ExcludeProgramTitles
+   global Length
+   global NumPresses
+   global LearnMode
+   global LearnCount
+   global LearnLength
+   global DoNotLearnStrings
+   global ArrowKeyMethod
+   global DisabledAutoCompleteKeys
+   global DetectMouseClickMove
+   global NoBackSpace
+   global AutoSpace
+   global SuppressMatchingWord
+   global SendMethod
+   global TerminatingCharacters
+   global ForceNewWordCharacters
+   global ListBoxOffset
+   global ListBoxFontFixed
+   global ListBoxFontOverride
+   global ListBoxFontSize
+   global ListBoxCharacterWidth
+   global ListBoxOpacity
+   global ListBoxRows
+   global HelperWindowProgramExecutables
+   global HelperWindowProgramTitles   
    
    ;PrefsFile is global so it works in Settings.ahk
-   Local INI
-   Local Defaults
-   Local LastState
-   Local IniValues
-   Local CurrentIniValues
-   Local CurrentIniValues0
-   Local CurrentIniValues1
-   Local CurrentIniValues2
-   Local CurrentIniValues3
-   Local CurrentIniValues4
-   Local CurrentIniValues5
-   Local SpaceVar
-   Local DftVariable
-   Local NormalVariable
-   Local IniSection
-   Local IniKey
-   Local DftValue
-   Local BrokenTerminatingCharacters
-   
-   Local DftIncludeProgramExecutables
-   Local DftIncludeProgramTitles
-   Local DftExcludeProgramExecutables
-   Local DftExcludeProgramTitles
-   ;DftLength should be global so it works in ValidatePreferences
-   ;DftNumPresses should be global so it works in ValidatePreferences
-   ;DftLearnMode should be global so it works in ValidatePreferences
-   ;DftLearnCount should be global so it works in ValidatePreferences
-   Local DftLearnLength
-   Local DftDoNotLearnStrings
-   ;DftArrowKeyMethod should be global so it works in ValidatePreferences
-   Local DftDisabledAutoCompleteKeys
-   ;DftDetectMouseClickMove should be globabl so it works in ValidatePreferences
-   ;DftNoBackSpace should be global so it works in ValidatePreferences
-   ;DftAutoSpace should be global so it works in ValidatePreferences
-   Local DftSuppressMatchingWord
-   ;DftSendMethod should be global so it works in ValidatePreferences
-   ;DftTerminatingCharacters should be global so it works in the help strings and ValidatePreferences
-   Local DftForceNewWordCharacters
-   ;DftListBoxOffSet should be global so it works in ValidatePreferences
-   ;DftListBoxFontFixed should be global so it works in ValidatePreferences
-   Local DftListBoxFontOverride
-   ;DftListBoxFontSize should be global so it works in ValidatePreferences
-   ;DftListBoxCharacterWidth should be global so it works in ValidatePreferences
-   ;DftListBoxOpacity should be global so it works in ValidatePreferences
-   ;DftListBoxRows should be global so it works in ValidatePreferences
-   Local DftHelperWindowProgramExecutables
-   Local DftHelperWindowProgramTitles
+   global PrefsFile
+   global PrefsSections
    
    PrefsFile = %A_ScriptDir%\Preferences.ini
    Defaults = %A_ScriptDir%\Defaults.ini
@@ -95,37 +104,39 @@ ReadPreferences(RestoreDefaults = false,RestorePreferences = false)
    
    IniValues =
    (
-      DftIncludeProgramExecutables,IncludeProgramExecutables,IncludePrograms,IncludeProgramExecutables,%SpaceVar%
-      DftIncludeProgramTitles,IncludeProgramTitles,IncludePrograms,IncludeProgramTitles,%SpaceVar%
-      DftExcludeProgramExecutables,ExcludeProgramExecutables,ExcludePrograms,ExcludeProgramExecutables,%SpaceVar%
-      DftExcludeProgramTitles,ExcludeProgramTitles,ExcludePrograms,ExcludeProgramTitles,%SpaceVar%
-      ,Title,Settings,Title,%SpaceVar%
-      DftLength,Length,Settings,Length,3
-      DftNumPresses,NumPresses,Settings,NumPresses,1
-      DftLearnMode,LearnMode,Settings,LearnMode,On
-      DftLearnCount,LearnCount,Settings,LearnCount,5
-      DftLearnLength,LearnLength,Settings,LearnLength,%SpaceVar%
-      DftDoNotLearnStrings,DoNotLearnStrings,Settings,DoNotLearnStrings,%SpaceVar%
-      DftArrowKeyMethod,ArrowKeyMethod,Settings,ArrowKeyMethod,First
-      DftDisabledAutoCompleteKeys,DisabledAutoCompleteKeys,Settings,DisabledAutoCompleteKeys,%SpaceVar%
-      DftDetectMouseClickMove,DetectMouseClickMove,Settings,DetectMouseClickMove,On
-      DftNoBackSpace,NoBackSpace,Settings,NoBackSpace,On
-      DftAutoSpace,AutoSpace,Settings,AutoSpace,Off
-      DftSuppressMatchingWord,SuppressMatchingWord,Settings,SuppressMatchingWord,Off
-      DftSendMethod,SendMethod,Settings,SendMethod,1
-      DftTerminatingCharacters,TerminatingCharacters,Settings,TerminatingCharacters,`%DftTerminatingCharacters`%
-      DftForceNewWordCharacters,ForceNewWordCharacters,Settings,ForceNewWordCharacters,%SpaceVar%
-      DftListBoxOffSet,ListBoxOffset,ListBoxSettings,ListBoxOffset,14
-      DftListBoxFontFixed,ListBoxFontFixed,ListBoxSettings,ListBoxFontFixed,Off
-      DftListBoxFontOverride,ListBoxFontOverride,ListBoxSettings,ListBoxFontOverride,%SpaceVar%
-      DftListBoxFontSize,ListBoxFontSize,ListBoxSettings,ListBoxFontSize,10      
-      DftListBoxCharacterWidth,ListBoxCharacterWidth,ListBoxSettings,ListBoxCharacterWidth,%SpaceVar%
-      DftListBoxOpacity,ListBoxOpacity,ListBoxSettings,ListBoxOpacity,215
-      DftListBoxRows,ListBoxRows,ListBoxSettings,ListBoxRows,10
-      DftHelperWindowProgramExecutables,HelperWindowProgramExecutables,HelperWindow,HelperWindowProgramExecutables,%SpaceVar%
-      DftHelperWindowProgramTitles,HelperWindowProgramTitles,HelperWindow,HelperWindowProgramTitles,%SpaceVar%
-      ,XY,HelperWindow,XY,%SpaceVar%
+      DftIncludeProgramExecutables,IncludeProgramExecutables,IncludePrograms,%SpaceVar%
+      DftIncludeProgramTitles,IncludeProgramTitles,IncludePrograms,%SpaceVar%
+      DftExcludeProgramExecutables,ExcludeProgramExecutables,ExcludePrograms,%SpaceVar%
+      DftExcludeProgramTitles,ExcludeProgramTitles,ExcludePrograms,%SpaceVar%
+      ,Title,Settings,%SpaceVar%
+      DftLength,Length,Settings,3
+      DftNumPresses,NumPresses,Settings,1
+      DftLearnMode,LearnMode,Settings,On
+      DftLearnCount,LearnCount,Settings,5
+      DftLearnLength,LearnLength,Settings,%SpaceVar%
+      DftDoNotLearnStrings,DoNotLearnStrings,Settings,%SpaceVar%
+      DftArrowKeyMethod,ArrowKeyMethod,Settings,First
+      DftDisabledAutoCompleteKeys,DisabledAutoCompleteKeys,Settings,%SpaceVar%
+      DftDetectMouseClickMove,DetectMouseClickMove,Settings,On
+      DftNoBackSpace,NoBackSpace,Settings,On
+      DftAutoSpace,AutoSpace,Settings,Off
+      DftSuppressMatchingWord,SuppressMatchingWord,Settings,Off
+      DftSendMethod,SendMethod,Settings,1
+      DftTerminatingCharacters,TerminatingCharacters,Settings,`%DftTerminatingCharacters`%
+      DftForceNewWordCharacters,ForceNewWordCharacters,Settings,%SpaceVar%
+      DftListBoxOffSet,ListBoxOffset,ListBoxSettings,14
+      DftListBoxFontFixed,ListBoxFontFixed,ListBoxSettings,Off
+      DftListBoxFontOverride,ListBoxFontOverride,ListBoxSettings,%SpaceVar%
+      DftListBoxFontSize,ListBoxFontSize,ListBoxSettings,10      
+      DftListBoxCharacterWidth,ListBoxCharacterWidth,ListBoxSettings,%SpaceVar%
+      DftListBoxOpacity,ListBoxOpacity,ListBoxSettings,215
+      DftListBoxRows,ListBoxRows,ListBoxSettings,10
+      DftHelperWindowProgramExecutables,HelperWindowProgramExecutables,HelperWindow,%SpaceVar%
+      DftHelperWindowProgramTitles,HelperWindowProgramTitles,HelperWindow,%SpaceVar%
+      ,XY,HelperWindow,%SpaceVar%
    )
+   
+   Sections := Object()
     
    Loop, Parse, IniValues, `n, `r%A_Space%
    {
@@ -133,8 +144,9 @@ ReadPreferences(RestoreDefaults = false,RestorePreferences = false)
       DftVariable := CurrentIniValues1
       NormalVariable := CurrentIniValues2
       IniSection := CurrentIniValues3
-      IniKey := CurrentIniValues4
-      DftValue := CurrentIniValues5
+      DftValue := CurrentIniValues4
+      
+      PrefsSections[NormalVariable] := IniSection
       
       IF (DftValue == "%DftTerminatingCharacters%")
       {
@@ -145,11 +157,11 @@ ReadPreferences(RestoreDefaults = false,RestorePreferences = false)
          DftValue := A_Space
       
       IF !(RestoreDefaults)
-         IniRead, %NormalVariable%, %PrefsFile%, %IniSection%, %IniKey%, %A_Space%
+         IniRead, %NormalVariable%, %PrefsFile%, %IniSection%, %NormalVariable%, %A_Space%
       
       IF DftVariable
       { 
-         IniRead, %DftVariable%, %Defaults%, %IniSection%, %IniKey%, %DftValue%
+         IniRead, %DftVariable%, %Defaults%, %IniSection%, %NormalVariable%, %DftValue%
          IfEqual, %NormalVariable%,
             %NormalVariable% := %DftVariable%
       }
@@ -472,12 +484,19 @@ ParseTerminatingCharacters()
 
 SavePreferences(ByRef PrefsToSave)
 {
+   global
+   local index
+   local element
+      
+   for index, element in PrefsToSave
+   {
+      MsgBox,,,% element . " | " . %element% . " | " . PrefsToSave[element]
+   }
    
-   
-   ;for index, element in Menu_PrefsToSave
-   ;{
-   ;   Menu_PrefsToSavez%index% := element . " | " . %element% . " | " . Menu_ChangedPrefs[element]
-   ;}
+   If (%element% == Dft%element%)
+   {
+      IniDelete, %PrefsFile%, PrefsSections[element], %element%
+   }
    
    ;Loop, % Menu_PrefsToSave._MaxIndex()
    ;{
