@@ -136,7 +136,7 @@ ReadPreferences(RestoreDefaults = false,RestorePreferences = false)
       ,XY,HelperWindow,%SpaceVar%
    )
    
-   Sections := Object()
+   PrefsSections := Object()
     
    Loop, Parse, IniValues, `n, `r%A_Space%
    {
@@ -191,141 +191,6 @@ ReadPreferences(RestoreDefaults = false,RestorePreferences = false)
    }
    
    ConstructHelpStrings()
-   
-   If !(FileExist(PrefsFile) || FileExist(Defaults))
-   {
-      INI= 
-               ( 
-[IncludePrograms]
-;
-%hIncludeProgramExecutables%
-; ex: IncludeProgramExecutables=notepad.exe|iexplore.exe
-IncludeProgramExecutables=%DftIncludeProgramExecutables%
-;
-;
-%hIncludeProgramTitles%
-; ex: IncludeProgramTitles=Notepad|Internet Explorer
-IncludeProgramTitles=%DftIncludeProgramTitles%
-;
-;
-[ExcludePrograms]
-;
-%hExcludeProgramExecutables%
-; ex: ExcludeProgramExecutables=notepad.exe|iexplore.exe
-ExcludeProgramExecutables=%DftExcludeProgramExecutables%
-;
-;
-%hExcludeProgramTitles%
-; ex: ExcludeProgramTitles=Notepad|Internet Explorer
-ExcludeProgramTitles=%DftExcludeProgramTitles%
-;
-;
-[Settings]
-;
-%hLength%
-Length=%DftLength%
-;
-;
-%hNumPresses%
-NumPresses=%DftNumPresses%
-;
-;
-%hLearnMode%
-LearnMode=%DftLearnMode%
-;
-;
-%hLearnCount%
-LearnCount=%DftLearnCount%
-;
-;
-%hLearnLength%
-LearnLength=%DftLearnLength%
-;
-;
-%hDoNotLearnStrings%
-; ex: DoNotLearnStrings=ord98,fr21
-DoNotLearnStrings=%DftDoNotLearnStrings%
-;
-;
-%hArrowKeyMethod%
-ArrowKeyMethod=%DftArrowKeyMethod%
-;
-;
-%hDisabledAutoCompleteKeys%
-DisabledAutoCompleteKeys=%DftDisabledAutoCompleteKeys%
-;
-;
-%hDetectMouseClickMove%
-DetectMouseClickMove=%DftDetectMouseClickMove%
-;
-;
-%hNoBackSpace%
-NoBackSpace=%DftNoBackSpace%
-;
-;
-%hAutoSpace%
-AutoSpace=%DftAutoSpace%
-;
-;
-%hSuppressMatchingWord%
-SuppressMatchingWord=%DftSuppressMatchingWord%
-;
-;
-%hSendMethod%
-SendMethod=%DftSendMethod%
-;
-;
-%hTerminatingCharacters%
-TerminatingCharacters=%DftTerminatingCharacters%
-;
-;
-%hForceNewWordCharacters%
-ForceNewWordCharacters=%DftForceNewWordCharacters%
-;
-;
-[ListBoxSettings]
-;
-%hListBoxOffset%
-ListBoxOffset=%DftListBoxOffSet%
-;
-;
-%hListBoxFontFixed%
-ListBoxFontFixed=%DftListBoxFontFixed%
-;
-;
-%hListBoxFontOverride%
-ListBoxFontOverride=%DftListBoxFontOverride%
-;
-;
-%hListBoxFontSize%
-ListBoxFontSize=%DftListBoxFontSize%
-;
-;
-%hListBoxCharacterWidth%
-ListBoxCharacterWidth=%DftListBoxCharacterWidth%
-;
-;
-%hListBoxOpacity%
-ListBoxOpacity=%DftListBoxOpacity%
-;
-;
-%hListBoxRows%
-ListBoxRows=%DftListBoxRows%
-;
-;
-[HelperWindow]
-;
-%hHelperWindowProgramExecutables%
-; ex: HelperWindowProgramExecutables=notepad.exe|iexplore.exe
-HelperWindowProgramExecutables=%DftHelperWindowProgramExecutables%
-;
-;
-%hHelperWindowProgramTitles%
-; ex: HelperWindowProgramTitles=Notepad|Internet Explorer
-HelperWindowProgramTitles=%DftHelperWindowProgramTitles%
-               )
-               FileAppendDispatch(INI, PrefsFile, "UTF-16")
-         }
          
    Return
 }
@@ -490,22 +355,16 @@ SavePreferences(ByRef PrefsToSave)
       
    for index, element in PrefsToSave
    {
-      MsgBox,,,% element . " | " . %element% . " | " . PrefsToSave[element]
-   }
-   
-   If (%element% == Dft%element%)
-   {
-      IniDelete, %PrefsFile%, PrefsSections[element], %element%
-   }
-   
-   ;Loop, % Menu_PrefsToSave._MaxIndex()
-   ;{
-   ;   Menu_PrefsToSavez%A_LoopField% := Menu_PrefsToSave[A_LoopField]
-   ;}
-   ;ListVars
-   ;Pause
-   
    ;ValidatePreferences()? what about the fact this changes Terminating Characters
+   
+      If (%element% == Dft%element%)
+      {
+         IniDelete, %PrefsFile%,% PrefsSections[element], %element%
+      } else {
+         IniWrite,% %element%, %PrefsFile%,% PrefsSections[element], %element%
+      }
+   }
+   
    ;do stuff
    Return
 }
