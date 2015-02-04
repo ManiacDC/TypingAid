@@ -70,7 +70,7 @@ SavePriorMatchPosition()
    {
       IfEqual, ArrowKeyMethod, LastWord
       {
-         OldMatch := singlematch%MatchPos%
+         OldMatch := singlematch[MatchPos]
          OldMatchStart = 
       } else {
                IfEqual, ArrowKeyMethod, LastPosition
@@ -125,7 +125,7 @@ SetupMatchPosition()
                               IfLess, MatchStart, 1
                                  MatchStart = 1
                            }
-                           MatchPos = %OldMatch%
+                           MatchPos := OldMatch
                         }
                      
                } else IfEqual, ArrowKeyMethod, LastWord
@@ -133,9 +133,9 @@ SetupMatchPosition()
                         Pos =
                         Loop, %Number%
                         {
-                           if ( OldMatch == singlematch%A_Index% )
+                           if ( OldMatch == singlematch[A_Index] )
                            {
-                              Pos = %A_Index%
+                              Pos := A_Index
                               Break
                            }
                         }
@@ -147,7 +147,7 @@ SetupMatchPosition()
                                  MatchStart := Pos - (ListBoxRows - 1)
                                  IfLess, MatchStart, 1
                                     MatchStart = 1
-                                 MatchPos = %Pos%
+                                 MatchPos := Pos
                               }
                      } else {
                               MatchPos = 1
@@ -167,7 +167,7 @@ RebuildMatchList()
    Local CurrentLength
    Loop, %Number%
    {
-      CurrentLength := AddToMatchList(A_Index,singlematch%A_Index%)
+      CurrentLength := AddToMatchList(A_Index,singlematch[A_Index])
       IfGreater, CurrentLength, %MatchLongestLength%
          MatchLongestLength := CurrentLength      
    }

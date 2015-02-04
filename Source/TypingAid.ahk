@@ -340,11 +340,12 @@ RecomputeMatches()
    
    Matches := wDB.Query("SELECT word FROM Words" . WhereQuery . OrderByQuery . " LIMIT " . LimitTotalMatches . ";")
    
+   singlematch := Object()
+   
    for each, row in Matches.Rows
    {      
       number++
-      singlematch := row[1]
-      singlematch%number% = %singlematch%
+      singlematch[number] := row[1]
       
       continue
    }
@@ -606,7 +607,7 @@ CheckWord(Key)
       Return 
    }
       
-   if ( ( (WordIndex + 1 - MatchStart) > ListBoxRows) || ( Match = "" ) || (singlematch%WordIndex% = "") )   ; only continue singlematch is not empty 
+   if ( ( (WordIndex + 1 - MatchStart) > ListBoxRows) || ( Match = "" ) || (singlematch[WordIndex] = "") )   ; only continue singlematch is not empty 
    { 
       SendCompatible(Key,0)
       ProcessKey(Key,"")
@@ -734,7 +735,7 @@ EvaluateUpDown(Key)
          Return     
       }
       
-      IfEqual, singlematch%MatchPos%, ;only continue if singlematch is not empty
+      if (singlematch[MatchPos] = "") ;only continue if singlematch is not empty
       {
          SendKey(Key)
          MatchPos = %Number%
@@ -866,10 +867,10 @@ DeleteSelectedWordFromList()
 {
    global
    
-   IfNotEqual, singlematch%MatchPos%, ;only continue if singlematch is not empty
+   if !(singlematch[MatchPos] = "") ;only continue if singlematch is not empty
    {
       
-      DeleteWordFromList(singlematch%MatchPos%)
+      DeleteWordFromList(singlematch[MatchPos])
       RecomputeMatches()
       Return
    }
@@ -916,14 +917,8 @@ ClearAllVars(ClearWord)
       OldCaretX=
       LastInput_id=
    }
-   ; Clear all singlematches 
-   Loop,
-   { 
-      IfEqual, singlematch%A_Index%,
-         Break
-         
-      singlematch%a_index% = 
-   } 
+   
+   singlematch =
    sending = 
    key= 
    match= 

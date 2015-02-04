@@ -72,7 +72,7 @@ ReadPreferences(RestoreDefaults = false,RestorePreferences = false)
    global ListBoxOpacity
    global ListBoxRows
    global HelperWindowProgramExecutables
-   global HelperWindowProgramTitles   
+   global HelperWindowProgramTitles
    
    ;PrefsFile is global so it works in Settings.ahk
    global PrefsFile
@@ -168,6 +168,7 @@ ReadPreferences(RestoreDefaults = false,RestorePreferences = false)
    }
    
    ValidatePreferences()
+   ParseTerminatingCharacters()
    
    ; Legacy support for old Preferences File
    IfNotEqual, Etitle,
@@ -205,8 +206,9 @@ ValidatePreferences()
       Length := DftLength
    }
    
-   IfEqual, LearnLength,
-      LearnLength := Length +2
+   if (Length < 1) {
+      Length = 1
+   }
    
    if NumPresses not in 1,2
       NumPresses := DftNumPresses
@@ -215,15 +217,22 @@ ValidatePreferences()
       LearnMode := DftLearnMode
    
    If LearnCount is not Integer
+   {
       LearnCount := DftLearnCount
-      
-   If LearnLength is not Integer
+   }
+   
+   if (LearnCount < 1)
+   {
+      LearnCount = 1
+   }
+   
+   if LearnLength is not Integer
    {
       LearnLength := Length + 2
-   } else {
-            If ( LearnLength < ( Length + 1 ) )
-               LearnLength := Length + 1
-         }
+   } else If ( LearnLength < ( Length + 1 ) )
+   {
+      LearnLength := Length + 1
+   }
    
    if DisabledAutoCompleteKeys contains N
       NumKeyMethod = Off
@@ -250,6 +259,9 @@ ValidatePreferences()
    If AutoSpace not in On,Off
       AutoSpace := DftAutoSpace
    
+   if SuppressMatchingWord not in On,Off
+      SuppressMatchingWord := DftSuppressMatchingWord
+   
    if SendMethod not in 1,2,3,1C,2C,3C,4C
       SendMethod := DftSendMethod
    
@@ -268,8 +280,6 @@ ValidatePreferences()
    IfEqual, TerminatingCharacters,
       TerminatingCharacters := DftTerminatingCharacters
    
-   ParseTerminatingCharacters()
-   
    if ListBoxOffset is not Integer
       ListBoxOffset := DftListBoxOffSet
       
@@ -277,11 +287,13 @@ ValidatePreferences()
       ListBoxFontFixed := DftListBoxFontFixed
    
    If ListBoxFontSize is not Integer
+   {
       ListBoxFontSize := DftListBoxFontSize
-   else {
-         IfLess, ListBoxFontSize, 2
-            ListBoxFontSize = 2
-      }
+   }
+   else IfLess, ListBoxFontSize, 2
+   {
+      ListBoxFontSize = 2
+   }
    
    if ListBoxCharacterWidth is not Integer
       ListBoxCharacterWidth := DftListBoxCharacterWidth
@@ -291,13 +303,15 @@ ValidatePreferences()
       
    If ListBoxOpacity is not Integer
       ListBoxOpacity := DftListBoxOpacity
-   else IfLess, ListBoxOpacity, 0
-            ListBoxOpacity = 0
-         else IfGreater, ListBoxOpacity, 255
-                  ListBoxOpacity = 255
+   
+   IfLess, ListBoxOpacity, 0
+      ListBoxOpacity = 0
+   else IfGreater, ListBoxOpacity, 255
+      ListBoxOpacity = 255
                   
    If ListBoxRows is not Integer
       ListBoxRows := DftListBoxRows
+   
    IfLess, ListBoxRows, 3
       ListBoxRows = 3
    else IfGreater, ListBoxRows, 30
@@ -352,10 +366,11 @@ SavePreferences(ByRef PrefsToSave)
    global
    local index
    local element
+   
+   ValidatePreferences()
       
    for index, element in PrefsToSave
    {
-   ;ValidatePreferences()? what about the fact this changes Terminating Characters
    
       If (%element% == Dft%element%)
       {

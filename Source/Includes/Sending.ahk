@@ -25,7 +25,7 @@ SendWord(WordIndex)
    Local sending
    ;Local ClipboardSave
    ;Send the word
-   sending := singlematch%WordIndex%
+   sending := singlematch[WordIndex]
    ; Update Typed Count
    UpdateWordCount(sending,0)
    SendFull(sending, StrLen(Word))   

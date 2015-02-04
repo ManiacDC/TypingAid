@@ -777,6 +777,7 @@ Save()
 {
    global InSettings
    ValidatePreferences()
+   ParseTerminatingCharacters()
    InitializeHotKeys()
    DestroyListBox()
    InitializeListBox()
