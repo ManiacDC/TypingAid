@@ -226,9 +226,14 @@ ValidatePreferences()
       LearnCount = 1
    }
    
+   if DftLearnLength is not Integer
+   {
+      DftLearnLength := Length + 2
+   }
+   
    if LearnLength is not Integer
    {
-      LearnLength := Length + 2
+      LearnLength := DftLearnLength
    } else If ( LearnLength < ( Length + 1 ) )
    {
       LearnLength := Length + 1
@@ -295,11 +300,11 @@ ValidatePreferences()
       ListBoxFontSize = 2
    }
    
+   IfEqual, DftListBoxCharacterWidth,
+      DftListBoxCharacterWidth := Ceil(ListBoxFontSize * 0.8 )
+   
    if ListBoxCharacterWidth is not Integer
       ListBoxCharacterWidth := DftListBoxCharacterWidth
-         
-   IfEqual, ListBoxCharacterWidth,
-      ListBoxCharacterWidth := Ceil(ListBoxFontSize * 0.8 )
       
    If ListBoxOpacity is not Integer
       ListBoxOpacity := DftListBoxOpacity

@@ -22,7 +22,6 @@ ConstructGui()
    Global hExcludeProgramExecutables, hExcludeProgramTitles, hIncludeProgramExecutables, hIncludeProgramTitles, hHelperWindowProgramExecutables, hHelperWindowProgramTitles
    Global ListBoxCharacterWidth, ListBoxFontFixed, ListBoxFontOverride, ListBoxFontSize, ListBoxOffset, ListBoxOpacity, ListBoxRows
    Global hListBoxCharacterWidth, hListBoxFontFixed, hListBoxFontOverride, hListBoxFontSize, hListBoxOffset, hListBoxOpacity, hListBoxRows
-   Global Menu_LearnCount, Menu_LearnLength, Menu_LearnMode
    Global Menu_ArrowKeyMethodOptionsText, Menu_CaseCorrection, Menu_ListBoxOpacityUpDown, Menu_SendMethodOptionsCode, Menu_SendMethodC
    Global Menu_CtrlEnter, Menu_CtrlSpace, Menu_Enter, Menu_NumberKeys, Menu_RightArrow, Menu_Tab
    Global MenuAdvGuiHeight, MenuGuiWidth
@@ -107,7 +106,7 @@ ConstructGui()
    Menu_LearnModeOptions=|On|Off|
    StringReplace, Menu_LearnModeOptions, Menu_LearnModeOptions, |%LearnMode%|,|%LearnMode%||
    StringTrimLeft, Menu_LearnModeOptions, Menu_LearnModeOptions, 1
-   Gui, MenuGui:Add, DDL, x%MenuGroup1EditX% y%MenuRowEditY% r5 vMenu_LearnMode gEditValue, %Menu_LearnModeOptions%
+   Gui, MenuGui:Add, DDL, x%MenuGroup1EditX% y%MenuRowEditY% r5 vLearnMode gEditValue, %Menu_LearnModeOptions%
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup1of3HelpX% y%MenuRowHelpY% vhLearnMode gHelpMe, %MenuGuiHelpIcon%
    Gui, MenuGui:Font, cBlack
@@ -117,7 +116,7 @@ ConstructGui()
    Menu_LearnLengthOptions=|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|
    StringReplace,  Menu_LearnLengthOptions, Menu_LearnLengthOptions, |%LearnLength%|,|%LearnLength%||
    StringTrimLeft, Menu_LearnLengthOptions, Menu_LearnLengthOptions, 1
-   Gui, MenuGui:Add, DDL, x%MenuGroup2of3EditX% y%MenuRowEditY% r5 vMenu_LearnLength gEditValue, %Menu_LearnLengthOptions%
+   Gui, MenuGui:Add, DDL, x%MenuGroup2of3EditX% y%MenuRowEditY% r5 vLearnLength gEditValue, %Menu_LearnLengthOptions%
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup2of3HelpX% y%MenuRowHelpY% vhLearnLength gHelpMe, %MenuGuiHelpIcon%
    Gui, MenuGui:Font, cBlack
@@ -127,7 +126,7 @@ ConstructGui()
    Menu_LearnCountOptions=|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|
    StringReplace,  Menu_LearnCountOptions, Menu_LearnCountOptions, |%LearnCount%|,|%LearnCount%||
    StringTrimLeft, Menu_LearnCountOptions, Menu_LearnCountOptions, 1
-   Gui, MenuGui:Add, DDL, x%MenuGroup3of3EditX% y%MenuRowEditY% r5 vMenu_LearnCount gEditValue, %Menu_LearnCountOptions%
+   Gui, MenuGui:Add, DDL, x%MenuGroup3of3EditX% y%MenuRowEditY% r5 vLearnCount gEditValue, %Menu_LearnCountOptions%
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup3of3HelpX% y%MenuRowHelpY% vhLearnCount gHelpMe, %MenuGuiHelpIcon%
    Gui, MenuGui:Font, cBlack
@@ -697,7 +696,7 @@ Menu_ChangedPrefs["NoBackSpace"] := NoBackSpace
 Menu_ChangedPrefs["SendMethod"] := SendMethod
 Gui, MenuGui:Submit
 ListBoxOpacity := Menu_ListBoxOpacityUpDown
-IF (Menu_RestartValues <> (Menu_LearnCount . DelimiterChar . Menu_LearnLength . DelimiterChar . Menu_LearnMode))
+IF (Menu_RestartValues <> (LearnCount . DelimiterChar . LearnLength . DelimiterChar . LearnMode))
 {   
    MsgBox, 1, Save, Saving will change Learn settings.`r`nChanging Learn settings requires a script restart. Continue?
    IfMsgBox, Cancel
