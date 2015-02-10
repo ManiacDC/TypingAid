@@ -647,6 +647,11 @@ IfMsgBox Yes
 Return
 
 Restore:
+MsgBox, 1, Restore Defaults, This will restore all settings to default. Continue?
+
+IfMsgBox, Cancel
+   return
+
 ; If Learn settings have changed, we need to reload the script. Otherwise, we can just go through the normal save process.
 ReadPreferences("RestoreDefaults")
 IF (Menu_RestartValues <> (LearnCount . DelimiterChar . LearnLength . DelimiterChar . LearnMode))
@@ -657,17 +662,8 @@ IF (Menu_RestartValues <> (LearnCount . DelimiterChar . LearnLength . DelimiterC
       ReadPreferences(,"RestorePreferences")
       return
    }
-   try {
-      FileCopy, %PrefsFile%, %PrefsFile%-%A_Now%.bak, 1
-      FileDelete, %PrefsFile%
-   } catch {
-      MsgBox,,Restore Defaults,Unable to back up preferences! Canceling...
-      ReadPreferences(,"RestorePreferences")
-      return
-   }
-   Reload
-   return
-} else {
+   IfExist, %PrefsFile%
+   {
       try {
          FileCopy, %PrefsFile%, %PrefsFile%-%A_Now%.bak, 1
          FileDelete, %PrefsFile%
@@ -676,8 +672,27 @@ IF (Menu_RestartValues <> (LearnCount . DelimiterChar . LearnLength . DelimiterC
          ReadPreferences(,"RestorePreferences")
          return
       }
+   }
+   MsgBox,,Restore Defaults, Defaults have been restored. Restarting script...
+   Reload
+   return
+} else {
+      
+      IfExist, %PrefsFile%
+      {         
+         try {
+            FileCopy, %PrefsFile%, %PrefsFile%-%A_Now%.bak, 1
+            FileDelete, %PrefsFile%
+         } catch {
+            MsgBox,,Restore Defaults,Unable to back up preferences! Canceling...
+            ReadPreferences(,"RestorePreferences")
+            return
+         }
+      }
       Save()
+      MsgBox,,Restore Defaults, Defaults have been restored.
 }
+gosub, Cancel
 return
 
 MenuGuiGuiEscape:
@@ -711,7 +726,7 @@ IF (Menu_RestartValues <> (LearnCount . DelimiterChar . LearnLength . DelimiterC
    SaveSettings()
    Save()
 }
-Gui, MenuGui:Destroy
+gosub, Cancel
 Return
 
 SaveSettings()
@@ -781,8 +796,6 @@ Save()
    DestroyListBox()
    InitializeListBox()
    
-   InSettings := false
-   Menu, Tray, Enable, Settings
    Return
 
 }   
@@ -879,8 +892,8 @@ Gui, MenuGui:-Disabled  ; enable main window
 Gui, MenuGui:Show
 StringReplace, MenuTitleList, MenuTitleList, `n, |, All
 
-%MenuTitleType% := MenuTitleList
-GuiControl, MenuGui:Text, %MenuTitleType%, % %MenuTitleType%
+GuiControl, MenuGui:Text, %MenuTitleType%, %MenuTitleList%
+Menu_ChangedPrefs[MenuTitleType] := %MenuTitleType%
 	
 Return
 

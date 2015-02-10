@@ -162,8 +162,10 @@ ReadPreferences(RestoreDefaults = false,RestorePreferences = false)
       IF DftVariable
       { 
          IniRead, %DftVariable%, %Defaults%, %IniSection%, %NormalVariable%, %DftValue%
-         IfEqual, %NormalVariable%,
+         IF (RestoreDefaults || %NormalVariable% == "")
+         {
             %NormalVariable% := %DftVariable%
+         }
       }
    }
    
