@@ -5,7 +5,7 @@ LaunchSettings:
 Menu, Tray, Disable, Settings
 InSettings := true
 ClearAllVars(True)
-Menu_RestartValues := LearnCount . DelimiterChar . LearnLength . DelimiterChar . LearnMode
+Menu_OldLearnCount := LearnCount
 Menu_ChangedPrefs := Object()
 ConstructGui()
 Return
@@ -102,7 +102,7 @@ ConstructGui()
 
    Gui, MenuGui:Tab, 1 ; General Settings
 
-   Gui, MenuGui:Add, GroupBox, x%MenuGroup1BoxX% y%MenuRowY% w%MenuThreeColGroupWidth% h%MenuRowHeight% , Learn new words as you type*
+   Gui, MenuGui:Add, GroupBox, x%MenuGroup1BoxX% y%MenuRowY% w%MenuThreeColGroupWidth% h%MenuRowHeight% , Learn new words as you type
    Menu_LearnModeOptions=|On|Off|
    StringReplace, Menu_LearnModeOptions, Menu_LearnModeOptions, |%LearnMode%|,|%LearnMode%||
    StringTrimLeft, Menu_LearnModeOptions, Menu_LearnModeOptions, 1
@@ -112,7 +112,7 @@ ConstructGui()
    Gui, MenuGui:Font, cBlack
 
 
-   Gui, MenuGui:Add, GroupBox, x%MenuGroup2of3BoxX% y%MenuRowY% w%MenuThreeColGroupWidth% h%MenuRowHeight% , Minimum length of word to learn*
+   Gui, MenuGui:Add, GroupBox, x%MenuGroup2of3BoxX% y%MenuRowY% w%MenuThreeColGroupWidth% h%MenuRowHeight% , Minimum length of word to learn
    Menu_LearnLengthOptions=|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|
    StringReplace,  Menu_LearnLengthOptions, Menu_LearnLengthOptions, |%LearnLength%|,|%LearnLength%||
    StringTrimLeft, Menu_LearnLengthOptions, Menu_LearnLengthOptions, 1
@@ -122,7 +122,7 @@ ConstructGui()
    Gui, MenuGui:Font, cBlack
    
 
-   Gui, MenuGui:Add, GroupBox, x%MenuGroup3of3BoxX% y%MenuRowY% w%MenuThreeColGroupWidth% h%MenuRowHeight%, Add to wordlist after X times*
+   Gui, MenuGui:Add, GroupBox, x%MenuGroup3of3BoxX% y%MenuRowY% w%MenuThreeColGroupWidth% h%MenuRowHeight%, Add to wordlist after X times
    Menu_LearnCountOptions=|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|
    StringReplace,  Menu_LearnCountOptions, Menu_LearnCountOptions, |%LearnCount%|,|%LearnCount%||
    StringTrimLeft, Menu_LearnCountOptions, Menu_LearnCountOptions, 1
@@ -278,14 +278,7 @@ ConstructGui()
    Gui, MenuGui:Font, cBlack
 
    ;NumPresses
-   ;
-   
-   MenuRowY := MenuTabHeight-20
-   MenuRowHelpY := MenuRowY - MenuHelpIndentY
-   MenuRowEditY := MenuRowY + MenuEditIndentY
-
-   Gui, MenuGui:Add, Text, x%MenuGroup1BoxX% y%MenuRowY% w%MenuOneColGroupWidth% , *Changing these values requires a restart of TypingAid
-   
+   ;   
 
    Gui, MenuGui:Tab, 2 ; listbox ---------------------------------------------------------
 
@@ -648,38 +641,37 @@ Return
 
 Restore:
 MsgBox, 1, Restore Defaults, This will restore all settings to default. Continue?
-
 IfMsgBox, Cancel
    return
+RestoreDefaults()
+gosub, Cancel
+return
 
-; If Learn settings have changed, we need to reload the script. Otherwise, we can just go through the normal save process.
-ReadPreferences("RestoreDefaults")
-IF (Menu_RestartValues <> (LearnCount . DelimiterChar . LearnLength . DelimiterChar . LearnMode))
+RestoreDefaults()
 {
-   MsgBox, 1, Restore Defaults, Restoring Defaults will change Learn settings.`r`nChanging Learn settings requires a script restart. Continue?
-   IfMsgBox, Cancel
+   global LearnCount
+   global Menu_OldLearnCount
+   global PrefsFile
+
+   ReadPreferences("RestoreDefaults")
+
+   IF ( Menu_OldLearnCount < LearnCount )
+   {
+      MsgBox, 1, Restore Defaults, Restoring Defaults will increase the Learn Count value.`r`nThis will permanently delete any words from the Learned Words`r`nwhich have been typed less times than the new Learn Count. Continue?
+      IfMsgBox, Cancel
+      {
+         ReturnValue := "Cancel"
+      }
+   }
+   
+   if (ReturnValue == "Cancel")
    {
       ReadPreferences(,"RestorePreferences")
       return
-   }
-   IfExist, %PrefsFile%
-   {
-      try {
-         FileCopy, %PrefsFile%, %PrefsFile%-%A_Now%.bak, 1
-         FileDelete, %PrefsFile%
-      } catch {
-         MsgBox,,Restore Defaults,Unable to back up preferences! Canceling...
-         ReadPreferences(,"RestorePreferences")
-         return
-      }
-   }
-   MsgBox,,Restore Defaults, Defaults have been restored. Restarting script...
-   Reload
-   return
-} else {
+   } else {
       
       IfExist, %PrefsFile%
-      {         
+      {
          try {
             FileCopy, %PrefsFile%, %PrefsFile%-%A_Now%.bak, 1
             FileDelete, %PrefsFile%
@@ -689,11 +681,13 @@ IF (Menu_RestartValues <> (LearnCount . DelimiterChar . LearnLength . DelimiterC
             return
          }
       }
-      Save()
+      
+      ApplyChanges()
       MsgBox,,Restore Defaults, Defaults have been restored.
+   }
+   
+   return
 }
-gosub, Cancel
-return
 
 MenuGuiGuiEscape:
 MenuGuiGuiClose:
@@ -704,30 +698,40 @@ Menu, Tray, Enable, Settings
 Return
 
 Save:
-; should only save preferences.ini if different from defaults
-Menu_ChangedPrefs["ArrowKeyMethod"] := ArrowKeyMethod
-Menu_ChangedPrefs["DisabledAutoCompleteKeys"] := DisabledAutoCompleteKeys
-Menu_ChangedPrefs["NoBackSpace"] := NoBackSpace
-Menu_ChangedPrefs["SendMethod"] := SendMethod
-Gui, MenuGui:Submit
-ListBoxOpacity := Menu_ListBoxOpacityUpDown
-IF (Menu_RestartValues <> (LearnCount . DelimiterChar . LearnLength . DelimiterChar . LearnMode))
-{   
-   MsgBox, 1, Save, Saving will change Learn settings.`r`nChanging Learn settings requires a script restart. Continue?
-   IfMsgBox, Cancel
+Save()
+return
+
+Save()
+{
+   global LearnCount, ListBoxOpacity
+   global Menu_ChangedPrefs, Menu_ListBoxOpacityUpDown, Menu_OldLearnCount
+   ; should only save preferences.ini if different from defaults
+   Menu_ChangedPrefs["ArrowKeyMethod"] := ArrowKeyMethod
+   Menu_ChangedPrefs["DisabledAutoCompleteKeys"] := DisabledAutoCompleteKeys
+   Menu_ChangedPrefs["NoBackSpace"] := NoBackSpace
+   Menu_ChangedPrefs["SendMethod"] := SendMethod
+   Gui, MenuGui:Submit
+   ListBoxOpacity := Menu_ListBoxOpacityUpDown
+   
+   IF (Menu_OldLearnCount < LearnCount )
+   {   
+      MsgBox, 1, Save, Saving will increase the Learn Count value.`r`nThis will permanently delete any words from the Learned Words`r`nwhich have been typed less times than the new Learn Count. Continue?
+      IfMsgBox, Cancel
+      {
+         ReturnValue := "Cancel"
+      }
+   }
+   
+   If ( ReturnValue == "Cancel" )
    {
       ReadPreferences(,"RestorePreferences")
-      Gui, MenuGui:Destroy
-      return
+   } else {
+      SaveSettings()
+      ApplyChanges()
    }
-   SaveSettings()
-   Reload
-} else {
-   SaveSettings()
-   Save()
+   gosub, Cancel
+   Return
 }
-gosub, Cancel
-Return
 
 SaveSettings()
 {
@@ -787,10 +791,14 @@ SaveSettings()
    SavePreferences(Menu_PrefsToSave)
 }
 
-Save()
+ApplyChanges()
 {
-   global InSettings
+   global LearnCount, Menu_LearnCount
    ValidatePreferences()
+   if ( Menu_OldLearnCount < LearnCount )
+   {
+      CleanupWordList()
+   }
    ParseTerminatingCharacters()
    InitializeHotKeys()
    DestroyListBox()

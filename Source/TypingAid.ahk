@@ -94,24 +94,6 @@ BlockInput, Send
 ;Read in the WordList
 ReadWordList()
 
-;Setup toggle-able hotkeys
-
-;Can't disable mouse buttons as we need to check to see if we have clicked the ListBox window
-
-EnabledKeyboardHotKeys = 
-
-; If we disable the number keys they never get to the input for some reason,
-; so we need to keep them enabled as hotkeys
-
-IfNotEqual, LearnMode, On
-{
-   Hotkey, $^+Delete, Off
-   ; We only want Ctrl-Shift-Delete enabled when the listbox is showing.
-   EnabledKeyboardHotKeys .= "$^+Delete" . DelimiterChar
-   
-   HotKey, $^+c, Off
-}
-
 InitializeHotKeys()
 
 DisableKeyboardHotKeys()
@@ -323,20 +305,28 @@ RecomputeMatches()
    
    WhereQuery := " WHERE wordindexed GLOB '" . WordMatch . "*' " . SuppressMatchingWordQuery
    
-   NormalizeTable := wDB.Query("SELECT MIN(count) AS normalize FROM Words" . WhereQuery . "AND count IS NOT NULL LIMIT " . LimitTotalMatches . ";")
-   
-   for each, row in NormalizeTable.Rows
+   IfEqual, LearnMode, Off
    {
-      Normalize := row[1]
+      WhereQuery .= " AND count IS NULL"
+      OrderByQuery := " ORDER BY ROWID, Word"
+   } else {
+   
+      NormalizeTable := wDB.Query("SELECT MIN(count) AS normalize FROM Words" . WhereQuery . "AND count IS NOT NULL LIMIT " . LimitTotalMatches . ";")
+   
+      for each, row in NormalizeTable.Rows
+      {
+         Normalize := row[1]
+      }
+      
+      IfEqual, Normalize,
+      {
+         Normalize := 0
+      }
+      
+      WordLen := StrLen(Word)
+      OrderByQuery := " ORDER BY CASE WHEN count IS NULL then ROWID else 'z' end, CASE WHEN count IS NOT NULL then ( (count - " . Normalize . ") * ( 1 - ( '0.75' / (LENGTH(word) - " . WordLen . ")))) end DESC, Word"
    }
    
-   IfEqual, Normalize,
-   {
-      Normalize := 0
-   }
-   
-   WordLen := StrLen(Word)
-   OrderByQuery := " ORDER BY CASE WHEN count IS NULL then ROWID else 'z' end, CASE WHEN count IS NOT NULL then ( (count - " . Normalize . ") * ( 1 - ( '0.75' / (LENGTH(word) - " . WordLen . ")))) end DESC, Word"
    
    Matches := wDB.Query("SELECT word FROM Words" . WhereQuery . OrderByQuery . " LIMIT " . LimitTotalMatches . ";")
    
@@ -436,6 +426,26 @@ InitializeHotKeys()
    global
    
    EnabledKeyboardHotKeys =
+
+   ;Setup toggle-able hotkeys
+
+   ;Can't disable mouse buttons as we need to check to see if we have clicked the ListBox window
+
+
+   ; If we disable the number keys they never get to the input for some reason,
+   ; so we need to keep them enabled as hotkeys
+
+   IfNotEqual, LearnMode, On
+   {
+      Hotkey, $^+Delete, Off
+   
+      HotKey, $^+c, Off
+   } else {
+      HotKey, $^+c, On
+      Hotkey, $^+Delete, Off
+      ; We only want Ctrl-Shift-Delete enabled when the listbox is showing.
+      EnabledKeyboardHotKeys .= "$^+Delete" . DelimiterChar
+   }
    
    IfEqual, ArrowKeyMethod, Off
    {
@@ -448,26 +458,26 @@ InitializeHotKeys()
       Hotkey, $PgUp, Off
       Hotkey, $PgDn, Off
    } else {
-            EnabledKeyboardHotKeys .= "$Up" . DelimiterChar
-            EnabledKeyboardHotKeys .= "$Down" . DelimiterChar
-            EnabledKeyboardHotKeys .= "$PgUp" . DelimiterChar
-            EnabledKeyboardHotKeys .= "$PgDn" . DelimiterChar
-            If DisabledAutoCompleteKeys contains E
-               Hotkey, $^Enter, Off
-            else EnabledKeyboardHotKeys .= "$^Enter" . DelimiterChar
-            If DisabledAutoCompleteKeys contains S
-               HotKey, $^Space, Off
-            else EnabledKeyboardHotKeys .= "$^Space" . DelimiterChar
-            If DisabledAutoCompleteKeys contains T
-               HotKey, $Tab, Off
-            else EnabledKeyboardHotKeys .= "$Tab" . DelimiterChar
-            If DisabledAutoCompleteKeys contains R
-               HotKey, $Right, Off
-            else EnabledKeyboardHotKeys .= "$Right" . DelimiterChar
-            If DisabledAutoCompleteKeys contains U
-               HotKey, $Enter, Off
-            else EnabledKeyboardHotKeys .= "$Enter" . DelimiterChar
-         }
+      EnabledKeyboardHotKeys .= "$Up" . DelimiterChar
+      EnabledKeyboardHotKeys .= "$Down" . DelimiterChar
+      EnabledKeyboardHotKeys .= "$PgUp" . DelimiterChar
+      EnabledKeyboardHotKeys .= "$PgDn" . DelimiterChar
+      If DisabledAutoCompleteKeys contains E
+         Hotkey, $^Enter, Off
+      else EnabledKeyboardHotKeys .= "$^Enter" . DelimiterChar
+         If DisabledAutoCompleteKeys contains S
+            HotKey, $^Space, Off
+         else EnabledKeyboardHotKeys .= "$^Space" . DelimiterChar
+         If DisabledAutoCompleteKeys contains T
+            HotKey, $Tab, Off
+         else EnabledKeyboardHotKeys .= "$Tab" . DelimiterChar
+         If DisabledAutoCompleteKeys contains R
+            HotKey, $Right, Off
+         else EnabledKeyboardHotKeys .= "$Right" . DelimiterChar
+         If DisabledAutoCompleteKeys contains U
+            HotKey, $Enter, Off
+         else EnabledKeyboardHotKeys .= "$Enter" . DelimiterChar
+   }
 
    ; remove last ascii 2
    StringTrimRight, EnabledKeyboardHotKeys, EnabledKeyboardHotKeys, 1
