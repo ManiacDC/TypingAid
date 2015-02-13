@@ -60,7 +60,7 @@ ReadWordList()
       }
    } else
    {
-      CleanupWordList("AllWords")
+      CleanupWordList()
    }
    
    wDB.BeginTransaction()
@@ -205,7 +205,7 @@ AddWordToList(AddWord,ForceCountNewOnly,ForceLearn=false)
             CountValue = 1
                   
          } else {
-            CountValue = %LearnCount% ;set the count to LearnCount so it gets written to the file
+            CountValue := LearnCount ;set the count to LearnCount so it gets written to the file
          }
          
          IfEqual, LearnMode, On
@@ -319,17 +319,11 @@ UpdateWordCount(word,SortOnly)
 
 ;------------------------------------------------------------------------
 
-CleanupWordList(AllWords=false)
+CleanupWordList()
 {
    global LearnCount
    global wDB
-   QueryString := "DELETE FROM Words WHERE count < " . LearnCount
-   if (AllWords == "AllWords")
-   {
-      QueryString .= " OR count IS NULL"
-   }
-   QueryString .= ";"
-   wDB.Query(QueryString)
+   wDB.Query("DELETE FROM Words WHERE count < " . LearnCount . " OR count IS NULL;")
 }
 
 ;------------------------------------------------------------------------
@@ -348,7 +342,7 @@ MaybeUpdateWordlist()
    IfEqual, WordListDone, 1
    {
       
-      CleanupWordList("AllWords")
+      CleanupWordList()
       
       SortWordList := wDB.Query("SELECT Word FROM Words ORDER BY count DESC;")
       

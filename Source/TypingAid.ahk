@@ -230,7 +230,6 @@ ProcessKey(chr,EndKey)
                AddWordToList(Word,0)
                ClearAllVars(true)
                Word = %chr%
-               Return
             } else { 
                   Word .= chr
                   }

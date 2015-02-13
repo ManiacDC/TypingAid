@@ -289,7 +289,7 @@ ConstructGui()
 
 
    Gui, MenuGui:Add, GroupBox, x%MenuGroup1BoxX% y%MenuRowY% w%MenuThreeColGroupWidth% h%MenuRowHeight% , List appears X pixels below cursor
-   Menu_ListBoxOffsetOptions=|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|
+   Menu_ListBoxOffsetOptions=|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31|32
    StringReplace,  Menu_ListBoxOffsetOptions, Menu_ListBoxOffsetOptions, |%ListBoxOffset%|,|%ListBoxOffset%||
    StringTrimLeft, Menu_ListBoxOffsetOptions, Menu_ListBoxOffsetOptions, 1
    Gui, MenuGui:Add, DDL, x%MenuGroup1EditX% y%MenuRowEditY% r5 vListBoxOffset gEditValue, %Menu_ListBoxOffsetOptions%
@@ -657,7 +657,7 @@ RestoreDefaults()
 
    IF ( Menu_OldLearnCount < LearnCount )
    {
-      MsgBox, 1, Restore Defaults, Restoring Defaults will increase the Learn Count value.`r`nThis will permanently delete any words from the Learned Words`r`nwhich have been typed less times than the new Learn Count. Continue?
+      MsgBox, 1, Restore Defaults, Restoring Defaults will increase the Learn Count value.`r`nWhen exiting TypingAid, this will permanently delete any words`r`nfrom the Learned Words which have been typed less times`r`nthan the new Learn Count. Continue?
       IfMsgBox, Cancel
       {
          ReturnValue := "Cancel"
@@ -715,7 +715,7 @@ Save()
    
    IF (Menu_OldLearnCount < LearnCount )
    {   
-      MsgBox, 1, Save, Saving will increase the Learn Count value.`r`nThis will permanently delete any words from the Learned Words`r`nwhich have been typed less times than the new Learn Count. Continue?
+      MsgBox, 1, Save, Saving will increase the Learn Count value.`r`nWhen exiting TypingAid, this will permanently delete any words`r`nfrom the Learned Words which have been typed less times`r`nthan the new Learn Count. Continue?
       IfMsgBox, Cancel
       {
          ReturnValue := "Cancel"
@@ -793,12 +793,7 @@ SaveSettings()
 
 ApplyChanges()
 {
-   global LearnCount, Menu_LearnCount
    ValidatePreferences()
-   if ( Menu_OldLearnCount < LearnCount )
-   {
-      CleanupWordList()
-   }
    ParseTerminatingCharacters()
    InitializeHotKeys()
    DestroyListBox()

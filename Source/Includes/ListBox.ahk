@@ -229,7 +229,7 @@ ShowListBox()
          BorderWidthX = 1
       
       ;Use 8 pixels for each character in width
-      ListBoxSizeX := ListBoxCharacterWidth * MatchLongestLength + ListBoxCharacterWidth + ScrollBarWidth + (BorderWidthX *2)
+      ListBoxSizeX := ListBoxCharacterWidthComputed * MatchLongestLength + ListBoxCharacterWidthComputed + ScrollBarWidth + (BorderWidthX *2)
       
       ListBoxPosX := HCaretX()
       ; + ListBoxOffset Move ListBox down a little so as not to hide the caret. 

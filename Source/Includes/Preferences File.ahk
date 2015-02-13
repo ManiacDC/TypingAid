@@ -302,11 +302,22 @@ ValidatePreferences()
       ListBoxFontSize = 2
    }
    
-   IfEqual, DftListBoxCharacterWidth,
-      DftListBoxCharacterWidth := Ceil(ListBoxFontSize * 0.8 )
+   if DftListBoxCharacterWidth is not Integer
+   {
+      DftListBoxCharacterWidth =
+   }
    
    if ListBoxCharacterWidth is not Integer
+   {
       ListBoxCharacterWidth := DftListBoxCharacterWidth
+   }
+   
+   if ListBoxCharacterWidth is Integer
+   {
+      ListBoxCharacterWidthComputed := ListBoxCharacterWidth
+   } else {
+      ListBoxCharacterWidthComputed := Ceil(ListBoxFontSize * 0.8)
+   }
       
    If ListBoxOpacity is not Integer
       ListBoxOpacity := DftListBoxOpacity
@@ -387,7 +398,6 @@ SavePreferences(ByRef PrefsToSave)
       }
    }
    
-   ;do stuff
    Return
 }
 
