@@ -24,7 +24,7 @@ ConstructGui()
    Global hListBoxCharacterWidth, hListBoxFontFixed, hListBoxFontOverride, hListBoxFontSize, hListBoxOffset, hListBoxOpacity, hListBoxRows
    Global Menu_ArrowKeyMethodOptionsText, Menu_CaseCorrection, Menu_ListBoxOpacityUpDown, Menu_SendMethodOptionsCode, Menu_SendMethodC
    Global Menu_CtrlEnter, Menu_CtrlSpace, Menu_Enter, Menu_NumberKeys, Menu_RightArrow, Menu_Tab
-   Global MenuAdvGuiHeight, MenuGuiWidth
+   Global MenuAdvGuiHeight, MenuGuiWidth, VisitForum
    Global Length
    Global WM_SETCURSOR, WM_MOUSEMOVE, ScriptTitle
    
@@ -547,7 +547,8 @@ Full (untested) for UTF-8 character set.
 
       Gui, MenuGui:Add, Text, xp+60 Yp gVisitForum, is free software, support forum at
       Gui, MenuGui:Font, cGreen 
-      Gui, MenuGui:Add, Text, x%MenuGroup2of2EditX% Yp+%MenuTextMenuRowY% gVisitForum, www.autohotkey.com (click here)
+      ;the vVisitForum variable is necessary for the link highlighting
+      Gui, MenuGui:Add, Text, x%MenuGroup2of2EditX% Yp+%MenuTextMenuRowY% gVisitForum vVisitForum, www.autohotkey.com (click here)
       Gui, MenuGui:Font, cBlack 
    }
    
@@ -841,10 +842,12 @@ HandleMessage( p_w, p_l, p_m, p_hw )
    
 	if ( p_m = WM_SETCURSOR )
 	{
-		if ( Help_Hover)
-			return, true
-	}
-	else if ( p_m = WM_MOUSEMOVE )
+		if ( Help_Hover || URL_Hover)
+         return, true
+	} else if (A_GuiControl == Old_GuiControl)
+   {
+      return
+   } else if ( p_m = WM_MOUSEMOVE )
 	{
 		if A_GuiControl in hIncludeProgramExecutables,hIncludeProgramTitles,hExcludeProgramExecutables,hExcludeProgramTitles,hLength,hNumPresses,hLearnMode,hLearnCount,hLearnLength,hArrowKeyMethod,hDisabledAutoCompleteKeys,hDetectMouseClickMove,hNoBackSpace,hAutoSpace,hSendMethod,hTerminatingCharacters,hForceNewWordCharacters,hListBoxOffset,hListBoxFontFixed,hListBoxFontOverride,hListBoxFontSize,hListBoxCharacterWidth,hListBoxOpacity,hListBoxRows,hHelperWindowProgramExecutables,hHelperWindowProgramTitles
 		{
@@ -859,11 +862,10 @@ HandleMessage( p_w, p_l, p_m, p_hw )
 				URL_Hover = 
 				Gui, Font, cBlue        ;;; xyz
 				GuiControl, Font, %A_GuiControl% ;;; xyz
-				Old_GuiControl = %A_GuiControl%
 			}
 		} else if (A_GuiControl = "VisitForum")
 		{	
-			if !(URLHover)
+			if !(URL_Hover)
 			{
 				IF !(h_cursor_hand)
 				{
@@ -874,7 +876,6 @@ HandleMessage( p_w, p_l, p_m, p_hw )
 				Help_Hover =
 				Gui, Font, cBlue        ;;; xyz
 				GuiControl, Font, %A_GuiControl% ;;; xyz
-				Old_GuiControl = %A_GuiControl%
 			}
 				
 		} else if (Help_Hover || URL_Hover)
@@ -889,8 +890,10 @@ HandleMessage( p_w, p_l, p_m, p_hw )
 		IF !(h_old_cursor)
 		{
 			h_old_cursor := old_cursor
-		}
-	}
+      }
+      
+      Old_GuiControl := A_GuiControl
+   }
 }
 
 SaveTitleList:
