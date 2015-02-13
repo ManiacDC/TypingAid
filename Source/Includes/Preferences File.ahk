@@ -407,26 +407,26 @@ ConstructHelpStrings()
    
 hIncludeProgramExecutables=
 (
-;IncludeProgramExecutables is a list of executable (.exe) files that TypingAid should be enabled for.
-;If one the executables matches the current program, TypingAid is enabled for that program.
+;IncludeProgramExecutables is a list of executable (.exe) files that %ScriptTitle% should be enabled for.
+;If one the executables matches the current program, %ScriptTitle% is enabled for that program.
 )
 
 hIncludeProgramTitles=
 (
-;IncludeProgramTitles is a list of strings (separated by | ) to find in the title of the window you want TypingAid enabled for.
-;If one of the strings is found in the title, TypingAid is enabled for that window.
+;IncludeProgramTitles is a list of strings (separated by | ) to find in the title of the window you want %ScriptTitle% enabled for.
+;If one of the strings is found in the title, %ScriptTitle% is enabled for that window.
 )
 
 hExcludeProgramExecutables=
 (
-;ExcludeProgramExecutables is a list of executable (.exe) files that TypingAid should be disabled for.
-;If one the executables matches the current program, TypingAid is disabled for that program.
+;ExcludeProgramExecutables is a list of executable (.exe) files that %ScriptTitle% should be disabled for.
+;If one the executables matches the current program, %ScriptTitle% is disabled for that program.
 )
 
 hExcludeProgramTitles=
 (
-;ExcludeProgramTitles is a list of strings (separated by | ) to find in the title of the window you want TypingAid disabled for.
-;If one of the strings is found in the title, TypingAid is disabled for that window.
+;ExcludeProgramTitles is a list of strings (separated by | ) to find in the title of the window you want %ScriptTitle% disabled for.
+;If one of the strings is found in the title, %ScriptTitle% is disabled for that window.
 )
 
 hLength=
@@ -490,13 +490,13 @@ hDisabledAutoCompleteKeys=
 hDetectMouseClickMove=
 (
 ;DetectMouseClickMove is used to detect when the cursor is moved with the mouse.
-; On - TypingAid will not work when used with an On-Screen keyboard.
-; Off - TypingAid will not detect when the cursor is moved within the same line using the mouse, and scrolling the text will clear the list.
+; On - %ScriptTitle% will not work when used with an On-Screen keyboard.
+; Off - %ScriptTitle% will not detect when the cursor is moved within the same line using the mouse, and scrolling the text will clear the list.
 )
 
 hNoBackSpace=
 (
-;NoBackSpace is used to make TypingAid not backspace any of the previously typed characters
+;NoBackSpace is used to make %ScriptTitle% not backspace any of the previously typed characters
 ;(ie, do not change the case of any previously typed characters).
 ;  On - characters you have already typed will not be changed
 ;  Off - characters you have already typed will be backspaced and replaced with the case of the word you have chosen.
@@ -543,7 +543,7 @@ hTerminatingCharacters=
 ;For support of special characters, remove the key that is used to type the diacritic symbol (or the character) from the right hand side. 
 ;For example, if on your keyboard layout, " is used before typing ë, ; is used to type ñ, remove them from the right hand side.
 ;
-;After this, TypingAid can recognize the special character. The side-effect is that, it cannot complete words typed after 
+;After this, %ScriptTitle% can recognize the special character. The side-effect is that, it cannot complete words typed after 
 ;the symbol, (e.g. "word... ) If you need to complete a word after a quotation mark, first type two quotation marks "" then 
 ;press left and type the word in the middle.
 ;
@@ -602,7 +602,7 @@ hListBoxCharacterWidth=
 ; 1. Changing the Font DPI in Windows
 ; 2. Changing the ListBoxFontFixed setting
 ; 3. Changing the ListBoxFontSize setting
-;Leave this blank to let TypingAid try to compute the width.
+;Leave this blank to let %ScriptTitle% try to compute the width.
 )
 
 hListBoxOpacity=

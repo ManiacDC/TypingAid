@@ -27,13 +27,14 @@ ListLines Off
 CoordMode, Caret, Screen
 CoordMode, Mouse, Screen
 
+SplitPath, A_ScriptName,,,ScriptExtension,ScriptNoExtension,
+
 If A_Is64bitOS
 {
    IF (A_PtrSize = 4)
    {
       IF A_IsCompiled
       {
-         SplitPath, A_ScriptName,,,ScriptExtension,ScriptNoExtension,
          
          ScriptPath64 := A_ScriptDir . "\" . ScriptNoExtension . "64." . ScriptExtension
          
@@ -46,12 +47,19 @@ If A_Is64bitOS
    }
 }
 
+if (SubStr(ScriptNoExtension, StrLen(ScriptNoExtension)-1, 2) == "64" )
+{
+   StringTrimRight, ScriptTitle, ScriptNoExtension, 2
+} else {
+   ScriptTitle := ScriptNoExtension
+}
+
 ScriptExtension=
 ScriptNoExtension=
 ScriptPath64=
 
 ;; Tray menu
-;Name=TypingAid v2.15
+;Name=TypingAid
 ; I would like to see an icon here, see also active/inactive below
 ;Menu, tray, NoStandard
 ;Menu, tray, tip, %Name% - active
@@ -890,25 +898,27 @@ DeleteSelectedWordFromList()
 
 SuspendOn()
 {
+   global ScriptTitle
    Suspend, On
    If A_IsCompiled
    {
       Menu, tray, Icon, %A_ScriptName%,3,1
    } else
    {
-      Menu, tray, icon, TypingAid-Inactive.ico, ,1
+      Menu, tray, icon, %ScriptTitle%-Inactive.ico, ,1
    }
 }
 
 SuspendOff()
 {
+   global ScriptTitle
    Suspend, Off
    If A_IsCompiled
    {
       Menu, tray, Icon, %A_ScriptName%,1,1
    } else
    {
-      Menu, tray, icon, TypingAid-Active.ico, ,1
+      Menu, tray, icon, %ScriptTitle%-Active.ico, ,1
    }
 }   
 

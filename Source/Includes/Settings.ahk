@@ -1,4 +1,4 @@
-; GUI for TypingAid 2.15 configuration
+; GUI for TypingAid configuration
 ; by HugoV / Maniac
 
 LaunchSettings:
@@ -26,7 +26,7 @@ ConstructGui()
    Global Menu_CtrlEnter, Menu_CtrlSpace, Menu_Enter, Menu_NumberKeys, Menu_RightArrow, Menu_Tab
    Global MenuAdvGuiHeight, MenuGuiWidth
    Global Length
-   Global WM_SETCURSOR, WM_MOUSEMOVE
+   Global WM_SETCURSOR, WM_MOUSEMOVE, ScriptTitle
    
    Menu_CaseCorrection=
    Menu_ArrowKeyMethodOptionsText=
@@ -358,7 +358,7 @@ ConstructGui()
    MenuRowHelpY := MenuRowY - MenuHelpIndentY
    MenuRowEditY := MenuRowY + MenuEditIndentY
 
-   Gui, MenuGui:Add, GroupBox, x%MenuGroup1BoxX% y%MenuRowY% w%MenuOneColGroupWidth% h%MenuRowHeight% , Window titles you want TypingAid enabled for
+   Gui, MenuGui:Add, GroupBox, x%MenuGroup1BoxX% y%MenuRowY% w%MenuOneColGroupWidth% h%MenuRowHeight% , Window titles you want %ScriptTitle% enabled for
    Gui, MenuGui:Add, Edit, x%MenuGroup1EditX% y%MenuRowEditY% w%MenuOneColEditWidthEdit% vIncludeProgramTitles gEditValue, %IncludeProgramTitles%
    Gui, MenuGui:Add, Button, x%MenuOneColEditButton% yp w130 gSetEnableTitles, Edit
    Gui, MenuGui:Font, cGreen
@@ -369,7 +369,7 @@ ConstructGui()
    MenuRowHelpY := MenuRowY - MenuHelpIndentY
    MenuRowEditY := MenuRowY + MenuEditIndentY
 
-   Gui, MenuGui:Add, GroupBox, x%MenuGroup1BoxX% y%MenuRowY% w%MenuOneColGroupWidth% h%MenuRowHeight% , Window titles you want TypingAid disabled for
+   Gui, MenuGui:Add, GroupBox, x%MenuGroup1BoxX% y%MenuRowY% w%MenuOneColGroupWidth% h%MenuRowHeight% , Window titles you want %ScriptTitle% disabled for
    Gui, MenuGui:Add, Edit, x%MenuGroup1EditX% y%MenuRowEditY% w%MenuOneColEditWidthEdit% vExcludeProgramTitles gEditValue, %ExcludeProgramTitles%
    Gui, MenuGui:Add, Button, x%MenuOneColEditButton% yp w130 gSetDisableTitles, Edit
    Gui, MenuGui:Font, cGreen
@@ -380,7 +380,7 @@ ConstructGui()
    MenuRowHelpY := MenuRowY - MenuHelpIndentY
    MenuRowEditY := MenuRowY + MenuEditIndentY
 
-   Gui, MenuGui:Add, GroupBox, x%MenuGroup1BoxX% y%MenuRowY% w%MenuOneColGroupWidth% h%MenuRowHeight% , Processes you want TypingAid enabled for
+   Gui, MenuGui:Add, GroupBox, x%MenuGroup1BoxX% y%MenuRowY% w%MenuOneColGroupWidth% h%MenuRowHeight% , Processes you want %ScriptTitle% enabled for
    Gui, MenuGui:Add, Edit, x%MenuGroup1EditX% y%MenuRowEditY% w%MenuOneColEditWidthEdit% vIncludeProgramExecutables gEditValue, %IncludeProgramExecutables%
    Gui, MenuGui:Add, Button, x%MenuOneColEditButton% yp w130 gSetEnableProcess, Edit
    Gui, MenuGui:Font, cGreen
@@ -391,7 +391,7 @@ ConstructGui()
    MenuRowHelpY := MenuRowY - MenuHelpIndentY
    MenuRowEditY := MenuRowY + MenuEditIndentY
 
-   Gui, MenuGui:Add, GroupBox, x%MenuGroup1BoxX% y%MenuRowY% w%MenuOneColGroupWidth% h%MenuRowHeight% , Processes you want TypingAid disabled for
+   Gui, MenuGui:Add, GroupBox, x%MenuGroup1BoxX% y%MenuRowY% w%MenuOneColGroupWidth% h%MenuRowHeight% , Processes you want %ScriptTitle% disabled for
    Gui, MenuGui:Add, Edit, x%MenuGroup1EditX% y%MenuRowEditY% w%MenuOneColEditWidthEdit% vExcludeProgramExecutables gEditValue, %ExcludeProgramExecutables%
    Gui, MenuGui:Add, Button, x%MenuOneColEditButton% yp w130 gSetDisableProcess, Edit
    Gui, MenuGui:Font, cGreen
@@ -458,7 +458,7 @@ ConstructGui()
 
    hIntro=
    (
-TypingAid is a simple, compact, and handy auto-completion utility.
+%ScriptTitle% is a simple, compact, and handy auto-completion utility.
 
 It is customizable enough to be useful for regular typing and for programming.
 
@@ -477,8 +477,8 @@ To allow for distribution of standardized preferences, a Defaults.ini may be dis
 
 Customizable features include (see also detailed description below)
 
-   * List of programs for which you want TypingAid enabled.
-   * List of programs for which you do not want TypingAid enabled.
+   * List of programs for which you want %ScriptTitle% enabled.
+   * List of programs for which you do not want %ScriptTitle% enabled.
    * Number of characters before the list of words appears.
    * Number of times you must press a number hotkey to select the associated word (options are 1 and 2, 2 has had minimal testing).
    * Enable or disable learning mode.
@@ -539,17 +539,20 @@ Full (untested) for UTF-8 character set.
    Gui, MenuGui:Add, Button,   xp+%MenuRowThreeButtonNext% yp          w%MenuRowThreeButtonWidth%    gRestore, Restore default
    Gui, MenuGui:Add, Button,   xp+%MenuRowThreeButtonNext% yp          w%MenuRowThreeButtonWidth%    gCancel , Cancel
 
-   Gui, MenuGui:Font, cBlack bold
-   Gui, MenuGui:Add, Text, x%MenuGroup2of2EditX% Yp-10 gVisitForum, TypingAid
-   Gui, MenuGui:Font, cBlack normal
+   if (ScriptTitle == "TypingAid")
+   {
+      Gui, MenuGui:Font, cBlack bold
+      Gui, MenuGui:Add, Text, x%MenuGroup2of2EditX% Yp-10 gVisitForum, %ScriptTitle%
+      Gui, MenuGui:Font, cBlack normal
 
-   Gui, MenuGui:Add, Text, xp+60 Yp gVisitForum, is free software, support forum at
-   Gui, MenuGui:Font, cGreen 
-   Gui, MenuGui:Add, Text, x%MenuGroup2of2EditX% Yp+%MenuTextMenuRowY% gVisitForum, www.autohotkey.com (click here)
-   Gui, MenuGui:Font, cBlack 
+      Gui, MenuGui:Add, Text, xp+60 Yp gVisitForum, is free software, support forum at
+      Gui, MenuGui:Font, cGreen 
+      Gui, MenuGui:Add, Text, x%MenuGroup2of2EditX% Yp+%MenuTextMenuRowY% gVisitForum, www.autohotkey.com (click here)
+      Gui, MenuGui:Font, cBlack 
+   }
    
    Gui, Menugui:+OwnDialogs
-   Gui, MenuGui:Show, h%MenuGuiHeight% w%MenuGuiWidth%, TypingAid Settings
+   Gui, MenuGui:Show, h%MenuGuiHeight% w%MenuGuiWidth%, %ScriptTitle% Settings
    Return
 }
 
@@ -581,6 +584,7 @@ GetList(TitleType,GetExe, ByRef ActiveList)
 {
    global MenuTitleType
    global InProcessList
+   global ScriptTitle
    InProcessList := true
    MenuTitleType := TitleType
    If (GetExe =1)
@@ -623,7 +627,7 @@ GetList(TitleType,GetExe, ByRef ActiveList)
    Gui, ProcessList:Add, Text, x10 yp+170, a) Select a program or window from the list or type a name in the`n%A_Space%%A_Space%%A_Space%%A_Space%%A_Space%'Edit' control (you may need to edit it further)`nb) Click ADD to add it to the list`nc) To remove a program/title, select an item from the 'current list' and`n%A_Space%%A_Space%%A_Space%%A_Space%click DEL.
    Gui, ProcessList:Add, Button, x10 yp+90 w190 gSaveTitleList, Save 
    Gui, ProcessList:Add, Button, xp+210 yp w190 gCancelTitle, Cancel
-   Gui, ProcessList:Show, w420 h380, TypingAid Settings
+   Gui, ProcessList:Show, w420 h380, %ScriptTitle% Settings
    Return
 }
 
@@ -634,7 +638,7 @@ Gui, MenuGui:Show, h%MenuAdvGuiHeight% w%MenuGuiWidth% y%MenuGuiYPos% x%MenuGuiX
 Return
 
 VisitForum:
-MsgBox , 36 , Visit TypingAid forum (www.autohotkey.com), Do you want to visit the TypingAid forum on www.autohotkey.com?
+MsgBox , 36 , Visit %ScriptTitle% forum (www.autohotkey.com), Do you want to visit the %ScriptTitle% forum on www.autohotkey.com?
 IfMsgBox Yes
 	Run, http://www.autohotkey.com/board/topic/49517-ahk-11typingaid-v2198-word-autocompletion-utility/
 Return
@@ -652,12 +656,13 @@ RestoreDefaults()
    global LearnCount
    global Menu_OldLearnCount
    global PrefsFile
+   global ScriptTitle
 
    ReadPreferences("RestoreDefaults")
 
    IF ( Menu_OldLearnCount < LearnCount )
    {
-      MsgBox, 1, Restore Defaults, Restoring Defaults will increase the Learn Count value.`r`nWhen exiting TypingAid, this will permanently delete any words`r`nfrom the Learned Words which have been typed less times`r`nthan the new Learn Count. Continue?
+      MsgBox, 1, Restore Defaults, Restoring Defaults will increase the Learn Count value.`r`nWhen exiting %ScriptTitle%, this will permanently delete any words`r`nfrom the Learned Words which have been typed less times`r`nthan the new Learn Count. Continue?
       IfMsgBox, Cancel
       {
          ReturnValue := "Cancel"
@@ -705,6 +710,7 @@ Save()
 {
    global LearnCount, ListBoxOpacity
    global Menu_ChangedPrefs, Menu_ListBoxOpacityUpDown, Menu_OldLearnCount
+   global ScriptTitle
    ; should only save preferences.ini if different from defaults
    Menu_ChangedPrefs["ArrowKeyMethod"] := ArrowKeyMethod
    Menu_ChangedPrefs["DisabledAutoCompleteKeys"] := DisabledAutoCompleteKeys
@@ -715,7 +721,7 @@ Save()
    
    IF (Menu_OldLearnCount < LearnCount )
    {   
-      MsgBox, 1, Save, Saving will increase the Learn Count value.`r`nWhen exiting TypingAid, this will permanently delete any words`r`nfrom the Learned Words which have been typed less times`r`nthan the new Learn Count. Continue?
+      MsgBox, 1, Save, Saving will increase the Learn Count value.`r`nWhen exiting %ScriptTitle%, this will permanently delete any words`r`nfrom the Learned Words which have been typed less times`r`nthan the new Learn Count. Continue?
       IfMsgBox, Cancel
       {
          ReturnValue := "Cancel"
@@ -821,7 +827,7 @@ Loop, Parse, %A_GuiControl%,`r`n
 		Menu_Help .= A_LoopField . "`r`n"
 	}
 }
-MsgBox , 32 , TypingAid Help, %Menu_Help%
+MsgBox , 32 , %ScriptTitle% Help, %Menu_Help%
 Menu_Help=
 Return
 
