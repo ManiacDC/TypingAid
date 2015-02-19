@@ -54,6 +54,11 @@ if (SubStr(ScriptNoExtension, StrLen(ScriptNoExtension)-1, 2) == "64" )
    ScriptTitle := ScriptNoExtension
 }
 
+if (InStr(ScriptTitle, "TypingAid"))
+{
+   ScriptTitle = TypingAid
+}
+
 ScriptExtension=
 ScriptNoExtension=
 ScriptPath64=
