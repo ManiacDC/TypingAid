@@ -12,12 +12,12 @@ Return
 
 ConstructGui()
 {
-   Global ArrowKeyMethod, AutoSpace, DetectMouseClickMove, DisabledAutoCompleteKeys
-   Global hArrowKeyMethod, hAutoSpace, hDetectMouseClickMove, hDisabledAutoCompleteKeys
+   Global ArrowKeyMethod, AutoSpace, DetectMouseClickMove, DisabledAutoCompleteKeys, DoNotLearnStrings
+   Global hArrowKeyMethod, hAutoSpace, hDetectMouseClickMove, hDisabledAutoCompleteKeys, hDoNotLearnStrings
    Global ForceNewWordCharacters, LearnCount, LearnLength, LearnMode, Length
    Global hForceNewWordCharacters, hLearnCount, hLearnLength, hLearnMode, hLength
-   Global NoBackSpace, SendMethod, TerminatingCharacters
-   Global hNoBackSpace, hSendMethod, hTerminatingCharacters
+   Global NoBackSpace, SendMethod, SuppressMatchingWord, TerminatingCharacters
+   Global hNoBackSpace, hSendMethod, hSuppressMatchingWord, hTerminatingCharacters
    Global ExcludeProgramExecutables, ExcludeProgramTitles, IncludeProgramExecutables, IncludeProgramTitles, HelperWindowProgramExecutables, HelperWindowProgramTitles
    Global hExcludeProgramExecutables, hExcludeProgramTitles, hIncludeProgramExecutables, hIncludeProgramTitles, hHelperWindowProgramExecutables, hHelperWindowProgramTitles
    Global ListBoxCharacterWidth, ListBoxFontFixed, ListBoxFontOverride, ListBoxFontSize, ListBoxOffset, ListBoxOpacity, ListBoxRows
@@ -275,6 +275,26 @@ ConstructGui()
    Gui, MenuGui:Add, DDL, x%MenuGroup3of3EditX% y%MenuRowEditY% r5 vAutoSpace gEditValue, %Menu_AutoSpaceOptions%
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup3of3HelpX% y%MenuRowHelpY% vhAutoSpace gHelpMe, %MenuGuiHelpIcon%
+   Gui, MenuGui:Font, cBlack
+   
+
+   MenuRowY := MenuRowY + MenuRowHeight + MenuSeparatorY
+   MenuRowHelpY := MenuRowY - MenuHelpIndentY
+   MenuRowEditY := MenuRowY + MenuEditIndentY
+
+   Gui, MenuGui:Add, GroupBox, x%MenuGroup1BoxX% y%MenuRowY% w%MenuTwoColGroupWidth% h%MenuRowHeight% , Sub-strings to not learn
+   Gui, MenuGui:Add, Edit, x%MenuGroup1EditX% y%MenuRowEditY% w%MenuTwoColEditWidth% vDoNotLearnStrings Password gEditValue, %DoNotLearnStrings%
+   Gui, MenuGui:Font, cGreen
+   Gui, MenuGui:Add, Text, x%MenuGroup1of2HelpX% y%MenuRowHelpY% vhDoNotLearnStrings gHelpMe, %MenuGuiHelpIcon%
+   Gui, MenuGui:Font, cBlack
+
+   Gui, MenuGui:Add, GroupBox, x%MenuGroup2of2BoxX% y%MenuRowY% w%MenuTwoColGroupWidth% h%MenuRowHeight% , Suppress matching word
+   Menu_SuppressMatchingWordOptions=|On|Off|
+   StringReplace,  Menu_SuppressMatchingWordOptions, Menu_SuppressMatchingWordOptions, |%SuppressMatchingWord%|,|%SuppressMatchingWord%||
+   StringTrimLeft, Menu_SuppressMatchingWordOptions, Menu_SuppressMatchingWordOptions, 1
+   Gui, MenuGui:Add, DDL, x%MenuGroup2of2EditX% y%MenuRowEditY% w%MenuTwoColEditWidth% vSuppressMatchingWord gEditValue, %Menu_SuppressMatchingWordOptions%
+   Gui, MenuGui:Font, cGreen
+   Gui, MenuGui:Add, Text, x%MenuGroup2of2HelpX% y%MenuRowHelpY% vhSuppressMatchingWord gHelpMe, %MenuGuiHelpIcon%
    Gui, MenuGui:Font, cBlack
 
    ;NumPresses
@@ -849,7 +869,7 @@ HandleMessage( p_w, p_l, p_m, p_hw )
       return
    } else if ( p_m = WM_MOUSEMOVE )
 	{
-		if A_GuiControl in hIncludeProgramExecutables,hIncludeProgramTitles,hExcludeProgramExecutables,hExcludeProgramTitles,hLength,hNumPresses,hLearnMode,hLearnCount,hLearnLength,hArrowKeyMethod,hDisabledAutoCompleteKeys,hDetectMouseClickMove,hNoBackSpace,hAutoSpace,hSendMethod,hTerminatingCharacters,hForceNewWordCharacters,hListBoxOffset,hListBoxFontFixed,hListBoxFontOverride,hListBoxFontSize,hListBoxCharacterWidth,hListBoxOpacity,hListBoxRows,hHelperWindowProgramExecutables,hHelperWindowProgramTitles
+      if ( SubStr(A_GuiControl, 1, 1) == "h" )
 		{
 			if !(Help_Hover)
 			{
