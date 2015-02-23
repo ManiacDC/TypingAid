@@ -405,65 +405,65 @@ ConstructHelpStrings()
 {
    global
    
-hIncludeProgramExecutables=
+helpinfo_IncludeProgramExecutables=
 (
 ;IncludeProgramExecutables is a list of executable (.exe) files that %ScriptTitle% should be enabled for.
 ;If one the executables matches the current program, %ScriptTitle% is enabled for that program.
 )
 
-hIncludeProgramTitles=
+helpinfo_IncludeProgramTitles=
 (
 ;IncludeProgramTitles is a list of strings (separated by | ) to find in the title of the window you want %ScriptTitle% enabled for.
 ;If one of the strings is found in the title, %ScriptTitle% is enabled for that window.
 )
 
-hExcludeProgramExecutables=
+helpinfo_ExcludeProgramExecutables=
 (
 ;ExcludeProgramExecutables is a list of executable (.exe) files that %ScriptTitle% should be disabled for.
 ;If one the executables matches the current program, %ScriptTitle% is disabled for that program.
 )
 
-hExcludeProgramTitles=
+helpinfo_ExcludeProgramTitles=
 (
 ;ExcludeProgramTitles is a list of strings (separated by | ) to find in the title of the window you want %ScriptTitle% disabled for.
 ;If one of the strings is found in the title, %ScriptTitle% is disabled for that window.
 )
 
-hLength=
+helpinfo_Length=
 (
 ;Length is the minimum number of characters that need to be typed before the program shows a List of words.
 ;Generally, the higher this number the better the performance will be.
 ;For example, if you need to autocomplete "as soon as possible" in the word list, set this to 2, type 'as' and a list will appear.
 )
 
-hNumPresses=
+helpinfo_NumPresses=
 (
 ;NumPresses is the number of times the number hotkey must be tapped for the word to be selected, either 1 or 2.
 )
 
-hLearnMode=
+helpinfo_LearnMode=
 (
 ;LearnMode defines whether or not the script should learn new words as you type them, either On or Off.
 )
 
-hLearnCount=
+helpinfo_LearnCount=
 (
 ;LearnCount defines the number of times you have to type a word within a single session for it to be learned permanently.
 )
 
-hLearnLength=
+helpinfo_LearnLength=
 (
 ;LearnLength is the minimum number of characters in a word for it to be learned. This must be at least Length+1.
 )
 
-hDoNotLearnStrings=
+helpinfo_DoNotLearnStrings=
 (
 ;DoNotLearnStrings is a comma separated list of strings. Any words which contain any of these strings will not be learned.
 ;This can be used to prevent the program from learning passwords or other critical information.
 ;For example, if you have ord98 in DoNotLearnStrings, password987 will not be learned.
 )
 
-hArrowKeyMethod=
+helpinfo_ArrowKeyMethod=
 (
 ;ArrowKeyMethod is the way the arrow keys are handled when a list is shown.
 ;Options are:
@@ -473,7 +473,7 @@ hArrowKeyMethod=
 ;  LastPosition - maintains the selection cursor's position
 )
 
-hDisabledAutoCompleteKeys=
+helpinfo_DisabledAutoCompleteKeys=
 (
 ;DisabledAutoCompleteKeys is used to disable certain hotkeys from autocompleting the selected item in the list.
 ;Place the character listed for each key you want to disable in the list.
@@ -487,14 +487,14 @@ hDisabledAutoCompleteKeys=
 ;  U = Enter
 )
 
-hDetectMouseClickMove=
+helpinfo_DetectMouseClickMove=
 (
 ;DetectMouseClickMove is used to detect when the cursor is moved with the mouse.
 ; On - %ScriptTitle% will not work when used with an On-Screen keyboard.
 ; Off - %ScriptTitle% will not detect when the cursor is moved within the same line using the mouse, and scrolling the text will clear the list.
 )
 
-hNoBackSpace=
+helpinfo_NoBackSpace=
 (
 ;NoBackSpace is used to make %ScriptTitle% not backspace any of the previously typed characters
 ;(ie, do not change the case of any previously typed characters).
@@ -502,14 +502,14 @@ hNoBackSpace=
 ;  Off - characters you have already typed will be backspaced and replaced with the case of the word you have chosen.
 )
 
-hAutoSpace=
+helpinfo_AutoSpace=
 (
 ;AutoSpace is used to automatically add a space to the end of an autocompleted word.
 ; On - Add a space to the end of the autocompleted word.
 ; Off - Do not add a space to the end of the autocompleted word.
 )
 
-hSuppressMatchingWord=
+helpinfo_SuppressMatchingWord=
 (
 ;SuppressMatchingWord is used to suppress a word from the Word list if it matches the typed word.
 ;  If NoBackspace=On, then the match is case in-sensitive.
@@ -518,7 +518,7 @@ hSuppressMatchingWord=
 ; Off - Do not suppress matching words from the word list.
 )
 
-hSendMethod=
+helpinfo_SendMethod=
 (
 ;SendMethod is used to change the way the program sends the keys to the screen, this is included for compatibility reasons.
 ;Try changing this only when you encounter a problem with key sending during autocompletion.
@@ -534,7 +534,7 @@ hSendMethod=
 ;  4C = Alternate method.
 )
 
-hTerminatingCharacters=
+helpinfo_TerminatingCharacters=
 (
 ;TerminatingCharacters is a list of characters (EndKey) which will signal the program that you are done typing a word.
 ;You probably need to change this only when you want to recognize and type accented (diacritic) or Unicode characters
@@ -562,7 +562,7 @@ hTerminatingCharacters=
 ; http://www.autohotkey.com/docs/commands/Input.htm
 )
 
-hForceNewWordCharacters=
+helpinfo_ForceNewWordCharacters=
 (
 ;ForceNewWordCharacters is a comma separated list of characters which forces the program to start a new word whenever
 ;one of those characters is typed. Any words which begin with one of these characters will never be learned (even
@@ -572,29 +572,29 @@ hForceNewWordCharacters=
 ; ex: ForceNewWordCharacters=@,:,#
 )
 
-hListBoxOffset=
+helpinfo_ListBoxOffset=
 (
 ;ListBoxOffset is the number of pixels below the top of the caret (vertical blinking line) to display the list.
 )
 
-hListBoxFontFixed=
+helpinfo_ListBoxFontFixed=
 (
 ;ListBoxFontFixed controls whether a fixed or variable character font width is used.
 ;(ie, in fixed width, "i" and "w" take the same number of pixels)
 )
 
-hListBoxFontOverride=
+helpinfo_ListBoxFontOverride=
 (
 ;ListBoxFontOverride is used to specify a font for the List Box to use. The default for Fixed is Courier,
 ;and the default for Variable is Tahoma.
 )
 
-hListBoxFontSize=
+helpinfo_ListBoxFontSize=
 (
 ;ListBoxFontSize controls the size of the font in the list.
 )
 
-hListBoxCharacterWidth=
+helpinfo_ListBoxCharacterWidth=
 (
 ;ListBoxCharacterWidth is the width (in pixels) of one character in the List Box.
 ;This number should only need to be changed if the box containing the list is not the correct width.
@@ -605,42 +605,42 @@ hListBoxCharacterWidth=
 ;Leave this blank to let %ScriptTitle% try to compute the width.
 )
 
-hListBoxOpacity=
+helpinfo_ListBoxOpacity=
 (
 ;ListBoxOpacity is how transparent (see-through) the ListBox should be. Use a value of 255 to make it so the
 ;ListBox is fully Opaque, or use a value of 0 to make it so the ListBox cannot be seen at all.
 )
 
-hListBoxRows=
+helpinfo_ListBoxRows=
 (
 ;ListBoxRows is the maximum number of rows to show in the ListBox. This value can range from 3 to 30.
 )
 
-hHelperWindowProgramExecutables=
+helpinfo_HelperWindowProgramExecutables=
 (
 ;HelperWindowProgramExecutables is a list of executable (.exe) files that the HelperWindow should be automatically enabled for.
 ;If one the executables matches the current program, the HelperWindow will pop up automatically for that program.
 )
 
-hHelperWindowProgramTitles=
+helpinfo_HelperWindowProgramTitles=
 (
 ;HelperWindowProgramTitles is a list of strings (separated by | ) to find in the title of the window that the HelperWindow should be automatically enabled for.
 ;If one of the strings is found in the title, the HelperWindow will pop up automatically for that program.
 )
 
-hFullHelpString =
+helpinfo_FullHelpString =
 (
-%hIncludeProgramExecutables% `r`n`r`n %hIncludeProgramTitles% `r`n`r`n %hExcludeProgramExecutables% `r`n`r`n %hExcludeProgramTitles%
+%helpinfo_IncludeProgramExecutables% `r`n`r`n %helpinfo_IncludeProgramTitles% `r`n`r`n %helpinfo_ExcludeProgramExecutables% `r`n`r`n %helpinfo_ExcludeProgramTitles%
 
-%hLength% `r`n`r`n %hNumPresses% `r`n`r`n %hLearnMode% `r`n`r`n %hLearnCount% `r`n`r`n %hLearnLength% `r`n`r`n %hDoNotLearnStrings%
+%helpinfo_Length% `r`n`r`n %helpinfo_NumPresses% `r`n`r`n %helpinfo_LearnMode% `r`n`r`n %helpinfo_LearnCount% `r`n`r`n %helpinfo_LearnLength% `r`n`r`n %helpinfo_DoNotLearnStrings%
 
-%hArrowKeyMethod% `r`n`r`n %hDisabledAutoCompleteKeys% `r`n`r`n %hDetectMouseClickMove% `r`n`r`n %hNoBackSpace% `r`n`r`n %hAutoSpace%
+%helpinfo_ArrowKeyMethod% `r`n`r`n %helpinfo_DisabledAutoCompleteKeys% `r`n`r`n %helpinfo_DetectMouseClickMove% `r`n`r`n %helpinfo_NoBackSpace% `r`n`r`n %helpinfo_AutoSpace%
 
-%hSuppressMatchingWord% `r`n`r`n %hSendMethod% `r`n`r`n %hTerminatingCharacters% `r`n`r`n %hForceNewWordCharacters% `r`n`r`n %hListBoxOffset%
+%helpinfo_SuppressMatchingWord% `r`n`r`n %helpinfo_SendMethod% `r`n`r`n %helpinfo_TerminatingCharacters% `r`n`r`n %helpinfo_ForceNewWordCharacters% `r`n`r`n %helpinfo_ListBoxOffset%
 
-%hListBoxFontFixed% `r`n`r`n %hListBoxFontOverride% `r`n`r`n %hListBoxFontSize% `r`n`r`n %hListBoxCharacterWidth% `r`n`r`n %hListBoxOpacity%
+%helpinfo_ListBoxFontFixed% `r`n`r`n %helpinfo_ListBoxFontOverride% `r`n`r`n %helpinfo_ListBoxFontSize% `r`n`r`n %helpinfo_ListBoxCharacterWidth% `r`n`r`n %helpinfo_ListBoxOpacity%
 
-%hListBoxRows% `r`n`r`n %hHelperWindowProgramExecutables% `r`n`r`n %hHelperWindowProgramTitles%
+%helpinfo_ListBoxRows% `r`n`r`n %helpinfo_HelperWindowProgramExecutables% `r`n`r`n %helpinfo_HelperWindowProgramTitles%
 )
 
 }
