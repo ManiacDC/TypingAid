@@ -77,9 +77,13 @@ ScriptPath64=
 
 Menu, Tray, NoStandard
 Menu, Tray, add, Settings, Configuration
-Menu, Tray, Standard
-;Initialize Tray Icon
+IF !(A_IsCompiled)
+{
+   Menu, Tray, Standard
+}
 SuspendOn()
+Menu, Tray, Default, Settings
+;Initialize Tray Icon
 Menu, Tray, Icon
       
 
@@ -905,6 +909,7 @@ SuspendOn()
 {
    global ScriptTitle
    Suspend, On
+   Menu, Tray, Tip, %ScriptTitle% - Inactive
    If A_IsCompiled
    {
       Menu, tray, Icon, %A_ScriptName%,3,1
@@ -918,6 +923,7 @@ SuspendOff()
 {
    global ScriptTitle
    Suspend, Off
+   Menu, Tray, Tip, %ScriptTitle% - Active
    If A_IsCompiled
    {
       Menu, tray, Icon, %A_ScriptName%,1,1
