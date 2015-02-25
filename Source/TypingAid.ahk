@@ -63,29 +63,8 @@ ScriptExtension=
 ScriptNoExtension=
 ScriptPath64=
 
-;; Tray menu
-;Name=TypingAid
-; I would like to see an icon here, see also active/inactive below
-;Menu, tray, NoStandard
-;Menu, tray, tip, %Name% - active
-;Menu, tray, add, Restart, Restart
-;Menu, tray, add, Edit Wordlist, EditWordList
-;Menu, tray, add, Settings, Configuration
-;Menu, tray, add, Pause %Name%, PauseProgram
-;Menu, tray, add, Exit, SaveScript
-; End Tray menu
-
-Menu, Tray, NoStandard
-Menu, Tray, add, Settings, Configuration
-IF !(A_IsCompiled)
-{
-   Menu, Tray, Standard
-}
 SuspendOn()
-Menu, Tray, Default, Settings
-;Initialize Tray Icon
-Menu, Tray, Icon
-      
+BuildTrayMenu("Running")      
 
 OnExit, SaveScript
 
@@ -118,8 +97,15 @@ DisableKeyboardHotKeys()
 ;Find the ID of the window we are using
 GetIncludedActiveWindow()
 
-; Set a timer to check for a changed window
-SetTimer, Winchanged, 100
+WinChangedCallback := RegisterCallback("WinChanged")
+
+if !(WinChangedCallback)
+{
+   MsgBox, Failed to register callback function
+   ExitApp
+}
+
+EnableWinHook()
 
 ;Change the Running performance speed (Priority changed to High in GetIncludedActiveWindow)
 SetBatchLines, -1
@@ -935,6 +921,29 @@ SuspendOff()
 
 ;------------------------------------------------------------------------
 
+BuildTrayMenu(State)
+{
+
+   Menu, Tray, DeleteAll
+   Menu, Tray, NoStandard
+   Menu, Tray, add, Settings, Configuration
+   if (State == "Running")
+   {
+      Menu, Tray, add, Pause, PauseScript
+   } else {
+      Menu, Tray, add, Resume, ResumeScript
+   }
+   IF !(A_IsCompiled)
+   {
+      Menu, Tray, Standard
+   }
+   Menu, Tray, Default, Settings
+   ;Initialize Tray Icon
+   Menu, Tray, Icon
+}
+
+;------------------------------------------------------------------------
+
 ; This is to blank all vars related to matches, ListBox and (optionally) word 
 ClearAllVars(ClearWord)
 {
@@ -1028,9 +1037,23 @@ MaybeFixFileEncoding(File,Encoding)
 Configuration:
 GoSub, LaunchSettings
 Return
+
+PauseScript:
+DisableWinHook()
+SuspendOn()
+BuildTrayMenu("Paused")
+Pause, On, 1
+Return
+
+   
+ResumeScript:
+Pause, Off
+EnableWinHook()
+GetIncludedActiveWindow()
+BuildTrayMenu("Running")
+Return
    
 SaveScript:
-
 ; Close the ListBox if it's open
 CloseListBox()
 

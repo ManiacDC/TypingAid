@@ -1,8 +1,50 @@
 ;These functions and labels are related to the active window
 
+EnableWinHook()
+{
+   global WinChangedEventHook
+   global WinChangedCallback
+   ; Set a hook to check for a changed window
+   If !(WinChangedEventHook)
+   {
+      DllCall("CoInitializeEx", Ptr, 0, Uint, 0)
+      WinChangedEventHook := DllCall("SetWinEventHook", Uint, 0x0003, Uint, 0x0003, Ptr, 0, Uint, WinChangedCallback, Uint, 0, Uint, 0, Uint, 0x0002)
+      
+      if !(WinChangedEventHook)
+      {
+         MsgBox, Failed to register Event Hook!
+         ExitApp
+      }
+   }
+   
+   Return
+}
 
-; Timed function to detect change of focus (and remove ListBox when changing active window) 
-Winchanged: 
+DisableWinHook()
+{
+   global WinChangedEventHook
+   
+   if (WinChangedEventHook)
+   {
+      if (DllCall("UnhookWinEvent", Uint, WinChangedEventHook))
+      {
+         DllCall("CoUninitialize")
+         WinChangedEventHook =
+      }
+   }
+   return
+}
+
+; Hook function to detect change of focus (and remove ListBox when changing active window) 
+WinChanged(hWinEventHook, event, wchwnd, idObject, idChild, dwEventThread, dwmsEventTime)
+{
+   global DetectMouseClickMove
+   global OldCaretY
+   
+   If (event <> 3)
+   {
+      return
+   }
    
    IF ( ReturnWinActive() )
    {
@@ -21,6 +63,8 @@ Winchanged:
             GetIncludedActiveWindow()
          }
    Return
+}
+   
    
 ;------------------------------------------------------------------------
 
