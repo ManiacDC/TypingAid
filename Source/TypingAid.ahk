@@ -93,9 +93,6 @@ ReadWordList()
 InitializeHotKeys()
 
 DisableKeyboardHotKeys()
-   
-;Find the ID of the window we are using
-GetIncludedActiveWindow()
 
 WinChangedCallback := RegisterCallback("WinChanged")
 
@@ -106,6 +103,9 @@ if !(WinChangedCallback)
 }
 
 EnableWinHook()
+   
+;Find the ID of the window we are using
+GetIncludedActiveWindow()
 
 ;Change the Running performance speed (Priority changed to High in GetIncludedActiveWindow)
 SetBatchLines, -1
@@ -1049,7 +1049,6 @@ Return
 ResumeScript:
 Pause, Off
 EnableWinHook()
-GetIncludedActiveWindow()
 BuildTrayMenu("Running")
 Return
    

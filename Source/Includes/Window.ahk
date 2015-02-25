@@ -30,6 +30,9 @@ DisableWinHook()
       {
          DllCall("CoUninitialize")
          WinChangedEventHook =
+      } else {
+         MsgBox, Failed to Unhook WinEvent!
+         ExitApp
       }
    }
    return
@@ -68,7 +71,14 @@ WinChanged(hWinEventHook, event, wchwnd, idObject, idChild, dwEventThread, dwmsE
    
 ;------------------------------------------------------------------------
 
+; Wrapper function to ensure we always enable the WinEventHook after waiting for an active window
 GetIncludedActiveWindow()
+{
+   GetIncludedActiveWindowGuts()
+   EnableWinHook()
+}
+
+GetIncludedActiveWindowGuts()
 {
    global Active_id
    global Active_Title
@@ -93,12 +103,12 @@ GetIncludedActiveWindow()
                Return
             }
          
-         ;Force unload of Keyboard Hook
+         ;Force unload of Keyboard Hook and WinEventHook
          Input
          SuspendOn()
          CloseListBox()
          MaybeSaveHelperWindowPos()
-         ;Wait for an active window, then check again
+         DisableWinHook()
          ;Wait for any window to be active
          WinWaitActive, , , , ZZZYouWillNeverFindThisStringInAWindowTitleZZZ
          Continue
@@ -109,11 +119,12 @@ GetIncludedActiveWindow()
          Break
       If CheckForActive(ActiveProcess,ActiveTitle)
          Break
-      ;Force unload of Keyboard Hook
+      ;Force unload of Keyboard Hook and WinEventHook
       Input
       SuspendOn()
       CloseListBox()
       MaybeSaveHelperWindowPos()
+      DisableWinHook()
       SetTitleMatchMode, 3 ; set the title match mode to exact so we can detect a window title change
       WinWaitNotActive, %ActiveTitle% ahk_id %ActiveId%
       SetTitleMatchMode, 2
