@@ -97,11 +97,13 @@ GetIncludedActiveWindowGuts()
       IfEqual, ActiveId, 
       {
          IfNotEqual, MouseWin_ID,
+         {
             IfEqual, MouseWin_ID, %ListBox_ID% 
             {
                WinActivate, ahk_id %Active_id%
                Return
             }
+         }
          
          ;Force unload of Keyboard Hook and WinEventHook
          Input
@@ -126,6 +128,7 @@ GetIncludedActiveWindowGuts()
       MaybeSaveHelperWindowPos()
       DisableWinHook()
       SetTitleMatchMode, 3 ; set the title match mode to exact so we can detect a window title change
+      ; Wait for the current window to no longer be active
       WinWaitNotActive, %ActiveTitle% ahk_id %ActiveId%
       SetTitleMatchMode, 2
       ActiveId = 
@@ -133,7 +136,7 @@ GetIncludedActiveWindowGuts()
       ActiveProcess =
    }
 
-   IfEqual, ActiveID, %ListBox_ID%
+   IfEqual, ActiveId, %ListBox_ID%
    {
       Active_id :=  ActiveId
       Active_Title := ActiveTitle
