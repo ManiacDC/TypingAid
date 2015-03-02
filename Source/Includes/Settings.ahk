@@ -578,30 +578,30 @@ Full (untested) for UTF-8 character set.
 }
 
 SetEnableTitles:
-GetList("IncludeProgramTitles",0,IncludeProgramTitles)
+GetList("IncludeProgramTitles",0)
 Return
 
 SetDisableTitles:
-GetList("ExcludeProgramTitles",0,ExcludeProgramTitles)
+GetList("ExcludeProgramTitles",0)
 Return
 
 SetEnableProcess:
-GetList("IncludeProgramExecutables",1,IncludeProgramExecutables)
+GetList("IncludeProgramExecutables",1)
 Return
 
 SetDisableProcess:
-GetList("ExcludeProgramExecutables",1,ExcludeProgramExecutables)
+GetList("ExcludeProgramExecutables",1)
 Return
 
 SetHelpTitles:
-GetList("HelperWindowProgramTitles",0,HelperWindowProgramTitles)
+GetList("HelperWindowProgramTitles",0)
 Return
 
 SetHelpProcess:
-GetList("HelperWindowProgramExecutables",1,HelperWindowProgramExecutables)
+GetList("HelperWindowProgramExecutables",1)
 Return
 
-GetList(TitleType,GetExe, ByRef ActiveList)
+GetList(TitleType,GetExe)
 {
    global MenuTitleType
    global InProcessList
@@ -632,6 +632,8 @@ GetList(TitleType,GetExe, ByRef ActiveList)
 	  }
    }	
    GetExe=0
+   
+   GuiControlGet, MenuTitleList, MenuGui: , %MenuTitleType%
 	
    Sort,RunningList, D| U	
    Gui, ProcessList:+OwnerMenuGui
@@ -643,7 +645,7 @@ GetList(TitleType,GetExe, ByRef ActiveList)
    Gui, ProcessList:Add, Edit, x110 y40 w250
    Gui, ProcessList:Add, Button, xp+260 yp gAddNew1 w40 Default, Add
    Gui, ProcessList:Add, Text, x10 yp+40, Current list:
-   Gui, ProcessList:Add, ListBox, x110 yp w250 r10, %ActiveList%
+   Gui, ProcessList:Add, ListBox, x110 yp w250 r10, %MenuTitleList%
    Gui, ProcessList:Add, Button, xp+260 yp gRemoveNew1 w40 , Del
    Gui, ProcessList:Add, Text, x10 yp+170, a) Select a program or window from the list or type a name in the`n%A_Space%%A_Space%%A_Space%%A_Space%%A_Space%'Edit' control (you may need to edit it further)`nb) Click ADD to add it to the list`nc) To remove a program/title, select an item from the 'current list' and`n%A_Space%%A_Space%%A_Space%%A_Space%click DEL.
    Gui, ProcessList:Add, Button, x10 yp+90 w190 gSaveTitleList, Save 
@@ -651,12 +653,6 @@ GetList(TitleType,GetExe, ByRef ActiveList)
    Gui, ProcessList:Show, w420 h380, %ScriptTitle% Settings
    Return
 }
-
-
-Advanced:
-WinGetPos, MenuGuiXPos, MenuGuiYPos,,,A
-Gui, MenuGui:Show, h%MenuAdvGuiHeight% w%MenuGuiWidth% y%MenuGuiYPos% x%MenuGuiXPos%, New GUI Window
-Return
 
 VisitForum:
 MsgBox , 36 , Visit %ScriptTitle% forum (www.autohotkey.com), Do you want to visit the %ScriptTitle% forum on www.autohotkey.com?
@@ -838,20 +834,25 @@ IF (A_GuiControl && !(SubStr(A_GuiControl ,1 ,5) == "Menu_") )
 Return
 
 HelpMe:
-Loop, Parse, %A_GuiControl%,`r`n
-{
-	IF ( SubStr(A_LoopField, 1,1) = ";")
-	{
-		Menu_Help .= SubStr(A_LoopField,2) . "`r`n"
-	} else
-	{
-		Menu_Help .= A_LoopField . "`r`n"
-	}
-}
-MsgBox , 32 , %ScriptTitle% Help, %Menu_Help%
-Menu_Help=
-Return
+HelpMe()
+return
 
+HelpMe()
+{
+   global ScriptTitle
+   Loop, Parse, %A_GuiControl%,`r`n
+   {
+      IF ( SubStr(A_LoopField, 1,1) = ";")
+      {
+         Menu_Help .= SubStr(A_LoopField,2) . "`r`n"
+      } else
+      {
+         Menu_Help .= A_LoopField . "`r`n"
+      }
+   }
+   MsgBox , 32 , %ScriptTitle% Help, %Menu_Help%
+   return
+}
    
 ; derived from work by shimanov, 2005
 ; http://www.autohotkey.com/forum/viewtopic.php?p=37696#37696
@@ -917,17 +918,25 @@ HandleMessage( p_w, p_l, p_m, p_hw )
 }
 
 SaveTitleList:
-ControlGet, MenuTitleList, List, , ListBox1
-InProcessList := false
-Gui, ProcessList:Destroy
-Gui, MenuGui:-Disabled  ; enable main window
-Gui, MenuGui:Show
-StringReplace, MenuTitleList, MenuTitleList, `n, |, All
+SaveTitleList()
+return
 
-GuiControl, MenuGui:Text, %MenuTitleType%, %MenuTitleList%
-Menu_ChangedPrefs[MenuTitleType] := %MenuTitleType%
+SaveTitleList()
+{
+   global InProcessList
+   global MenuTitleType
+   ControlGet, MenuTitleList, List, , ListBox1
+   InProcessList := false
+   Gui, ProcessList:Destroy
+   Gui, MenuGui:-Disabled  ; enable main window
+   Gui, MenuGui:Show
+   StringReplace, MenuTitleList, MenuTitleList, `n, |, All
+
+   GuiControl, MenuGui:Text, %MenuTitleType%, %MenuTitleList%
+   Menu_ChangedPrefs[MenuTitleType] := %MenuTitleType%
 	
-Return
+   return
+}
 
 ProcessListGuiEscape:
 ProcessListGuiClose:
@@ -939,29 +948,48 @@ Gui, MenuGui:Show
 Return
 
 ToEdit:
-GuiControlGet, MenuOutputVar, ProcessList:,ComboBox1
-GuiControl, ProcessList:, Edit1, 
-GuiControl, ProcessList:, Edit1, %MenuOutputVar%
-ControlFocus, Edit1
-Return
+ToEdit()
+return
+
+ToEdit()
+{
+   GuiControlGet, MenuOutputVar, ProcessList:,ComboBox1
+   GuiControl, ProcessList:, Edit1, 
+   GuiControl, ProcessList:, Edit1, %MenuOutputVar%
+   ControlFocus, Edit1
+   return
+}
 
 AddNew1:
-GuiControlGet, MenuOutputVar, ProcessList:,Edit1
-GuiControl, ProcessList:, ListBox1, %MenuOutputVar%|
-GuiControl, ProcessList:, Edit1, 
-ControlFocus, Edit1
-Return
+AddNew1()
+return
+
+AddNew1()
+{
+   GuiControlGet, MenuOutputVar, ProcessList:,Edit1
+   GuiControl, ProcessList:, ListBox1, %MenuOutputVar%|
+   GuiControl, ProcessList:, Edit1, 
+   ControlFocus, Edit1
+   return
+}
 
 RemoveNew1:
-GuiControlGet, MenuOutputVar, ProcessList:, Listbox1
-ControlGet, MenuTitleList, List, , ListBox1
-StringReplace, MenuTitleList, MenuTitleList, `n, |, All
-MenuTitleList := "|" MenuTitleList "|"
-StringReplace, MenuTitleList, MenuTitleList, |%MenuOutputVar%|, |, all
-StringTrimRight, MenuTitleList, MenuTitleList, 1
-GuiControl, ProcessList:, ListBox1, |
-GuiControl, ProcessList:, ListBox1, %MenuTitleList%
-Return
+RemoveNew1()
+return
+
+RemoveNew1()
+{
+   GuiControlGet, MenuOutputVar, ProcessList:, Listbox1
+   ControlGet, MenuTitleList, List, , ListBox1
+   StringReplace, MenuTitleList, MenuTitleList, `n, |, All
+   MenuTitleList := "|" MenuTitleList "|"
+   StringReplace, MenuTitleList, MenuTitleList, |%MenuOutputVar%|, |, all
+   StringTrimRight, MenuTitleList, MenuTitleList, 1
+   GuiControl, ProcessList:, ListBox1, |
+   GuiControl, ProcessList:, ListBox1, %MenuTitleList%
+   
+   return
+}
 
 ; copied from font explorer http://www.autohotkey.com/forum/viewtopic.php?t=57501&highlight=font
 Writer_enumFonts()

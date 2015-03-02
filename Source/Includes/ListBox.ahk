@@ -64,7 +64,11 @@ DestroyListBox()
 
 SavePriorMatchPosition()
 {
-   global
+   global ArrowKeyMethod
+   global MatchPos
+   global OldMatch
+   global OldMatchStart
+   global singlematch
    
    IfNotEqual, MatchPos, 
    {
@@ -75,8 +79,8 @@ SavePriorMatchPosition()
       } else {
                IfEqual, ArrowKeyMethod, LastPosition
                {
-                  OldMatch = %MatchPos%
-                  OldMatchStart = %MatchStart%
+                  OldMatch := MatchPos
+                  OldMatchStart := MatchStart
                } else {
                         OldMatch =
                         OldMatchStart =
@@ -93,7 +97,14 @@ SavePriorMatchPosition()
 
 SetupMatchPosition()
 {
-   global
+   global ArrowKeyMethod
+   global ListBoxRows
+   global MatchPos
+   global MatchStart
+   global Number
+   global OldMatch
+   global OldMatchStart
+   global singlematch
    
    IfEqual, OldMatch, 
    {
@@ -116,9 +127,9 @@ SetupMatchPosition()
                      MatchStart := Number - (ListBoxRows - 1)
                      IfLess, MatchStart, 1
                         MatchStart = 1
-                     MatchPos = %Number%
+                     MatchPos := Number
                   } else {
-                           MatchStart = %OldMatchStart%
+                           MatchStart := OldMatchStart
                            If ( MatchStart > (Number - (ListBoxRows - 1) ))
                            {
                               MatchStart := Number - (ListBoxRows - 1)
@@ -130,24 +141,24 @@ SetupMatchPosition()
                      
                } else IfEqual, ArrowKeyMethod, LastWord
                      {
-                        Pos =
+                        ListPosition =
                         Loop, %Number%
                         {
                            if ( OldMatch == singlematch[A_Index] )
                            {
-                              Pos := A_Index
+                              ListPosition := A_Index
                               Break
                            }
                         }
-                        IfEqual, pos, 
+                        IfEqual, ListPosition, 
                         {
                            MatchPos = 1
                            MatchStart = 1
                         } Else {
-                                 MatchStart := Pos - (ListBoxRows - 1)
+                                 MatchStart := ListPosition - (ListBoxRows - 1)
                                  IfLess, MatchStart, 1
                                     MatchStart = 1
-                                 MatchPos := Pos
+                                 MatchPos := ListPosition
                               }
                      } else {
                               MatchPos = 1
@@ -161,24 +172,31 @@ SetupMatchPosition()
 
 RebuildMatchList()
 {
-   global
-   match = 
+   global Match
+   global MatchLongestLength
+   global Number
+   global singlematch
+   
+   Match = 
    MatchLongestLength =
-   Local CurrentLength
+   
    Loop, %Number%
    {
       CurrentLength := AddToMatchList(A_Index,singlematch[A_Index])
       IfGreater, CurrentLength, %MatchLongestLength%
          MatchLongestLength := CurrentLength      
    }
-   StringTrimRight, match, match, 1        ; Get rid of the last linefeed 
+   StringTrimRight, Match, Match, 1        ; Get rid of the last linefeed 
    Return
 }
 
 AddToMatchList(position,value)
 {
-   global
-   Local prefix
+   global DelimiterChar
+   global Match
+   global MatchStart
+   global NumKeyMethod
+   
    IfEqual, NumKeyMethod, Off
       prefix =
    else {
@@ -190,7 +208,7 @@ AddToMatchList(position,value)
                   else prefix := Mod(position - MatchStart +1,10) . " "
                }
          }
-   match .= prefix . value . DelimiterChar
+   Match .= prefix . value . DelimiterChar
    Return, StrLen("8 " . value)
 }
 
@@ -203,16 +221,16 @@ ShowListBox()
 
    IfNotEqual, Match,
    {
-      Local ListBoxSizeX
-      Local ListBoxPosY
-      Local ListBoxPosX
-      Local Rows
-      Local ScrollBarWidth
+      Local BorderWidthX
       Local ListBoxActualSize
       Local ListBoxActualSizeH
       Local ListBoxActualSizeW
-      Local BorderWidthX
+      Local ListBoxPosX
+      Local ListBoxPosY
+      Local ListBoxSizeX
       Local MatchEnd
+      Local Rows
+      Local ScrollBarWidth
 
       Rows := GetRows()
       
@@ -241,7 +259,7 @@ ShowListBox()
          {
             GuiControl, ListBoxGui: -Redraw, ListBox%A_Index%
             GuiControl, ListBoxGui: Move, ListBox%A_Index%, w%ListBoxSizeX%
-            GuiControl, ListBoxGui: ,ListBox%A_Index%, %DelimiterChar%%match%
+            GuiControl, ListBoxGui: ,ListBox%A_Index%, %DelimiterChar%%Match%
             MatchEnd := MatchStart + (ListBoxRows - 1)
             IfNotEqual, MatchPos,
             {

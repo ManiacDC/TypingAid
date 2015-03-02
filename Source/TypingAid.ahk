@@ -223,8 +223,8 @@ ProcessKey(chr,EndKey)
             {
                AddWordToList(Word,0)
                ClearAllVars(true)
-               word = %chr%
-               LastInput_Id = %Active_id%
+               word := chr
+               LastInput_Id := Active_id
                Return
             }
          
@@ -232,7 +232,7 @@ ProcessKey(chr,EndKey)
             {
                AddWordToList(Word,0)
                ClearAllVars(true)
-               Word = %chr%
+               Word := chr
             } else { 
                   Word .= chr
                   }
@@ -287,7 +287,7 @@ RecomputeMatches()
    IfEqual, ArrowKeyMethod, Off
    {
       IfLess, ListBoxRows, 10
-         LimitTotalMatches = %ListBoxRows%
+         LimitTotalMatches := ListBoxRows
       else LimitTotalMatches = 10
    } else {
       LimitTotalMatches = 200
@@ -425,7 +425,11 @@ CheckForCaretMove:
 
 InitializeHotKeys()
 {
-   global
+   global ArrowKeyMethod
+   global DelimiterChar
+   global DisabledAutoCompleteKeys
+   global EnabledKeyboardHotKeys
+   global LearnMode  
    
    EnabledKeyboardHotKeys =
 
@@ -851,7 +855,8 @@ EvaluateUpDown(Key)
 
 ReturnLineWrong()
 {
-   global
+   global DetectMouseClickMove
+   global OldCaretY
    ; Return false if we are using DetectMouseClickMove
    IfEqual, DetectMouseClickMove, On
       Return
@@ -877,7 +882,8 @@ AddSelectedWordToList()
 
 DeleteSelectedWordFromList()
 {
-   global
+   global MatchPos
+   global singlematch
    
    if !(singlematch[MatchPos] = "") ;only continue if singlematch is not empty
    {

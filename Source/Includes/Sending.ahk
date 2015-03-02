@@ -21,9 +21,8 @@ SendKey(Key)
    
 SendWord(WordIndex)
 {
-   global
-   Local sending
-   ;Local ClipboardSave
+   global singlematch
+   global Word
    ;Send the word
    sending := singlematch[WordIndex]
    ; Update Typed Count

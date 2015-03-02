@@ -2,7 +2,8 @@
 
 MaybeWriteHelperWindowPos()
 {
-   global
+   global XY
+   global XYSaved
    ;Update the Helper Window Position
    IfEqual, XYSaved, 1
    {
@@ -201,7 +202,13 @@ ReadPreferences(RestoreDefaults = false,RestorePreferences = false)
 ValidatePreferences()
 {
    
-   global
+   global ArrowKeyMethod, DisabledAutoCompleteKeys, ListBoxCharacterWidthComputed, NumKeyMethod
+   global AutoSpace, DetectMouseClickMove, LearnCount, LearnLength, LearnMode, Length
+   global DftAutoSpace, DftDetectMouseClickMove, DftLearnCount, DftLearnLength, DftLearnMode, DftLength
+   global ListBoxCharacterWidth, ListBoxFontFixed, ListBoxFontSize, ListBoxOffset, ListBoxOpacity, ListBoxRows
+   global DftListBoxCharacterWidth, DftListBoxFontFixed, DftListBoxFontSize, DftListBoxOffset, DftListBoxOpacity, DftListBoxRows
+   global NoBackSpace, NumPresses, SendMethod, SuppressMatchingWord, TerminatingCharacters
+   global DftNoBackSpace, DftNumPresses, DftSendMethod, DftSuppressMatchingWord, DftTerminatingCharacters
    
    if Length is not integer
    {

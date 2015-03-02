@@ -2,18 +2,12 @@
 
 ReadWordList()
 {
-   global
+   global LearnedWordsCount
+   global LegacyLearnedWords
+   global WordListDone
+   global wDB
    ;mark the wordlist as not done
    WordListDone = 0
-   
-   Local ParseWords
-   Local TempAddToLearned
-   Local each
-   Local row
-   Local WordList
-   Local WordlistLearned
-   Local tableconverted
-   Local WordlistConverted
    
    Wordlist = %A_ScriptDir%\Wordlist.txt
    WordlistLearned = %A_ScriptDir%\WordlistLearned.txt
@@ -125,12 +119,9 @@ ReadWordList()
 ReverseWordNums()
 {
    ; This function will reverse the read numbers since now we know the total number of words
-   Global
-   Local LearnedWordsTable
-   Local each
-   Local row
-   Local WhereQuery
-   
+   global LearnedWordsCount
+   global LearnCount
+   global wDB
 
    LearnedWordsCount+= (LearnCount - 1)
 
@@ -157,17 +148,14 @@ AddWordToList(AddWord,ForceCountNewOnly,ForceLearn=false)
    ;AddWord = Word to add to the list
    ;ForceCountNewOnly = force this word to be permanently learned even if learnmode is off
    ;ForceLearn = disables some checks in CheckValid
-   global
-   Local CharTerminateList
-   Local AddWordInList
-   Local CountWord
-   Local pos
-   Local WhereQuery
-   Local QueryResult
-   Local CountValue
-   Local each
-   Local row
-   Local AddWordIndex
+   global DoNotLearnStrings
+   global ForceNewWordCharacters
+   global LearnedWordsCount
+   global LearnCount
+   global LearnLength
+   global LearnMode
+   global WordListDone
+   global wDB
    
    StringUpper, AddWordIndex, AddWord
          
@@ -279,7 +267,8 @@ CheckValid(Word,ForceLearn=false)
 
 DeleteWordFromList(DeleteWord)
 {
-   global
+   global LearnMode
+   global wDB
    
    Ifequal, DeleteWord,  ;If we have no word to delete, skip out.
       Return
@@ -299,8 +288,8 @@ DeleteWordFromList(DeleteWord)
 
 UpdateWordCount(word,SortOnly)
 {
-   global
-   Local WhereQuery
+   global LearnMode
+   global wDB
    ;Word = Word to increment count for
    ;SortOnly = Only sort the words, don't increment the count
    
@@ -330,14 +319,10 @@ CleanupWordList()
 
 MaybeUpdateWordlist()
 {
-   global
-    
-   local TempWordList
-   local SortWordList
-   local LearnedWordsPos
-   local ParseWords
-   Local each
-   Local row
+   global LegacyLearnedWords
+   global wDB
+   global WordListDone
+   
    ; Update the Learned Words
    IfEqual, WordListDone, 1
    {
