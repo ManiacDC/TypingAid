@@ -27,41 +27,7 @@ ListLines Off
 CoordMode, Caret, Screen
 CoordMode, Mouse, Screen
 
-SplitPath, A_ScriptName,,,ScriptExtension,ScriptNoExtension,
-
-If A_Is64bitOS
-{
-   IF (A_PtrSize = 4)
-   {
-      IF A_IsCompiled
-      {
-         
-         ScriptPath64 := A_ScriptDir . "\" . ScriptNoExtension . "64." . ScriptExtension
-         
-         IfExist, %ScriptPath64%
-         {
-            Run, %ScriptPath64%, %A_WorkingDir%
-            ExitApp
-         }
-      }
-   }
-}
-
-if (SubStr(ScriptNoExtension, StrLen(ScriptNoExtension)-1, 2) == "64" )
-{
-   StringTrimRight, ScriptTitle, ScriptNoExtension, 2
-} else {
-   ScriptTitle := ScriptNoExtension
-}
-
-if (InStr(ScriptTitle, "TypingAid"))
-{
-   ScriptTitle = TypingAid
-}
-
-ScriptExtension=
-ScriptNoExtension=
-ScriptPath64=
+EvaluateScriptPathAndTitle()
 
 SuspendOn()
 BuildTrayMenu("Running")      
@@ -123,17 +89,27 @@ Loop
          }
    
    ;Get one key at a time 
-   Input, chr, L1 V I, {BS}%TerminatingEndKeys%
+   Input, InputChar, L1 V I, {BS}%TerminatingEndKeys%
    
    Critical
    EndKey := ErrorLevel
    
-   ProcessKey(chr,EndKey)
+   ProcessKey(InputChar,EndKey)
 }
 
-ProcessKey(chr,EndKey)
+ProcessKey(InputChar,EndKey)
 {
-   global
+   global Active_id
+   global DetectMouseClickMove
+   global ForceNewWordCharacters
+   global Helper_id
+   global IgnoreSend
+   global LastInput_Id
+   global Length
+   global OldCaretX
+   global OldCaretY
+   global TerminatingCharactersParsed
+   global Word
    
    IfEqual, IgnoreSend, 1
    {
@@ -190,7 +166,7 @@ ProcessKey(chr,EndKey)
          ; add the word if switching lines
          AddWordToList(Word,0)
          ClearAllVars(true)
-         Word = %chr%
+         Word := InputChar
          Return         
       } 
    }
@@ -208,14 +184,14 @@ ProcessKey(chr,EndKey)
       StringLen, len, Word
       IfNotEqual, len, 0
       { 
-         ifequal, len, 1   
+         IfEqual, len, 1   
          { 
             ClearAllVars(true)
          } else {
                   StringTrimRight, Word, Word, 1
                 }     
       }
-   } else if ( ( EndKey == "Max" ) && !(InStr(TerminatingCharactersParsed, chr)) )
+   } else if ( ( EndKey == "Max" ) && !(InStr(TerminatingCharactersParsed, InputChar)) )
          {
             ; If active window has different window ID from the last input,
             ;learn and blank word, then assign number pressed to the word
@@ -223,18 +199,18 @@ ProcessKey(chr,EndKey)
             {
                AddWordToList(Word,0)
                ClearAllVars(true)
-               word := chr
+               Word := InputChar
                LastInput_Id := Active_id
                Return
             }
          
-            if chr in %ForceNewWordCharacters%
+            if InputChar in %ForceNewWordCharacters%
             {
                AddWordToList(Word,0)
                ClearAllVars(true)
-               Word := chr
+               Word := InputChar
             } else { 
-                  Word .= chr
+                  Word .= InputChar
                   }
          } else {
                   ;Don't do anything if we aren't in the original window and aren't starting a new word
@@ -263,25 +239,19 @@ RecomputeMatchesTimer:
 RecomputeMatches()
 {
    ; This function will take the given word, and will recompile the list of matches and redisplay the wordlist.
-   global
-   Local each
-   Local LimitTotalMatches
-   Local Matches
-   Local Normalize
-   Local NormalizeTable
-   Local OrderByQuery
-   Local SuppressMatchingWordQuery
-   Local row
-   Local ValueType
-   Local Values
-   Local WhereQuery
-   Local WordMatch
-   Local WordLen
+   global ArrowKeyMethod
+   global LearnMode
+   global ListBoxRows
+   global NoBackSpace
+   global number
+   global singlematch
+   global SuppressMatchingWord
+   global Word
+   global wDB
 
    SavePriorMatchPosition()
 
    ;Match part-word with command 
-   Num = 
    number = 0 
    
    IfEqual, ArrowKeyMethod, Off
@@ -361,25 +331,32 @@ RecomputeMatches()
 ;  and update the Last Window Clicked in
 MouseGetPos, MouseX, MouseY, MouseWin_ID
 WinGetPos, ,TempY, , , ahk_id %MouseWin_ID%
-MouseButtonClick=LButton
-; Using GoSub as A_CaretX in function call breaks doubleclick
-Gosub, CheckForCaretMove
-TempY = 
-Return
+CheckForCaretMove("LButton")
+return
+   
 
 ;------------------------------------------------------------------------
 
 ~RButton:: 
 ; Update the Last Window Clicked in
 MouseGetPos, , ,MouseWin_ID
-MouseButtonClick=RButton
 ; Using GoSub as A_CaretX in function call breaks doubleclick
-Gosub, CheckForCaretMove
+CheckForCaretMove("RButton")
 Return
 
 ;------------------------------------------------------------------------
 
-CheckForCaretMove:
+CheckForCaretMove(MouseButtonClick)
+{
+   global DetectMouseClickMove
+   global LastInput_Id
+   global MouseWin_ID
+   global MouseX, MouseY
+   global OldCaretX
+   global OldCaretY
+   global TempY
+   global Word
+   
    ;If we aren't using the DetectMouseClickMoveScheme, skip out
    IfNotEqual, DetectMouseClickMove, On
       Return
@@ -417,8 +394,8 @@ CheckForCaretMove:
       }
    }
 
-   MouseButtonClick=
    Return
+}
    
    
 ;------------------------------------------------------------------------
@@ -558,10 +535,14 @@ Return
 ; If hotkey was pressed, check wether there's a match going on and send it, otherwise send the number(s) typed 
 CheckWord(Key)
 {
-   global
-   Local ATitle
-   Local WordIndex
-   Local KeyAgain
+   global ListBox_ID
+   global ListBoxRows
+   global Match
+   global MatchStart
+   global NumKeyMethod
+   global NumPresses
+   global singlematch
+   global Word
    
    StringRight, Key, Key, 1 ;Grab just the number pushed, trim off the "$"
    
@@ -634,7 +615,7 @@ CheckWord(Key)
 
    IfEqual, NumPresses, 2
    {
-      Input, keyagain, L1 I T0.5, 1234567890
+      Input, KeyAgain, L1 I T0.5, 1234567890
       
       ; If there is a timeout, abort replacement, send key and return
       IfEqual, ErrorLevel, Timeout
@@ -656,9 +637,9 @@ CheckWord(Key)
       }
    
       ; If the 2nd key is NOT the same 1st trigger key, abort replacement and send keys   
-      IfNotInString, ErrorLevel, %key%
+      IfNotInString, ErrorLevel, %Key%
       {
-         StringTrimLeft, keyagain, ErrorLevel, 7
+         StringTrimLeft, KeyAgain, ErrorLevel, 7
          SendCompatible(Key . KeyAgain,0)
          ProcessKey(Key,"")
          ProcessKey(KeyAgain,"")
@@ -678,7 +659,17 @@ CheckWord(Key)
 ;If a hotkey related to the up/down arrows was pressed
 EvaluateUpDown(Key)
 {
-   global 
+   global ArrowKeyMethod
+   global DisabledAutoCompleteKeys
+   global ListBox_ID
+   global ListBoxRows
+   global Match
+   global MatchPos
+   global MatchStart
+   global Number
+   global singlematch
+   global Word
+   
    IfEqual, ArrowKeyMethod, Off
    {
       SendKey(Key)
@@ -720,7 +711,6 @@ EvaluateUpDown(Key)
    
    if ( ( Key = "$^Enter" ) || ( Key = "$Tab" ) || ( Key = "$^Space" ) || ( Key = "$Right") || ( Key = "$Enter") )
    {
-      Local KeyTest
       IfEqual, Key, $^Enter
       {
          KeyTest = E
@@ -754,7 +744,7 @@ EvaluateUpDown(Key)
       if (singlematch[MatchPos] = "") ;only continue if singlematch is not empty
       {
          SendKey(Key)
-         MatchPos = %Number%
+         MatchPos := Number
          RebuildMatchList()
          ShowListBox()
          Return
@@ -765,8 +755,7 @@ EvaluateUpDown(Key)
       
    }
 
-   Local PreviousMatchStart
-   PreviousMatchStart = %MatchStart%
+   PreviousMatchStart := MatchStart
    
    IfEqual, Key, $Up
    {   
@@ -840,10 +829,11 @@ EvaluateUpDown(Key)
    
    IfEqual, MatchStart, %PreviousMatchStart%
    {
-      Local Rows
       Rows := GetRows()
       IfNotEqual, MatchPos,
-         GuiControl, ListBoxGui: Choose, ListBox%Rows%, %MatchPos%
+      {
+         ListBoxChooseItem(Rows)
+      }
    } else {
             RebuildMatchList()
             ShowListBox()
@@ -893,6 +883,48 @@ DeleteSelectedWordFromList()
       Return
    }
    
+}
+
+;------------------------------------------------------------------------
+
+EvaluateScriptPathAndTitle()
+{
+   ;relaunches to 64 bit or sets script title
+   global ScriptTitle
+
+   SplitPath, A_ScriptName,,,ScriptExtension,ScriptNoExtension,
+
+   If A_Is64bitOS
+   {
+      IF (A_PtrSize = 4)
+      {
+         IF A_IsCompiled
+         {
+         
+            ScriptPath64 := A_ScriptDir . "\" . ScriptNoExtension . "64." . ScriptExtension
+         
+            IfExist, %ScriptPath64%
+            {
+               Run, %ScriptPath64%, %A_WorkingDir%
+               ExitApp
+            }
+         }
+      }
+   }
+
+   if (SubStr(ScriptNoExtension, StrLen(ScriptNoExtension)-1, 2) == "64" )
+   {
+      StringTrimRight, ScriptTitle, ScriptNoExtension, 2
+   } else {
+      ScriptTitle := ScriptNoExtension
+   }
+
+   if (InStr(ScriptTitle, "TypingAid"))
+   {
+      ScriptTitle = TypingAid
+   }
+   
+   return
 }
 
 ;------------------------------------------------------------------------
@@ -957,7 +989,7 @@ ClearAllVars(ClearWord)
    CloseListBox()
    Ifequal,ClearWord,1
    {
-      word =
+      Word =
       OldCaretY=
       OldCaretX=
       LastInput_id=
@@ -965,8 +997,7 @@ ClearAllVars(ClearWord)
    
    singlematch =
    sending = 
-   key= 
-   match= 
+   Match= 
    MatchPos=
    MatchStart= 
    Return

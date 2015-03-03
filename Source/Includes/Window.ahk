@@ -164,8 +164,7 @@ GetIncludedActiveWindowGuts()
    {
       WinWaitActive, ahk_id %LastInput_id%,,0
       ;Check Caret Position again
-      MouseButtonClick=LButton
-      Gosub, CheckForCaretMove
+      CheckForCaretMove("LButton")
       ShowListBox()      
    } else {
             CloseListBox()

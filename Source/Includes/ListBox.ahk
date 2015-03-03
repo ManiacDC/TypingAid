@@ -26,15 +26,21 @@ InitializeListBox()
 }
 
 ListBoxClick:
-   ListBoxChooseItem()
+   ListBoxClickItem()
    Return
    
-ListBoxChooseItem()
+ListBoxClickItem()
 {
    Local TempRows
    TempRows := GetRows()
    GuiControlGet, MatchPos, ,ListBox%TempRows%
    Return
+}
+
+ListBoxChooseItem(Row)
+{
+   global
+   GuiControl, ListBoxGui: Choose, ListBox%Row%, %MatchPos%
 }
 
 ;------------------------------------------------------------------------
@@ -345,7 +351,6 @@ GetRows()
 ; function to grab the X position of the caret for the ListBox
 HCaretX() 
 { 
-   global MouseX
    global Helper_id
     
    WinGetPos, HelperX,,,, ahk_id %Helper_id% 
@@ -355,10 +360,8 @@ HCaretX()
    } 
    if ( CheckIfCaretNotDetectable() )
    { 
-      if MouseX != 0 
-      { 
-         return MouseX 
-      } 
+      MouseGetPos, MouseX
+      return MouseX
    } 
    return A_CaretX 
 } 
@@ -368,10 +371,8 @@ HCaretX()
 ; function to grab the Y position of the caret for the ListBox
 HCaretY() 
 { 
-   global MouseY
    global Helper_id
 
-   
    WinGetPos,,HelperY,,, ahk_id %Helper_id% 
    if HelperY != 
    { 
@@ -379,10 +380,8 @@ HCaretY()
    } 
    if ( CheckIfCaretNotDetectable() )
    { 
-      if MouseY != 0 
-      { 
-         return MouseY + 20
-      } 
+      MouseGetPos, , MouseY
+      return MouseY + 20
    } 
    return A_CaretY 
 }
@@ -401,10 +400,12 @@ CheckIfCaretNotDetectable()
    Loop, %NumMonitors%
    {
       SysGet, Mon, Monitor, %A_Index%
-      if ( A_CaretX = ( MonLeft + 1 ) )
-         Return, A_CaretX
+      if ( A_CaretX = ( MonLeft ) )
+      {
+         Return, 1
+      }
       
    }
    
-   Return
+   Return, 0
 }
