@@ -107,7 +107,7 @@ SetupMatchPosition()
    global ListBoxRows
    global MatchPos
    global MatchStart
-   global Number
+   global MatchTotal
    global OldMatch
    global OldMatchStart
    global singlematch
@@ -128,17 +128,17 @@ SetupMatchPosition()
             MatchStart = 1
          } else IfEqual, ArrowKeyMethod, LastPosition
                {
-                  IfGreater, OldMatch, %Number%
+                  IfGreater, OldMatch, %MatchTotal%
                   {
-                     MatchStart := Number - (ListBoxRows - 1)
+                     MatchStart := MatchTotal - (ListBoxRows - 1)
                      IfLess, MatchStart, 1
                         MatchStart = 1
-                     MatchPos := Number
+                     MatchPos := MatchTotal
                   } else {
                            MatchStart := OldMatchStart
-                           If ( MatchStart > (Number - (ListBoxRows - 1) ))
+                           If ( MatchStart > (MatchTotal - (ListBoxRows - 1) ))
                            {
-                              MatchStart := Number - (ListBoxRows - 1)
+                              MatchStart := MatchTotal - (ListBoxRows - 1)
                               IfLess, MatchStart, 1
                                  MatchStart = 1
                            }
@@ -148,7 +148,7 @@ SetupMatchPosition()
                } else IfEqual, ArrowKeyMethod, LastWord
                      {
                         ListPosition =
-                        Loop, %Number%
+                        Loop, %MatchTotal%
                         {
                            if ( OldMatch == singlematch[A_Index] )
                            {
@@ -180,13 +180,13 @@ RebuildMatchList()
 {
    global Match
    global MatchLongestLength
-   global Number
+   global MatchTotal
    global singlematch
    
    Match = 
    MatchLongestLength =
    
-   Loop, %Number%
+   Loop, %MatchTotal%
    {
       CurrentLength := AddToMatchList(A_Index,singlematch[A_Index])
       IfGreater, CurrentLength, %MatchLongestLength%
@@ -240,7 +240,7 @@ ShowListBox()
 
       Rows := GetRows()
       
-      IfGreater, Number, %Rows%
+      IfGreater, MatchTotal, %Rows%
       {
          SysGet, ScrollBarWidth, 2        
          if ScrollBarWidth is not integer
@@ -338,11 +338,11 @@ ForceWithinMonitorBounds(ByRef ListBoxPosX,ByRef ListBoxPosY,ListBoxActualSizeH,
 
 GetRows()
 {
-   global Number
+   global MatchTotal
    global ListBoxRows
-   IfGreater, Number, %ListBoxRows%
+   IfGreater, MatchTotal, %ListBoxRows%
       Rows := ListBoxRows
-   else Rows := Number
+   else Rows := MatchTotal
    
    Return, Rows
 }

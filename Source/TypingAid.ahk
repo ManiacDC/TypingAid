@@ -243,7 +243,7 @@ RecomputeMatches()
    global LearnMode
    global ListBoxRows
    global NoBackSpace
-   global number
+   global MatchTotal
    global singlematch
    global SuppressMatchingWord
    global Word
@@ -252,7 +252,7 @@ RecomputeMatches()
    SavePriorMatchPosition()
 
    ;Match part-word with command 
-   number = 0 
+   MatchTotal = 0 
    
    IfEqual, ArrowKeyMethod, Off
    {
@@ -306,14 +306,14 @@ RecomputeMatches()
    
    for each, row in Matches.Rows
    {      
-      number++
-      singlematch[number] := row[1]
+      MatchTotal++
+      singlematch[MatchTotal] := row[1]
       
       continue
    }
    
    ;If no match then clear Tip 
-   IfEqual, number, 0
+   IfEqual, MatchTotal, 0
    {
       ClearAllVars(false)
       Return 
@@ -666,7 +666,7 @@ EvaluateUpDown(Key)
    global Match
    global MatchPos
    global MatchStart
-   global Number
+   global MatchTotal
    global singlematch
    global Word
    
@@ -744,7 +744,7 @@ EvaluateUpDown(Key)
       if (singlematch[MatchPos] = "") ;only continue if singlematch is not empty
       {
          SendKey(Key)
-         MatchPos := Number
+         MatchPos := MatchTotal
          RebuildMatchList()
          ShowListBox()
          Return
@@ -763,10 +763,10 @@ EvaluateUpDown(Key)
    
       IfLess, MatchPos, 1
       {
-         MatchStart := Number - (ListBoxRows - 1)
+         MatchStart := MatchTotal - (ListBoxRows - 1)
          IfLess, MatchStart, 1
             MatchStart = 1
-         MatchPos := Number
+         MatchPos := MatchTotal
       } else {
                IfLess, MatchPos, %MatchStart%
                   MatchStart --
@@ -775,7 +775,7 @@ EvaluateUpDown(Key)
             IfEqual, Key, $Down
             {
                MatchPos++
-               IfGreater, MatchPos, %Number%
+               IfGreater, MatchPos, %MatchTotal%
                {
                   MatchStart =1
                   MatchPos =1
@@ -789,8 +789,8 @@ EvaluateUpDown(Key)
                      {
                         IfEqual, MatchPos, 1
                         {
-                           MatchPos := Number - (ListBoxRows - 1)
-                           MatchStart := Number - (ListBoxRows - 1)
+                           MatchPos := MatchTotal - (ListBoxRows - 1)
+                           MatchStart := MatchTotal - (ListBoxRows - 1)
                         } Else {
                                  MatchPos-=ListBoxRows   
                                  MatchStart-=ListBoxRows
@@ -804,7 +804,7 @@ EvaluateUpDown(Key)
                      } else {
                               IfEqual, Key, $PgDn
                               {
-                                 IfEqual, MatchPos, %Number%
+                                 IfEqual, MatchPos, %MatchTotal%
                                  {
                                     MatchPos := ListBoxRows
                                     MatchStart := 1
@@ -813,12 +813,12 @@ EvaluateUpDown(Key)
                                           MatchStart+=ListBoxRows
                                        }
                                  
-                                 IfGreater, MatchPos, %Number%
-                                    MatchPos := Number
+                                 IfGreater, MatchPos, %MatchTotal%
+                                    MatchPos := MatchTotal
                                     
-                                 If ( MatchStart > ( Number - (ListBoxRows - 1) ) )
+                                 If ( MatchStart > ( MatchTotal - (ListBoxRows - 1) ) )
                                  {
-                                    MatchStart := Number - (ListBoxRows - 1)   
+                                    MatchStart := MatchTotal - (ListBoxRows - 1)   
                                     IfLess, MatchStart, 1
                                        MatchStart = 1
                                  }
