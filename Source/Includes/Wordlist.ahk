@@ -2,12 +2,11 @@
 
 ReadWordList()
 {
-   global LearnedWordsCount
-   global LegacyLearnedWords
-   global WordListDone
-   global wDB
+   global g_LegacyLearnedWords
+   global g_WordListDone
+   global g_WordListDB
    ;mark the wordlist as not done
-   WordListDone = 0
+   g_WordListDone = 0
    
    Wordlist = %A_ScriptDir%\Wordlist.txt
    WordlistLearned = %A_ScriptDir%\WordlistLearned.txt
@@ -15,14 +14,14 @@ ReadWordList()
    MaybeFixFileEncoding(Wordlist,"UTF-8")
    MaybeFixFileEncoding(WordlistLearned,"UTF-8")
 
-   wDB := DBA.DataBaseFactory.OpenDataBase("SQLite", A_ScriptDir . "\WordlistLearned.db" )
-   if !wDB
+   g_WordListDB := DBA.DataBaseFactory.OpenDataBase("SQLite", A_ScriptDir . "\WordlistLearned.db" )
+   if !g_WordListDB
    {
       msgbox Problem opening database '%A_ScriptDir%\WordlistLearned.db' - fatal error...
       exitapp
    }
    
-   tableconverted := wDB.Query("SELECT tableconverted FROM LastState;")
+   tableconverted := g_WordListDB.Query("SELECT tableconverted FROM LastState;")
    
    for each, row in tableconverted.Rows
    {
@@ -31,23 +30,23 @@ ReadWordList()
    
    IfNotEqual, WordlistConverted, 1
    {
-      wDB.Query("DROP TABLE Words;")
-      wDB.Query("DROP INDEX WordIndex;")
-      wDB.Query("DROP TABLE LastState;")
+      g_WordListDB.Query("DROP TABLE Words;")
+      g_WordListDB.Query("DROP INDEX WordIndex;")
+      g_WordListDB.Query("DROP TABLE LastState;")
       
-      IF not wDB.Query("CREATE TABLE Words (wordindexed TEXT, word TEXT UNIQUE, count INTEGER);")
+      IF not g_WordListDB.Query("CREATE TABLE Words (wordindexed TEXT, word TEXT UNIQUE, count INTEGER);")
       {
          msgbox Cannot Create Table - fatal error...
          ExitApp
       }
    
-      IF not wDB.Query("CREATE INDEX WordIndex ON Words (wordindexed);")
+      IF not g_WordListDB.Query("CREATE INDEX WordIndex ON Words (wordindexed);")
       {
          msgbox Cannot Create Index - fatal error...
          ExitApp
       }
    
-      IF not wDB.Query("CREATE TABLE LastState (tableconverted INTEGER);")
+      IF not g_WordListDB.Query("CREATE TABLE LastState (tableconverted INTEGER);")
       {
          MsgBox Cannot Create Table - fatal error...
          ExitApp
@@ -57,7 +56,7 @@ ReadWordList()
       CleanupWordList()
    }
    
-   wDB.BeginTransaction()
+   g_WordListDB.BeginTransaction()
    ;reads list of words from file 
    FileRead, ParseWords, %Wordlist%
    Loop, Parse, ParseWords, `n, `r
@@ -69,14 +68,14 @@ ReadWordList()
             break
          } Else {
             LearnedWordsCount=0
-            LegacyLearnedWords=1 ; Set Flag that we need to convert wordlist file
+            g_LegacyLearnedWords=1 ; Set Flag that we need to convert wordlist file
          }
       } else {
-               AddWordToList(A_LoopField,0,"ForceLearn")
+               AddWordToList(A_LoopField,0,"ForceLearn",LearnedWordsCount)
             }
    }
    ParseWords =
-   wDB.EndTransaction()
+   g_WordListDB.EndTransaction()
    
    IfNotEqual, WordlistConverted, 1
    {
@@ -88,54 +87,51 @@ ReadWordList()
          LearnedWordsCount=0
       }
       
-      wDB.BeginTransaction()
+      g_WordListDB.BeginTransaction()
       ;reads list of words from file 
       FileRead, ParseWords, %WordlistLearned%
       Loop, Parse, ParseWords, `n, `r
       {
          
-         AddWordToList(A_LoopField,0,"ForceLearn")
+         AddWordToList(A_LoopField,0,"ForceLearn",LearnedWordsCount)
       }
       ParseWords =
-      wDB.EndTransaction()
+      g_WordListDB.EndTransaction()
       
       Progress, 50, Please wait..., Converting wordlist, %A_ScriptName%
 
       ;reverse the numbers of the word counts in memory
-      ReverseWordNums()
+      ReverseWordNums(LearnedWordsCount)
       
-      wDB.Query("INSERT INTO LastState VALUES ('1');")
+      g_WordListDB.Query("INSERT INTO LastState VALUES ('1');")
       
       Progress, Off
    }
 
    ;mark the wordlist as completed
-   WordlistDone = 1
+   g_WordlistDone = 1
    Return
 }
 
 ;------------------------------------------------------------------------
 
-ReverseWordNums()
+ReverseWordNums(LearnedWordsCount)
 {
    ; This function will reverse the read numbers since now we know the total number of words
-   global LearnedWordsCount
-   global LearnCount
-   global wDB
+   global prefs_LearnCount
+   global g_WordListDB
 
-   LearnedWordsCount+= (LearnCount - 1)
+   LearnedWordsCount+= (prefs_LearnCount - 1)
 
-   LearnedWordsTable := wDB.Query("SELECT word FROM Words WHERE count IS NOT NULL;")
+   LearnedWordsTable := g_WordListDB.Query("SELECT word FROM Words WHERE count IS NOT NULL;")
 
-   wDB.BeginTransaction()
+   g_WordListDB.BeginTransaction()
    For each, row in LearnedWordsTable.Rows
    {
       WhereQuery := "WHERE word = '" . row[1] . "'"
-      wDB.Query("UPDATE words SET count = (SELECT " . LearnedWordsCount . " - count FROM words " . WhereQuery . ") " . WhereQuery . ";")
+      g_WordListDB.Query("UPDATE words SET count = (SELECT " . LearnedWordsCount . " - count FROM words " . WhereQuery . ") " . WhereQuery . ";")
    }
-   wDB.EndTransaction()
-
-   LearnedWordsCount = 
+   g_WordListDB.EndTransaction()
 
    Return
    
@@ -143,67 +139,66 @@ ReverseWordNums()
 
 ;------------------------------------------------------------------------
 
-AddWordToList(AddWord,ForceCountNewOnly,ForceLearn=false)
+AddWordToList(AddWord,ForceCountNewOnly,ForceLearn=false, ByRef LearnedWordsCount = false)
 {
    ;AddWord = Word to add to the list
    ;ForceCountNewOnly = force this word to be permanently learned even if learnmode is off
    ;ForceLearn = disables some checks in CheckValid
-   global DoNotLearnStrings
-   global ForceNewWordCharacters
-   global LearnedWordsCount
-   global LearnCount
-   global LearnLength
-   global LearnMode
-   global WordListDone
-   global wDB
+   global prefs_DoNotLearnStrings
+   global prefs_ForceNewWordCharacters
+   global prefs_LearnCount
+   global prefs_LearnLength
+   global prefs_LearnMode
+   global g_WordListDone
+   global g_WordListDB
    
    StringUpper, AddWordIndex, AddWord
          
    if !(CheckValid(AddWord,ForceLearn))
       return
 
-   IfEqual, WordListDone, 0 ;if this is read from the wordlist
+   IfEqual, g_WordListDone, 0 ;if this is read from the wordlist
    {
       IfNotEqual,LearnedWordsCount,  ;if this is a stored learned word, this will only have a value when LearnedWords are read in from the wordlist
       {
-         wDB.Query("INSERT INTO words VALUES ('" . AddWordIndex . "','" . AddWord . "','" . LearnedWordsCount++ . "');")
+         g_WordListDB.Query("INSERT INTO words VALUES ('" . AddWordIndex . "','" . AddWord . "','" . LearnedWordsCount++ . "');")
       } else {
-         wDB.Query("INSERT INTO words (wordindexed,word) VALUES ('" . AddWordIndex . "','" . AddWord . "');")
+         g_WordListDB.Query("INSERT INTO words (wordindexed,word) VALUES ('" . AddWordIndex . "','" . AddWord . "');")
       }
       
-   } else if (LearnMode = "On" || ForceCountNewOnly == 1)
+   } else if (prefs_LearnMode = "On" || ForceCountNewOnly == 1)
    { 
       ; If this is an on-the-fly learned word
-      AddWordInList := wDB.Query("SELECT * FROM words WHERE word = '" . AddWord . "';")
+      AddWordInList := g_WordListDB.Query("SELECT * FROM words WHERE word = '" . AddWord . "';")
       
       IF !( AddWordInList.Count() ) ; if the word is not in the list
       {
       
          IfNotEqual, ForceCountNewOnly, 1
          {
-            IF (StrLen(AddWord) < LearnLength) ; don't add the word if it's not longer than the minimum length for learning if we aren't force learning it
+            IF (StrLen(AddWord) < prefs_LearnLength) ; don't add the word if it's not longer than the minimum length for learning if we aren't force learning it
                Return
             
-            if AddWord contains %ForceNewWordCharacters%
+            if AddWord contains %prefs_ForceNewWordCharacters%
                Return
                   
-            if AddWord contains %DoNotLearnStrings%
+            if AddWord contains %prefs_DoNotLearnStrings%
                Return
                   
             CountValue = 1
                   
          } else {
-            CountValue := LearnCount ;set the count to LearnCount so it gets written to the file
+            CountValue := prefs_LearnCount ;set the count to LearnCount so it gets written to the file
          }
          
-         IfEqual, LearnMode, On
+         IfEqual, prefs_LearnMode, On
          {
-            wDB.Query("INSERT INTO words VALUES ('" . AddWordIndex . "','" . AddWord . "','" . CountValue . "');")
+            g_WordListDB.Query("INSERT INTO words VALUES ('" . AddWordIndex . "','" . AddWord . "','" . CountValue . "');")
          } else {
-            wDB.Query("INSERT INTO words (wordindexed,word) VALUES ('" . AddWordIndex . "','" . AddWord . "');")
+            g_WordListDB.Query("INSERT INTO words (wordindexed,word) VALUES ('" . AddWordIndex . "','" . AddWord . "');")
          }
       } else {
-         IfEqual, LearnMode, On
+         IfEqual, prefs_LearnMode, On
          {
             IfEqual, ForceCountNewOnly, 1                     
             {
@@ -213,9 +208,9 @@ AddWordToList(AddWord,ForceCountNewOnly,ForceLearn=false)
                   break
                }
                
-               IF ( CountValue < LearnCount )
+               IF ( CountValue < prefs_LearnCount )
                {
-                  wDB.QUERY("UPDATE words SET count = ('" . LearnCount . "') WHERE word = '" . AddWord . "');")
+                  g_WordListDB.QUERY("UPDATE words SET count = ('" . prefs_LearnCount . "') WHERE word = '" . AddWord . "');")
                }
             } else {
                UpdateWordCount(AddWord,0) ;Increment the word count if it's already in the list and we aren't forcing it on
@@ -241,7 +236,7 @@ CheckValid(Word,ForceLearn=false)
       Return
    }
    
-   IF ( StrLen(Word) <= Length ) ; don't add the word if it's not longer than the minimum length
+   IF ( StrLen(Word) <= prefs_Length ) ; don't add the word if it's not longer than the minimum length
    {
       Return
    }
@@ -267,8 +262,8 @@ CheckValid(Word,ForceLearn=false)
 
 DeleteWordFromList(DeleteWord)
 {
-   global LearnMode
-   global wDB
+   global prefs_LearnMode
+   global g_WordListDB
    
    Ifequal, DeleteWord,  ;If we have no word to delete, skip out.
       Return
@@ -276,10 +271,10 @@ DeleteWordFromList(DeleteWord)
    if DeleteWord is space ;If DeleteWord is only whitespace, skip out.
       Return
    
-   IfNotEqual, LearnMode, On
+   IfNotEqual, prefs_LearnMode, On
       Return
    
-   wDB.Query("DELETE FROM words WHERE word = '" . DeleteWord . "';")
+   g_WordListDB.Query("DELETE FROM words WHERE word = '" . DeleteWord . "';")
       
    Return   
 }
@@ -288,20 +283,20 @@ DeleteWordFromList(DeleteWord)
 
 UpdateWordCount(word,SortOnly)
 {
-   global LearnMode
-   global wDB
+   global prefs_LearnMode
+   global g_WordListDB
    ;Word = Word to increment count for
    ;SortOnly = Only sort the words, don't increment the count
    
    ;Should only be called when LearnMode is on  
-   IfEqual, LearnMode, Off
+   IfEqual, prefs_LearnMode, Off
       Return
    
    IfEqual, SortOnly, 
       Return
    
    WhereQuery := "WHERE word = '" . word . "'"
-   wDB.Query("UPDATE words SET count = (SELECT count + 1 FROM words " . WhereQuery . ") " . WhereQuery . ";")
+   g_WordListDB.Query("UPDATE words SET count = (SELECT count + 1 FROM words " . WhereQuery . ") " . WhereQuery . ";")
    
    Return
 }
@@ -310,26 +305,26 @@ UpdateWordCount(word,SortOnly)
 
 CleanupWordList()
 {
-   global LearnCount
-   global wDB
-   wDB.Query("DELETE FROM Words WHERE count < " . LearnCount . " OR count IS NULL;")
+   global prefs_LearnCount
+   global g_WordListDB
+   g_WordListDB.Query("DELETE FROM Words WHERE count < " . prefs_LearnCount . " OR count IS NULL;")
 }
 
 ;------------------------------------------------------------------------
 
 MaybeUpdateWordlist()
 {
-   global LegacyLearnedWords
-   global wDB
-   global WordListDone
+   global g_LegacyLearnedWords
+   global g_WordListDB
+   global g_WordListDone
    
    ; Update the Learned Words
-   IfEqual, WordListDone, 1
+   IfEqual, g_WordListDone, 1
    {
       
       CleanupWordList()
       
-      SortWordList := wDB.Query("SELECT Word FROM Words ORDER BY count DESC;")
+      SortWordList := g_WordListDB.Query("SELECT Word FROM Words ORDER BY count DESC;")
       
       for each, row in SortWordList.Rows
       {
@@ -346,7 +341,7 @@ MaybeUpdateWordlist()
          FileDelete, %A_ScriptDir%\Temp_WordlistLearned.txt
          
          ; Convert the Old Wordlist file to not have ;LEARNEDWORDS;
-         IfEqual, LegacyLearnedWords, 1
+         IfEqual, g_LegacyLearnedWords, 1
          {
             TempWordList =
             FileRead, ParseWords, %A_ScriptDir%\Wordlist.txt
@@ -361,6 +356,6 @@ MaybeUpdateWordlist()
       }
    }
    
-   wDB.Close(),
+   g_WordListDB.Close(),
    
 }

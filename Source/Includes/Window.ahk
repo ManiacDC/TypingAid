@@ -2,15 +2,15 @@
 
 EnableWinHook()
 {
-   global WinChangedEventHook
-   global WinChangedCallback
+   global g_WinChangedEventHook
+   global g_WinChangedCallback
    ; Set a hook to check for a changed window
-   If !(WinChangedEventHook)
+   If !(g_WinChangedEventHook)
    {
       DllCall("CoInitializeEx", Ptr, 0, Uint, 0)
-      WinChangedEventHook := DllCall("SetWinEventHook", Uint, 0x0003, Uint, 0x0003, Ptr, 0, Uint, WinChangedCallback, Uint, 0, Uint, 0, Uint, 0x0002)
+      g_WinChangedEventHook := DllCall("SetWinEventHook", Uint, 0x0003, Uint, 0x0003, Ptr, 0, Uint, g_WinChangedCallback, Uint, 0, Uint, 0, Uint, 0x0002)
       
-      if !(WinChangedEventHook)
+      if !(g_WinChangedEventHook)
       {
          MsgBox, Failed to register Event Hook!
          ExitApp
@@ -22,14 +22,14 @@ EnableWinHook()
 
 DisableWinHook()
 {
-   global WinChangedEventHook
+   global g_WinChangedEventHook
    
-   if (WinChangedEventHook)
+   if (g_WinChangedEventHook)
    {
-      if (DllCall("UnhookWinEvent", Uint, WinChangedEventHook))
+      if (DllCall("UnhookWinEvent", Uint, g_WinChangedEventHook))
       {
          DllCall("CoUninitialize")
-         WinChangedEventHook =
+         g_WinChangedEventHook =
       } else {
          MsgBox, Failed to Unhook WinEvent!
          ExitApp
@@ -41,8 +41,8 @@ DisableWinHook()
 ; Hook function to detect change of focus (and remove ListBox when changing active window) 
 WinChanged(hWinEventHook, event, wchwnd, idObject, idChild, dwEventThread, dwmsEventTime)
 {
-   global DetectMouseClickMove
-   global OldCaretY
+   global prefs_DetectMouseClickMove
+   global g_OldCaretY
    
    If (event <> 3)
    {
@@ -51,11 +51,11 @@ WinChanged(hWinEventHook, event, wchwnd, idObject, idChild, dwEventThread, dwmsE
    
    IF ( ReturnWinActive() )
    {
-      IfNotEqual, DetectMouseClickMove, On 
+      IfNotEqual, prefs_DetectMouseClickMove, On 
       {
-         IfNotEqual, OldCaretY,
+         IfNotEqual, g_OldCaretY,
          {
-            if ( OldCaretY != HCaretY() )
+            if ( g_OldCaretY != HCaretY() )
             {
                CloseListBox()
             }
@@ -80,12 +80,12 @@ GetIncludedActiveWindow()
 
 GetIncludedActiveWindowGuts()
 {
-   global Active_id
-   global Active_Title
-   global Helper_id
-   global LastActiveIdBeforeHelper
-   global ListBox_ID
-   global MouseWin_ID
+   global g_Active_Id
+   global g_Active_Title
+   global g_Helper_Id
+   global g_LastActiveIdBeforeHelper
+   global g_ListBox_Id
+   global g_MouseWin_Id
    Process, Priority,,Normal
    ;Wait for Included Active Window
    
@@ -96,11 +96,11 @@ GetIncludedActiveWindowGuts()
       WinGetTitle, ActiveTitle, ahk_id %ActiveId%
       IfEqual, ActiveId, 
       {
-         IfNotEqual, MouseWin_ID,
+         IfNotEqual, g_MouseWin_Id,
          {
-            IfEqual, MouseWin_ID, %ListBox_ID% 
+            IfEqual, g_MouseWin_Id, %g_ListBox_Id% 
             {
-               WinActivate, ahk_id %Active_id%
+               WinActivate, ahk_id %g_Active_Id%
                Return
             }
          }
@@ -115,9 +115,9 @@ GetIncludedActiveWindowGuts()
          WinWaitActive, , , , ZZZYouWillNeverFindThisStringInAWindowTitleZZZ
          Continue
       }
-      IfEqual, ActiveId, %Helper_id%
+      IfEqual, ActiveId, %g_Helper_Id%
          Break
-      IfEqual, ActiveId, %ListBox_ID%
+      IfEqual, ActiveId, %g_ListBox_Id%
          Break
       If CheckForActive(ActiveProcess,ActiveTitle)
          Break
@@ -136,81 +136,81 @@ GetIncludedActiveWindowGuts()
       ActiveProcess =
    }
 
-   IfEqual, ActiveId, %ListBox_ID%
+   IfEqual, ActiveId, %g_ListBox_Id%
    {
-      Active_id :=  ActiveId
-      Active_Title := ActiveTitle
+      g_Active_Id :=  ActiveId
+      g_Active_Title := ActiveTitle
       Return
    }
    
    ;if we are in the Helper Window, we don't want to re-enable script functions
-   IfNotEqual, ActiveId, %Helper_id%
+   IfNotEqual, ActiveId, %g_Helper_Id%
    {
       ; Check to see if we need to reopen the helper window
       MaybeOpenOrCloseHelperWindow(ActiveProcess,ActiveTitle,ActiveId)
       SuspendOff()
       ;Set the process priority back to High
       Process, Priority,,High
-      LastActiveIdBeforeHelper = %ActiveId%
+      g_LastActiveIdBeforeHelper = %ActiveId%
       
    } else {
-            IfNotEqual, Active_id, %Helper_id%
-               LastActiveIdBeforeHelper = %Active_id%               
+            IfNotEqual, g_Active_Id, %g_Helper_Id%
+               g_LastActiveIdBeforeHelper = %g_Active_Id%               
          }
    
-   global LastInput_Id
+   global g_LastInput_Id
    ;Show the ListBox if the old window is the same as the new one
-   IfEqual, ActiveId, %LastInput_Id%
+   IfEqual, ActiveId, %g_LastInput_Id%
    {
-      WinWaitActive, ahk_id %LastInput_id%,,0
+      WinWaitActive, ahk_id %g_LastInput_Id%,,0
       ;Check Caret Position again
       CheckForCaretMove("LButton")
       ShowListBox()      
    } else {
             CloseListBox()
          }
-   Active_id :=  ActiveId
-   Active_Title := ActiveTitle
+   g_Active_Id :=  ActiveId
+   g_Active_Title := ActiveTitle
    Return
 }
 
 CheckForActive(ActiveProcess,ActiveTitle)
 {
    ;Check to see if the Window passes include/exclude tests
-   global ExcludeProgramExecutables
-   global ExcludeProgramTitles
-   global IncludeProgramExecutables
-   global IncludeProgramTitles
-   global InSettings
+   global g_InSettings
+   global prefs_ExcludeProgramExecutables
+   global prefs_ExcludeProgramTitles
+   global prefs_IncludeProgramExecutables
+   global prefs_IncludeProgramTitles
    
-   If InSettings
+   If g_InSettings
       Return,
    
-   Loop, Parse, ExcludeProgramExecutables, |
+   Loop, Parse, prefs_ExcludeProgramExecutables, |
    {
       IfEqual, ActiveProcess, %A_LoopField%
          Return,
    }
    
-   Loop, Parse, ExcludeProgramTitles, |
+   Loop, Parse, prefs_ExcludeProgramTitles, |
    {
       IfInString, ActiveTitle, %A_LoopField%
          Return,
    }
 
-   IfEqual, IncludeProgramExecutables,
+   IfEqual, prefs_IncludeProgramExecutables,
    {
-      IfEqual, IncludeProgramTitles,
+      IfEqual, prefs_IncludeProgramTitles,
          Return, 1
    }
 
-   Loop, Parse, IncludeProgramExecutables, |
+   Loop, Parse, prefs_IncludeProgramExecutables, |
    {
       IfEqual, ActiveProcess, %A_LoopField%
          Return, 1
    }
 
-   Loop, Parse, IncludeProgramTitles, |
+   Loop, Parse, prefs_IncludeProgramTitles, |
    {
       IfInString, ActiveTitle, %A_LoopField%
          Return, 1
@@ -223,16 +223,16 @@ CheckForActive(ActiveProcess,ActiveTitle)
       
 ReturnWinActive()
 {
-   global Active_id
-   global Active_Title
-   global InSettings
+   global g_Active_Id
+   global g_Active_Title
+   global g_InSettings
    
-   IF InSettings
+   IF g_InSettings
       Return,
    
    WinGet, Temp_id, ID, A
    WinGetTitle, Temp_Title, ahk_id %Temp_id%
-   Last_Title := Active_Title
+   Last_Title := g_Active_Title
    ; remove all asterisks, dashes, and spaces from title in case saved value changes
    StringReplace, Last_Title, Last_Title,*,,All
    StringReplace, Temp_Title, Temp_Title,*,,All
@@ -240,5 +240,5 @@ ReturnWinActive()
    StringReplace, Temp_Title, Temp_Title,%A_Space%,,All
    StringReplace, Last_Title, Last_Title,-,,All
    StringReplace, Temp_Title, Temp_Title,-,,All
-   Return, (( Active_id == Temp_id ) && ( Last_Title == Temp_Title ))
+   Return, (( g_Active_Id == Temp_id ) && ( Last_Title == Temp_Title ))
 }

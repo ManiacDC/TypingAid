@@ -2,13 +2,13 @@
 
 MaybeWriteHelperWindowPos()
 {
-   global XY
-   global XYSaved
+   global g_XY
+   global g_XYSaved
    ;Update the Helper Window Position
-   IfEqual, XYSaved, 1
+   IfEqual, g_XYSaved, 1
    {
-      IfNotEqual, XY, 
-         IniWrite, %XY%, %A_ScriptDir%\LastState.ini, HelperWindow, XY
+      IfNotEqual, g_XY, 
+         IniWrite, %g_XY%, %A_ScriptDir%\LastState.ini, HelperWindow, XY
    }
    Return
 }
@@ -17,87 +17,88 @@ MaybeWriteHelperWindowPos()
 
 ReadPreferences(RestoreDefaults = false,RestorePreferences = false)
 {
-   global DftIncludeProgramExecutables
-   global DftIncludeProgramTitles
-   global DftExcludeProgramExecutables
-   global DftExcludeProgramTitles
-   global DftLength
-   global DftNumPresses
-   global DftLearnMode
-   global DftLearnCount
-   global DftLearnLength
-   global DftDoNotLearnStrings
-   global DftArrowKeyMethod
-   global DftDisabledAutoCompleteKeys
-   global DftDetectMouseClickMove
-   global DftNoBackSpace
-   global DftAutoSpace
-   global DftSuppressMatchingWord
-   global DftSendMethod
-   global DftTerminatingCharacters
-   global DftForceNewWordCharacters
-   global DftListBoxOffSet
-   global DftListBoxFontFixed
-   global DftListBoxFontOverride
-   global DftListBoxFontSize
-   global DftListBoxCharacterWidth
-   global DftListBoxOpacity
-   global DftListBoxRows
-   global DftHelperWindowProgramExecutables
-   global DftHelperWindowProgramTitles
+   global dft_IncludeProgramExecutables
+   global dft_IncludeProgramTitles
+   global dft_ExcludeProgramExecutables
+   global dft_ExcludeProgramTitles
+   global dft_Length
+   global dft_NumPresses
+   global dft_LearnMode
+   global dft_LearnCount
+   global dft_LearnLength
+   global dft_DoNotLearnStrings
+   global dft_ArrowKeyMethod
+   global dft_DisabledAutoCompleteKeys
+   global dft_DetectMouseClickMove
+   global dft_NoBackSpace
+   global dft_AutoSpace
+   global dft_SuppressMatchingWord
+   global dft_SendMethod
+   global dft_TerminatingCharacters
+   global dft_ForceNewWordCharacters
+   global dft_ListBoxOffSet
+   global dft_ListBoxFontFixed
+   global dft_ListBoxFontOverride
+   global dft_ListBoxFontSize
+   global dft_ListBoxCharacterWidth
+   global dft_ListBoxOpacity
+   global dft_ListBoxRows
+   global dft_HelperWindowProgramExecutables
+   global dft_HelperWindowProgramTitles
    
-   global IncludeProgramExecutables
-   global IncludeProgramTitles
-   global ExcludeProgramExecutables
-   global ExcludeProgramTitles
-   global Length
-   global NumPresses
-   global LearnMode
-   global LearnCount
-   global LearnLength
-   global DoNotLearnStrings
-   global ArrowKeyMethod
-   global DisabledAutoCompleteKeys
-   global DetectMouseClickMove
-   global NoBackSpace
-   global AutoSpace
-   global SuppressMatchingWord
-   global SendMethod
-   global TerminatingCharacters
-   global ForceNewWordCharacters
-   global ListBoxOffset
-   global ListBoxFontFixed
-   global ListBoxFontOverride
-   global ListBoxFontSize
-   global ListBoxCharacterWidth
-   global ListBoxOpacity
-   global ListBoxRows
-   global HelperWindowProgramExecutables
-   global HelperWindowProgramTitles
+   global prefs_IncludeProgramExecutables
+   global prefs_IncludeProgramTitles
+   global prefs_ExcludeProgramExecutables
+   global prefs_ExcludeProgramTitles
+   global prefs_Length
+   global prefs_NumPresses
+   global prefs_LearnMode
+   global prefs_LearnCount
+   global prefs_LearnLength
+   global prefs_DoNotLearnStrings
+   global prefs_ArrowKeyMethod
+   global prefs_DisabledAutoCompleteKeys
+   global prefs_DetectMouseClickMove
+   global prefs_NoBackSpace
+   global prefs_AutoSpace
+   global prefs_SuppressMatchingWord
+   global prefs_SendMethod
+   global prefs_TerminatingCharacters
+   global prefs_ForceNewWordCharacters
+   global prefs_ListBoxOffset
+   global prefs_ListBoxFontFixed
+   global prefs_ListBoxFontOverride
+   global prefs_ListBoxFontSize
+   global prefs_ListBoxCharacterWidth
+   global prefs_ListBoxOpacity
+   global prefs_ListBoxRows
+   global prefs_HelperWindowProgramExecutables
+   global prefs_HelperWindowProgramTitles
    
-   ;PrefsFile is global so it works in Settings.ahk
-   global PrefsFile
-   global PrefsSections
+   ;g_PrefsFile is global so it works in Settings.ahk
+   global g_PrefsFile
+   global g_PrefsSections
+   global g_XY
    
-   PrefsFile = %A_ScriptDir%\Preferences.ini
+   g_PrefsFile = %A_ScriptDir%\Preferences.ini
    Defaults = %A_ScriptDir%\Defaults.ini
    LastState = %A_ScriptDir%\LastState.ini
    
-   MaybeFixFileEncoding(PrefsFile,"UTF-16")
+   MaybeFixFileEncoding(g_PrefsFile,"UTF-16")
    MaybeFixFileEncoding(Defaults,"UTF-16")
    MaybeFixFileEncoding(LastState,"UTF-16")
    
-   DftTerminatingCharacters = {enter}{space}{esc}{tab}{Home}{End}{PgUp}{PgDn}{Up}{Down}{Left}{Right}.;`,¿?¡!'"()[]{}{}}{{}``~`%$&*-+=\/><^|@#:
+   dft_TerminatingCharacters = {enter}{space}{esc}{tab}{Home}{End}{PgUp}{PgDn}{Up}{Down}{Left}{Right}.;`,¿?¡!'"()[]{}{}}{{}``~`%$&*-+=\/><^|@#:
    
    
    ; There was a bug in TypingAid 2.19.7 that broke terminating characters for new preference files, this code repairs it
    BrokenTerminatingCharacters = {enter}{space}{esc}{tab}{Home}{End}{PgUp}{PgDn}{Up}{Down}{Left}{Right}.;
-   IfExist, %PrefsFile%
+   IfExist, %g_PrefsFile%
    {
-      IniRead, MaybeFixTerminatingCharacters, %PrefsFile%, Settings, TerminatingCharacters, %A_Space%
+      IniRead, MaybeFixTerminatingCharacters, %g_PrefsFile%, Settings, TerminatingCharacters, %A_Space%
       IF (MaybeFixTerminatingCharacters == BrokenTerminatingCharacters)
       {
-         IniWrite, %DftTerminatingCharacters%, %PrefsFile%, Settings, TerminatingCharacters
+         IniWrite, %dft_TerminatingCharacters%, %g_PrefsFile%, Settings, TerminatingCharacters
       }
    }      
    
@@ -105,39 +106,39 @@ ReadPreferences(RestoreDefaults = false,RestorePreferences = false)
    
    IniValues =
    (
-      DftIncludeProgramExecutables,IncludeProgramExecutables,IncludePrograms,%SpaceVar%
-      DftIncludeProgramTitles,IncludeProgramTitles,IncludePrograms,%SpaceVar%
-      DftExcludeProgramExecutables,ExcludeProgramExecutables,ExcludePrograms,%SpaceVar%
-      DftExcludeProgramTitles,ExcludeProgramTitles,ExcludePrograms,%SpaceVar%
+      dft_IncludeProgramExecutables,prefs_IncludeProgramExecutables,IncludePrograms,%SpaceVar%
+      dft_IncludeProgramTitles,prefs_IncludeProgramTitles,IncludePrograms,%SpaceVar%
+      dft_ExcludeProgramExecutables,prefs_ExcludeProgramExecutables,ExcludePrograms,%SpaceVar%
+      dft_ExcludeProgramTitles,prefs_ExcludeProgramTitles,ExcludePrograms,%SpaceVar%
       ,Title,Settings,%SpaceVar%
-      DftLength,Length,Settings,3
-      DftNumPresses,NumPresses,Settings,1
-      DftLearnMode,LearnMode,Settings,On
-      DftLearnCount,LearnCount,Settings,5
-      DftLearnLength,LearnLength,Settings,%SpaceVar%
-      DftDoNotLearnStrings,DoNotLearnStrings,Settings,%SpaceVar%
-      DftArrowKeyMethod,ArrowKeyMethod,Settings,First
-      DftDisabledAutoCompleteKeys,DisabledAutoCompleteKeys,Settings,%SpaceVar%
-      DftDetectMouseClickMove,DetectMouseClickMove,Settings,On
-      DftNoBackSpace,NoBackSpace,Settings,On
-      DftAutoSpace,AutoSpace,Settings,Off
-      DftSuppressMatchingWord,SuppressMatchingWord,Settings,Off
-      DftSendMethod,SendMethod,Settings,1
-      DftTerminatingCharacters,TerminatingCharacters,Settings,`%DftTerminatingCharacters`%
-      DftForceNewWordCharacters,ForceNewWordCharacters,Settings,%SpaceVar%
-      DftListBoxOffSet,ListBoxOffset,ListBoxSettings,14
-      DftListBoxFontFixed,ListBoxFontFixed,ListBoxSettings,Off
-      DftListBoxFontOverride,ListBoxFontOverride,ListBoxSettings,%SpaceVar%
-      DftListBoxFontSize,ListBoxFontSize,ListBoxSettings,10      
-      DftListBoxCharacterWidth,ListBoxCharacterWidth,ListBoxSettings,%SpaceVar%
-      DftListBoxOpacity,ListBoxOpacity,ListBoxSettings,215
-      DftListBoxRows,ListBoxRows,ListBoxSettings,10
-      DftHelperWindowProgramExecutables,HelperWindowProgramExecutables,HelperWindow,%SpaceVar%
-      DftHelperWindowProgramTitles,HelperWindowProgramTitles,HelperWindow,%SpaceVar%
+      dft_Length,prefs_Length,Settings,3
+      dft_NumPresses,prefs_NumPresses,Settings,1
+      dft_LearnMode,prefs_LearnMode,Settings,On
+      dft_LearnCount,prefs_LearnCount,Settings,5
+      dft_LearnLength,prefs_LearnLength,Settings,%SpaceVar%
+      dft_DoNotLearnStrings,prefs_DoNotLearnStrings,Settings,%SpaceVar%
+      dft_ArrowKeyMethod,prefs_ArrowKeyMethod,Settings,First
+      dft_DisabledAutoCompleteKeys,prefs_DisabledAutoCompleteKeys,Settings,%SpaceVar%
+      dft_DetectMouseClickMove,prefs_DetectMouseClickMove,Settings,On
+      dft_NoBackSpace,prefs_NoBackSpace,Settings,On
+      dft_AutoSpace,prefs_AutoSpace,Settings,Off
+      dft_SuppressMatchingWord,prefs_SuppressMatchingWord,Settings,Off
+      dft_SendMethod,prefs_SendMethod,Settings,1
+      dft_TerminatingCharacters,prefs_TerminatingCharacters,Settings,`%dft_TerminatingCharacters`%
+      dft_ForceNewWordCharacters,prefs_ForceNewWordCharacters,Settings,%SpaceVar%
+      dft_ListBoxOffSet,prefs_ListBoxOffset,ListBoxSettings,14
+      dft_ListBoxFontFixed,prefs_ListBoxFontFixed,ListBoxSettings,Off
+      dft_ListBoxFontOverride,prefs_ListBoxFontOverride,ListBoxSettings,%SpaceVar%
+      dft_ListBoxFontSize,prefs_ListBoxFontSize,ListBoxSettings,10      
+      dft_ListBoxCharacterWidth,prefs_ListBoxCharacterWidth,ListBoxSettings,%SpaceVar%
+      dft_ListBoxOpacity,prefs_ListBoxOpacity,ListBoxSettings,215
+      dft_ListBoxRows,prefs_ListBoxRows,ListBoxSettings,10
+      dft_HelperWindowProgramExecutables,prefs_HelperWindowProgramExecutables,HelperWindow,%SpaceVar%
+      dft_HelperWindowProgramTitles,prefs_HelperWindowProgramTitles,HelperWindow,%SpaceVar%
       ,XY,HelperWindow,%SpaceVar%
    )
    
-   PrefsSections := Object()
+   g_PrefsSections := Object()
     
    Loop, Parse, IniValues, `n, `r%A_Space%
    {
@@ -146,23 +147,31 @@ ReadPreferences(RestoreDefaults = false,RestorePreferences = false)
       NormalVariable := CurrentIniValues2
       IniSection := CurrentIniValues3
       DftValue := CurrentIniValues4
-      
-      PrefsSections[NormalVariable] := IniSection
-      
-      IF (DftValue == "%DftTerminatingCharacters%")
+      ; maybe strip "prefs_" prefix
+      if (substr(NormalVariable, 1, 6) == "prefs_")
       {
-         DftValue := DftTerminatingCharacters
+         StringTrimLeft, KeyName, NormalVariable, 6
+      } else {
+         KeyName := NormalVariable
+      }
+      
+      g_PrefsSections[KeyName] := IniSection
+      
+      ; this is done because certain characters can break the parsing (comma, for example)
+      IF (DftValue == "%dft_TerminatingCharacters%")
+      {
+         DftValue := dft_TerminatingCharacters
       }
 
       IF ( DftValue = "%A_Space%" )
          DftValue := A_Space
       
       IF !(RestoreDefaults)
-         IniRead, %NormalVariable%, %PrefsFile%, %IniSection%, %NormalVariable%, %A_Space%
+         IniRead, %NormalVariable%, %g_PrefsFile%, %IniSection%, %KeyName%, %A_Space%
       
       IF DftVariable
       { 
-         IniRead, %DftVariable%, %Defaults%, %IniSection%, %NormalVariable%, %DftValue%
+         IniRead, %DftVariable%, %Defaults%, %IniSection%, %KeyName%, %DftValue%
          IF (RestoreDefaults || %NormalVariable% == "")
          {
             %NormalVariable% := %DftVariable%
@@ -176,22 +185,24 @@ ReadPreferences(RestoreDefaults = false,RestorePreferences = false)
    ; Legacy support for old Preferences File
    IfNotEqual, Etitle,
    {
-      IfEqual, IncludeProgramTitles,
+      IfEqual, prefs_IncludeProgramTitles,
       {
-         IncludeProgramTitles = %Etitle%
+         prefs_IncludeProgramTitles = %Etitle%
       } else {
-               IncludeProgramTitles .= "|" . Etitle
+               prefs_IncludeProgramTitles .= "|" . Etitle
             }
       
       Etitle=      
    }
+   
+   g_XY := XY
    
    IF ( RestoreDefaults || RestorePreferences )
       Return
    
    IfExist, %LastState%
    {    
-      IniRead, XY, %LastState%, HelperWindow, XY, %A_Space%
+      IniRead, g_XY, %LastState%, HelperWindow, XY, %A_Space%
    }
    
    ConstructHelpStrings()
@@ -201,157 +212,157 @@ ReadPreferences(RestoreDefaults = false,RestorePreferences = false)
 
 ValidatePreferences()
 {
+   global g_ListBoxCharacterWidthComputed, g_NumKeyMethod
+   global prefs_ArrowKeyMethod, prefs_DisabledAutoCompleteKeys
+   global prefs_AutoSpace, prefs_DetectMouseClickMove, prefs_LearnCount, prefs_LearnLength, prefs_LearnMode, prefs_Length
+   global dft_AutoSpace, dft_DetectMouseClickMove, dft_LearnCount, dft_LearnLength, dft_LearnMode, dft_Length
+   global prefs_ListBoxCharacterWidth, prefs_ListBoxFontFixed, prefs_ListBoxFontSize, prefs_ListBoxOffset, prefs_ListBoxOpacity, prefs_ListBoxRows
+   global dft_ListBoxCharacterWidth, dft_ListBoxFontFixed, dft_ListBoxFontSize, dft_ListBoxOffset, dft_ListBoxOpacity, dft_ListBoxRows
+   global prefs_NoBackSpace, prefs_NumPresses, prefs_SendMethod, prefs_SuppressMatchingWord, prefs_TerminatingCharacters
+   global dft_NoBackSpace, dft_NumPresses, dft_SendMethod, dft_SuppressMatchingWord, dft_TerminatingCharacters
    
-   global ArrowKeyMethod, DisabledAutoCompleteKeys, ListBoxCharacterWidthComputed, NumKeyMethod
-   global AutoSpace, DetectMouseClickMove, LearnCount, LearnLength, LearnMode, Length
-   global DftAutoSpace, DftDetectMouseClickMove, DftLearnCount, DftLearnLength, DftLearnMode, DftLength
-   global ListBoxCharacterWidth, ListBoxFontFixed, ListBoxFontSize, ListBoxOffset, ListBoxOpacity, ListBoxRows
-   global DftListBoxCharacterWidth, DftListBoxFontFixed, DftListBoxFontSize, DftListBoxOffset, DftListBoxOpacity, DftListBoxRows
-   global NoBackSpace, NumPresses, SendMethod, SuppressMatchingWord, TerminatingCharacters
-   global DftNoBackSpace, DftNumPresses, DftSendMethod, DftSuppressMatchingWord, DftTerminatingCharacters
-   
-   if Length is not integer
+   if prefs_Length is not integer
    {
-      Length := DftLength
+      prefs_Length := dft_Length
    }
    
-   if (Length < 1) {
-      Length = 1
+   if (prefs_Length < 1) {
+      prefs_Length = 1
    }
    
-   if NumPresses not in 1,2
-      NumPresses := DftNumPresses
+   if prefs_NumPresses not in 1,2
+      prefs_NumPresses := dft_NumPresses
    
-   If LearnMode not in On,Off
-      LearnMode := DftLearnMode
+   If prefs_LearnMode not in On,Off
+      prefs_LearnMode := dft_LearnMode
    
-   If LearnCount is not Integer
+   If prefs_LearnCount is not Integer
    {
-      LearnCount := DftLearnCount
+      prefs_LearnCount := dft_LearnCount
    }
    
-   if (LearnCount < 1)
+   if (prefs_LearnCount < 1)
    {
-      LearnCount = 1
+      prefs_LearnCount = 1
    }
    
-   if DftLearnLength is not Integer
+   if dft_LearnLength is not Integer
    {
-      DftLearnLength := Length + 2
+      dft_LearnLength := prefs_Length + 2
    }
    
-   if LearnLength is not Integer
+   if prefs_LearnLength is not Integer
    {
-      LearnLength := DftLearnLength
-   } else If ( LearnLength < ( Length + 1 ) )
+      prefs_LearnLength := dft_LearnLength
+   } else If ( prefs_LearnLength < ( prefs_Length + 1 ) )
    {
-      LearnLength := Length + 1
+      prefs_LearnLength := prefs_Length + 1
    }
    
-   if DisabledAutoCompleteKeys contains N
-      NumKeyMethod = Off
+   if prefs_DisabledAutoCompleteKeys contains N
+      g_NumKeyMethod = Off
    
-   IfNotEqual, ArrowKeyMethod, Off
-      If DisabledAutoCompleteKeys contains E
-         If DisabledAutoCompleteKeys contains S
-            If DisabledAutoCompleteKeys contains T
-               If DisabledAutoCompleteKeys contains R
-                  If DisabledAutoCompleteKeys contains U
-                     ArrowKeyMethod = Off
+   IfNotEqual, prefs_ArrowKeyMethod, Off
+      If prefs_DisabledAutoCompleteKeys contains E
+         If prefs_DisabledAutoCompleteKeys contains S
+            If prefs_DisabledAutoCompleteKeys contains T
+               If prefs_DisabledAutoCompleteKeys contains R
+                  If prefs_DisabledAutoCompleteKeys contains U
+                     prefs_ArrowKeyMethod = Off
    
-   If ArrowKeyMethod not in First,Off,LastWord,LastPosition
+   If prefs_ArrowKeyMethod not in First,Off,LastWord,LastPosition
    {
-      ArrowKeyMethod := DftArrowKeyMethod
+      prefs_ArrowKeyMethod := dft_ArrowKeyMethod
    }
    
-   If DetectMouseClickMove not in On,Off
-      DetectMouseClickMove := DftDetectMouseClickMove
+   If prefs_DetectMouseClickMove not in On,Off
+      prefs_DetectMouseClickMove := dft_DetectMouseClickMove
    
-   If NoBackSpace not in On,Off
-      NoBackSpace := DftNoBackSpace
+   If prefs_NoBackSpace not in On,Off
+      prefs_NoBackSpace := dft_NoBackSpace
       
-   If AutoSpace not in On,Off
-      AutoSpace := DftAutoSpace
+   If prefs_AutoSpace not in On,Off
+      prefs_AutoSpace := dft_AutoSpace
    
-   if SuppressMatchingWord not in On,Off
-      SuppressMatchingWord := DftSuppressMatchingWord
+   if prefs_SuppressMatchingWord not in On,Off
+      prefs_SuppressMatchingWord := dft_SuppressMatchingWord
    
-   if SendMethod not in 1,2,3,1C,2C,3C,4C
-      SendMethod := DftSendMethod
+   if prefs_SendMethod not in 1,2,3,1C,2C,3C,4C
+      prefs_SendMethod := dft_SendMethod
    
    ;SendPlay does not work when not running as Administrator, switch to SendInput
    If not A_IsAdmin
    {
-      IfEqual, SendMethod, 1
+      IfEqual, prefs_SendMethod, 1
       {
-         SendMethod = 2
-      } else IfEqual, SendMethod, 1C
+         prefs_SendMethod = 2
+      } else IfEqual, prefs_SendMethod, 1C
             {
-               SendMethod = 2C   
+               prefs_SendMethod = 2C   
             }
    }
    
-   IfEqual, TerminatingCharacters,
-      TerminatingCharacters := DftTerminatingCharacters
+   IfEqual, prefs_TerminatingCharacters,
+      prefs_TerminatingCharacters := dft_TerminatingCharacters
    
-   if ListBoxOffset is not Integer
-      ListBoxOffset := DftListBoxOffSet
+   if prefs_ListBoxOffset is not Integer
+      prefs_ListBoxOffset := dft_ListBoxOffSet
       
-   if ListBoxFontFixed not in On,Off
-      ListBoxFontFixed := DftListBoxFontFixed
+   if prefs_ListBoxFontFixed not in On,Off
+      prefs_ListBoxFontFixed := dft_ListBoxFontFixed
    
-   If ListBoxFontSize is not Integer
+   If prefs_ListBoxFontSize is not Integer
    {
-      ListBoxFontSize := DftListBoxFontSize
+      prefs_ListBoxFontSize := dft_ListBoxFontSize
    }
-   else IfLess, ListBoxFontSize, 2
+   else IfLess, prefs_ListBoxFontSize, 2
    {
-      ListBoxFontSize = 2
-   }
-   
-   if DftListBoxCharacterWidth is not Integer
-   {
-      DftListBoxCharacterWidth =
+      prefs_ListBoxFontSize = 2
    }
    
-   if ListBoxCharacterWidth is not Integer
+   if dft_ListBoxCharacterWidth is not Integer
    {
-      ListBoxCharacterWidth := DftListBoxCharacterWidth
+      dft_ListBoxCharacterWidth =
    }
    
-   if ListBoxCharacterWidth is Integer
+   if prefs_ListBoxCharacterWidth is not Integer
    {
-      ListBoxCharacterWidthComputed := ListBoxCharacterWidth
+      prefs_ListBoxCharacterWidth := dft_ListBoxCharacterWidth
+   }
+   
+   if prefs_ListBoxCharacterWidth is Integer
+   {
+      g_ListBoxCharacterWidthComputed := prefs_ListBoxCharacterWidth
    } else {
-      ListBoxCharacterWidthComputed := Ceil(ListBoxFontSize * 0.8)
+      g_ListBoxCharacterWidthComputed := Ceil(prefs_ListBoxFontSize * 0.8)
    }
       
-   If ListBoxOpacity is not Integer
-      ListBoxOpacity := DftListBoxOpacity
+   If prefs_ListBoxOpacity is not Integer
+      prefs_ListBoxOpacity := dft_ListBoxOpacity
    
-   IfLess, ListBoxOpacity, 0
-      ListBoxOpacity = 0
-   else IfGreater, ListBoxOpacity, 255
-      ListBoxOpacity = 255
+   IfLess, prefs_ListBoxOpacity, 0
+      prefs_ListBoxOpacity = 0
+   else IfGreater, prefs_ListBoxOpacity, 255
+      prefs_ListBoxOpacity = 255
                   
-   If ListBoxRows is not Integer
-      ListBoxRows := DftListBoxRows
+   If prefs_ListBoxRows is not Integer
+      prefs_ListBoxRows := dft_ListBoxRows
    
-   IfLess, ListBoxRows, 3
-      ListBoxRows = 3
-   else IfGreater, ListBoxRows, 30
-      ListBoxRows = 30
+   IfLess, prefs_ListBoxRows, 3
+      prefs_ListBoxRows = 3
+   else IfGreater, prefs_ListBoxRows, 30
+      prefs_ListBoxRows = 30
             
    Return
 }
 
 ParseTerminatingCharacters()
 {
-   global TerminatingCharacters
-   global TerminatingCharactersParsed
-   global TerminatingEndKeys
+   global prefs_TerminatingCharacters
+   global g_TerminatingCharactersParsed
+   global g_TerminatingEndKeys
    
-   Loop, Parse, TerminatingCharacters
+   Loop, Parse, prefs_TerminatingCharacters
    {
       IfEqual, OpenWord, 1
       {
@@ -382,8 +393,8 @@ ParseTerminatingCharacters()
       IfNotEqual, Word,
          TempCharacters .= Word
    
-   TerminatingCharactersParsed := TempCharacters
-   TerminatingEndKeys := TempEndKeys
+   g_TerminatingCharactersParsed := TempCharacters
+   g_TerminatingEndKeys := TempEndKeys
 }
 
 SavePreferences(ByRef PrefsToSave)
@@ -391,17 +402,24 @@ SavePreferences(ByRef PrefsToSave)
    global
    local index
    local element
+   local KeyName
    
    ValidatePreferences()
       
    for index, element in PrefsToSave
    {
-   
-      If (%element% == Dft%element%)
+      if (substr(element, 1, 6) == "prefs_")
       {
-         IniDelete, %PrefsFile%,% PrefsSections[element], %element%
+         StringTrimLeft, KeyName, element, 6
       } else {
-         IniWrite,% %element%, %PrefsFile%,% PrefsSections[element], %element%
+         KeyName := element
+      }
+   
+      If (%element% == dft_%KeyName%)
+      {
+         IniDelete, %g_PrefsFile%,% g_PrefsSections[KeyName], %KeyName%
+      } else {
+         IniWrite,% %element%, %g_PrefsFile%,% g_PrefsSections[KeyName], %KeyName%
       }
    }
    
@@ -414,26 +432,26 @@ ConstructHelpStrings()
    
 helpinfo_IncludeProgramExecutables=
 (
-;IncludeProgramExecutables is a list of executable (.exe) files that %ScriptTitle% should be enabled for.
-;If one the executables matches the current program, %ScriptTitle% is enabled for that program.
+;IncludeProgramExecutables is a list of executable (.exe) files that %g_ScriptTitle% should be enabled for.
+;If one the executables matches the current program, %g_ScriptTitle% is enabled for that program.
 )
 
 helpinfo_IncludeProgramTitles=
 (
-;IncludeProgramTitles is a list of strings (separated by | ) to find in the title of the window you want %ScriptTitle% enabled for.
-;If one of the strings is found in the title, %ScriptTitle% is enabled for that window.
+;IncludeProgramTitles is a list of strings (separated by | ) to find in the title of the window you want %g_ScriptTitle% enabled for.
+;If one of the strings is found in the title, %g_ScriptTitle% is enabled for that window.
 )
 
 helpinfo_ExcludeProgramExecutables=
 (
-;ExcludeProgramExecutables is a list of executable (.exe) files that %ScriptTitle% should be disabled for.
-;If one the executables matches the current program, %ScriptTitle% is disabled for that program.
+;ExcludeProgramExecutables is a list of executable (.exe) files that %g_ScriptTitle% should be disabled for.
+;If one the executables matches the current program, %g_ScriptTitle% is disabled for that program.
 )
 
 helpinfo_ExcludeProgramTitles=
 (
-;ExcludeProgramTitles is a list of strings (separated by | ) to find in the title of the window you want %ScriptTitle% disabled for.
-;If one of the strings is found in the title, %ScriptTitle% is disabled for that window.
+;ExcludeProgramTitles is a list of strings (separated by | ) to find in the title of the window you want %g_ScriptTitle% disabled for.
+;If one of the strings is found in the title, %g_ScriptTitle% is disabled for that window.
 )
 
 helpinfo_Length=
@@ -497,13 +515,13 @@ helpinfo_DisabledAutoCompleteKeys=
 helpinfo_DetectMouseClickMove=
 (
 ;DetectMouseClickMove is used to detect when the cursor is moved with the mouse.
-; On - %ScriptTitle% will not work when used with an On-Screen keyboard.
-; Off - %ScriptTitle% will not detect when the cursor is moved within the same line using the mouse, and scrolling the text will clear the list.
+; On - %g_ScriptTitle% will not work when used with an On-Screen keyboard.
+; Off - %g_ScriptTitle% will not detect when the cursor is moved within the same line using the mouse, and scrolling the text will clear the list.
 )
 
 helpinfo_NoBackSpace=
 (
-;NoBackSpace is used to make %ScriptTitle% not backspace any of the previously typed characters
+;NoBackSpace is used to make %g_ScriptTitle% not backspace any of the previously typed characters
 ;(ie, do not change the case of any previously typed characters).
 ;  On - characters you have already typed will not be changed
 ;  Off - characters you have already typed will be backspaced and replaced with the case of the word you have chosen.
@@ -550,7 +568,7 @@ helpinfo_TerminatingCharacters=
 ;For support of special characters, remove the key that is used to type the diacritic symbol (or the character) from the right hand side. 
 ;For example, if on your keyboard layout, " is used before typing ë, ; is used to type ñ, remove them from the right hand side.
 ;
-;After this, %ScriptTitle% can recognize the special character. The side-effect is that, it cannot complete words typed after 
+;After this, %g_ScriptTitle% can recognize the special character. The side-effect is that, it cannot complete words typed after 
 ;the symbol, (e.g. "word... ) If you need to complete a word after a quotation mark, first type two quotation marks "" then 
 ;press left and type the word in the middle.
 ;
@@ -560,7 +578,7 @@ helpinfo_TerminatingCharacters=
 ;{enter}{space}{bs}{esc}{tab}{Home}{End}{PgUp}{PdDn}{Up}{Dn}{Left}{Right}¿?¡!()$
 ;
 ;Default setting:
-;%DftTerminatingCharacters%
+;%dft_TerminatingCharacters%
 ;
 ; More information on how to configure TerminatingCharacters:
 ;A list of keys may be found here:
@@ -609,7 +627,7 @@ helpinfo_ListBoxCharacterWidth=
 ; 1. Changing the Font DPI in Windows
 ; 2. Changing the ListBoxFontFixed setting
 ; 3. Changing the ListBoxFontSize setting
-;Leave this blank to let %ScriptTitle% try to compute the width.
+;Leave this blank to let %g_ScriptTitle% try to compute the width.
 )
 
 helpinfo_ListBoxOpacity=

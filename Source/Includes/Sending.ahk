@@ -21,13 +21,13 @@ SendKey(Key)
    
 SendWord(WordIndex)
 {
-   global singlematch
-   global Word
+   global g_singlematch
+   global g_Word
    ;Send the word
-   sending := singlematch[WordIndex]
+   sending := g_singlematch[WordIndex]
    ; Update Typed Count
    UpdateWordCount(sending,0)
-   SendFull(sending, StrLen(Word))   
+   SendFull(sending, StrLen(g_Word))   
    ClearAllVars(true)
    Return
 }  
@@ -36,24 +36,24 @@ SendWord(WordIndex)
             
 SendFull(SendValue,BackSpaceLen)
 {
-   global SendMethod
-   global Active_id
-   global NoBackSpace
-   global AutoSpace
+   global g_Active_Id
+   global prefs_AutoSpace
+   global prefs_NoBackSpace
+   global prefs_SendMethod
    
    ; If we are not backspacing, remove the typed characters from the string to send
-   IfNotEqual, NoBackSpace, Off
+   IfNotEqual, prefs_NoBackSpace, Off
       StringTrimLeft, SendValue, SendValue, %BackSpaceLen%
    
    ; if autospace is on, add a space to the string to send
-   IfEqual, AutoSpace, On
+   IfEqual, prefs_AutoSpace, On
       SendValue .= A_Space
    
-   IfEqual, SendMethod, 1
+   IfEqual, prefs_SendMethod, 1
    {
       ; Shift key hits are here to account for an occassional bug which misses the first keys in SendPlay
       sending = {Shift Down}{Shift Up}{Shift Down}{Shift Up}      
-      IfEqual, NoBackSpace, Off
+      IfEqual, prefs_NoBackSpace, Off
          sending .= "{BS " . BackSpaceLen . "}"      
       sending .= "{Raw}" . SendValue
          
@@ -61,17 +61,17 @@ SendFull(SendValue,BackSpaceLen)
       Return
    }
 
-   IfEqual, NoBackSpace, Off
+   IfEqual, prefs_NoBackSpace, Off
       sending = {BS %BackSpaceLen%}{Raw}%SendValue%
    Else sending = {Raw}%SendValue%
    
-   IfEqual, SendMethod, 2
+   IfEqual, prefs_SendMethod, 2
    {
       SendInput, %sending% ; First do the backspaces, Then send word (Raw because we want the string exactly as in wordlist.txt)      
       Return
    }
 
-   IfEqual, SendMethod, 3
+   IfEqual, prefs_SendMethod, 3
    {
       SendEvent, %sending% ; First do the backspaces, Then send word (Raw because we want the string exactly as in wordlist.txt) 
       Return
@@ -82,26 +82,26 @@ SendFull(SendValue,BackSpaceLen)
    Clipboard := SendValue
    ClipWait, 0
    
-   IfEqual, NoBackSpace, Off
+   IfEqual, prefs_NoBackSpace, Off
       sending = {BS %BackSpaceLen%}{Ctrl Down}v{Ctrl Up}
    Else sending = {Ctrl Down}v{Ctrl Up}
    
-   IfEqual, SendMethod, 1C
+   IfEqual, prefs_SendMethod, 1C
    {
       sending := "{Shift Down}{Shift Up}{Shift Down}{Shift Up}" . sending
       SendPlay, %sending% ; First do the backspaces, Then send word via clipboard
    } else {
-            IfEqual, SendMethod, 2C
+            IfEqual, prefs_SendMethod, 2C
             {
                SendInput, %sending% ; First do the backspaces, Then send word via clipboard
             } else {
-                     IfEqual, SendMethod, 3C
+                     IfEqual, prefs_SendMethod, 3C
                      {
                         SendEvent, %sending% ; First do the backspaces, Then send word via clipboard
                      } Else {                      
-                              ControlGetFocus, ActiveControl, ahk_id %Active_id%
+                              ControlGetFocus, ActiveControl, ahk_id %g_Active_Id%
                               IfNotEqual, ActiveControl,
-                                 ControlSend, %ActiveControl%, %sending%, ahk_id %Active_id%
+                                 ControlSend, %ActiveControl%, %sending%, ahk_id %g_Active_Id%
                            }
                   }
          }
@@ -114,16 +114,16 @@ SendFull(SendValue,BackSpaceLen)
 
 SendCompatible(SendValue,ForceSendForInput)
 {
-   global SendMethod
-   global IgnoreSend
+   global g_IgnoreSend
+   global prefs_SendMethod
    IfEqual, ForceSendForInput, 1
    {
-      IgnoreSend = 
+      g_IgnoreSend = 
       SendEvent, %SendValue%
       Return
    }
    
-   SendMethodLocal := SubStr(SendMethod, 1, 1)
+   SendMethodLocal := SubStr(prefs_SendMethod, 1, 1)
    IF ( ( SendMethodLocal = 1 ) || ( SendMethodLocal = 2 ) )
    {
       SendInput, %SendValue%
@@ -132,7 +132,7 @@ SendCompatible(SendValue,ForceSendForInput)
 
    IF ( ( SendMethodLocal = 3 ) || ( SendMethodLocal = 4 ) )
    {
-      IgnoreSend = 1
+      g_IgnoreSend = 1
       SendEvent, %SendValue%
       Return
    }

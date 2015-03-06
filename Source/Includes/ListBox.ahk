@@ -4,23 +4,23 @@ InitializeListBox()
 {
    global
    
-   Gui, ListBoxGui: -Caption +AlwaysOnTop +ToolWindow +Delimiter%DelimiterChar%
+   Gui, ListBoxGui: -Caption +AlwaysOnTop +ToolWindow +Delimiter%g_DelimiterChar%
    
    Local ListBoxFont
-   IfNotEqual, ListBoxFontOverride,
-      ListBoxFont := ListBoxFontOverride
+   IfNotEqual, prefs_ListBoxFontOverride,
+      ListBoxFont := prefs_ListBoxFontOverride
    else {
-         IfEqual, ListBoxFontFixed, On   
+         IfEqual, prefs_ListBoxFontFixed, On   
             ListBoxFont = Courier New
          else ListBoxFont = Tahoma
       }
       
-   Gui, ListBoxGui:Font, s%ListBoxFontSize%, %ListBoxFont%
+   Gui, ListBoxGui:Font, s%prefs_ListBoxFontSize%, %ListBoxFont%
 
-   Loop, %ListBoxRows%
+   Loop, %prefs_ListBoxRows%
    {
-      GuiControl, -Redraw, ListBox%A_Index%
-      Gui, ListBoxGui: Add, ListBox, vListBox%A_Index% R%A_Index% X0 Y0 GListBoxClick
+      GuiControl, -Redraw, g_ListBox%A_Index%
+      Gui, ListBoxGui: Add, ListBox, vg_ListBox%A_Index% R%A_Index% X0 Y0 GListBoxClick
    }
    Return
 }
@@ -33,25 +33,25 @@ ListBoxClickItem()
 {
    Local TempRows
    TempRows := GetRows()
-   GuiControlGet, MatchPos, ,ListBox%TempRows%
+   GuiControlGet, g_MatchPos, , g_ListBox%TempRows%
    Return
 }
 
 ListBoxChooseItem(Row)
 {
    global
-   GuiControl, ListBoxGui: Choose, ListBox%Row%, %MatchPos%
+   GuiControl, ListBoxGui: Choose, g_ListBox%Row%, %g_MatchPos%
 }
 
 ;------------------------------------------------------------------------
 
 CloseListBox()
 {
-   global ListBox_ID
-   IfNotEqual, ListBox_ID,
+   global g_ListBox_Id
+   IfNotEqual, g_ListBox_Id,
    {
       Gui, ListBoxGui: Hide
-      ListBox_ID = 
+      g_ListBox_Id = 
       DisableKeyboardHotKeys()
    }
    Return
@@ -59,8 +59,8 @@ CloseListBox()
 
 DestroyListBox()
 {
-   global ListBox_ID
-   ListBox_ID =
+   global g_ListBox_Id
+   g_ListBox_Id =
    Gui, ListBoxGui:Destroy
    DisableKeyboardHotKeys()
    Return
@@ -70,32 +70,33 @@ DestroyListBox()
 
 SavePriorMatchPosition()
 {
-   global ArrowKeyMethod
-   global MatchPos
-   global OldMatch
-   global OldMatchStart
-   global singlematch
+   global g_MatchPos
+   global g_MatchStart
+   global g_OldMatch
+   global g_OldMatchStart
+   global g_singlematch
+   global prefs_ArrowKeyMethod
    
-   IfNotEqual, MatchPos, 
+   IfNotEqual, g_MatchPos, 
    {
-      IfEqual, ArrowKeyMethod, LastWord
+      IfEqual, prefs_ArrowKeyMethod, LastWord
       {
-         OldMatch := singlematch[MatchPos]
-         OldMatchStart = 
+         g_OldMatch := g_singlematch[g_MatchPos]
+         g_OldMatchStart = 
       } else {
-               IfEqual, ArrowKeyMethod, LastPosition
+               IfEqual, prefs_ArrowKeyMethod, LastPosition
                {
-                  OldMatch := MatchPos
-                  OldMatchStart := MatchStart
+                  g_OldMatch := g_MatchPos
+                  g_OldMatchStart := g_MatchStart
                } else {
-                        OldMatch =
-                        OldMatchStart =
+                        g_OldMatch =
+                        g_OldMatchStart =
                      }
             }
    
    } else {
-            OldMatch =
-            OldMatchStart = 
+            g_OldMatch =
+            g_OldMatchStart = 
          }
       
    Return
@@ -103,54 +104,54 @@ SavePriorMatchPosition()
 
 SetupMatchPosition()
 {
-   global ArrowKeyMethod
-   global ListBoxRows
-   global MatchPos
-   global MatchStart
-   global MatchTotal
-   global OldMatch
-   global OldMatchStart
-   global singlematch
+   global g_MatchPos
+   global g_MatchStart
+   global g_MatchTotal
+   global g_OldMatch
+   global g_OldMatchStart
+   global g_singlematch
+   global prefs_ArrowKeyMethod
+   global prefs_ListBoxRows
    
-   IfEqual, OldMatch, 
+   IfEqual, g_OldMatch, 
    {
-      IfEqual, ArrowKeyMethod, Off
+      IfEqual, prefs_ArrowKeyMethod, Off
       {
-         MatchPos = 
-         MatchStart = 1
+         g_MatchPos = 
+         g_MatchStart = 1
       } else {
-               MatchPos = 1
-               MatchStart = 1
+               g_MatchPos = 1
+               g_MatchStart = 1
             }
-   } Else IfEqual, ArrowKeyMethod, Off
+   } Else IfEqual, prefs_ArrowKeyMethod, Off
          {
-            MatchPos = 
-            MatchStart = 1
-         } else IfEqual, ArrowKeyMethod, LastPosition
+            g_MatchPos = 
+            g_MatchStart = 1
+         } else IfEqual, prefs_ArrowKeyMethod, LastPosition
                {
-                  IfGreater, OldMatch, %MatchTotal%
+                  IfGreater, g_OldMatch, %g_MatchTotal%
                   {
-                     MatchStart := MatchTotal - (ListBoxRows - 1)
-                     IfLess, MatchStart, 1
-                        MatchStart = 1
-                     MatchPos := MatchTotal
+                     g_MatchStart := g_MatchTotal - (prefs_ListBoxRows - 1)
+                     IfLess, g_MatchStart, 1
+                        g_MatchStart = 1
+                     g_MatchPos := g_MatchTotal
                   } else {
-                           MatchStart := OldMatchStart
-                           If ( MatchStart > (MatchTotal - (ListBoxRows - 1) ))
+                           g_MatchStart := g_OldMatchStart
+                           If ( g_MatchStart > (g_MatchTotal - (prefs_ListBoxRows - 1) ))
                            {
-                              MatchStart := MatchTotal - (ListBoxRows - 1)
-                              IfLess, MatchStart, 1
-                                 MatchStart = 1
+                              g_MatchStart := g_MatchTotal - (prefs_ListBoxRows - 1)
+                              IfLess, g_MatchStart, 1
+                                 g_MatchStart = 1
                            }
-                           MatchPos := OldMatch
+                           g_MatchPos := g_OldMatch
                         }
                      
-               } else IfEqual, ArrowKeyMethod, LastWord
+               } else IfEqual, prefs_ArrowKeyMethod, LastWord
                      {
                         ListPosition =
-                        Loop, %MatchTotal%
+                        Loop, %g_MatchTotal%
                         {
-                           if ( OldMatch == singlematch[A_Index] )
+                           if ( g_OldMatch == g_singlematch[A_Index] )
                            {
                               ListPosition := A_Index
                               Break
@@ -158,63 +159,63 @@ SetupMatchPosition()
                         }
                         IfEqual, ListPosition, 
                         {
-                           MatchPos = 1
-                           MatchStart = 1
+                           g_MatchPos = 1
+                           g_MatchStart = 1
                         } Else {
-                                 MatchStart := ListPosition - (ListBoxRows - 1)
-                                 IfLess, MatchStart, 1
-                                    MatchStart = 1
-                                 MatchPos := ListPosition
+                                 g_MatchStart := ListPosition - (prefs_ListBoxRows - 1)
+                                 IfLess, g_MatchStart, 1
+                                    g_MatchStart = 1
+                                 g_MatchPos := ListPosition
                               }
                      } else {
-                              MatchPos = 1
-                              MatchStart = 1
+                              g_MatchPos = 1
+                              g_MatchStart = 1
                            }
              
-   OldMatch = 
-   OldMatchStart = 
+   g_OldMatch = 
+   g_OldMatchStart = 
    Return
 }
 
 RebuildMatchList()
 {
-   global Match
-   global MatchLongestLength
-   global MatchTotal
-   global singlematch
+   global g_Match
+   global g_MatchLongestLength
+   global g_MatchTotal
+   global g_singlematch
    
-   Match = 
-   MatchLongestLength =
+   g_Match = 
+   g_MatchLongestLength =
    
-   Loop, %MatchTotal%
+   Loop, %g_MatchTotal%
    {
-      CurrentLength := AddToMatchList(A_Index,singlematch[A_Index])
-      IfGreater, CurrentLength, %MatchLongestLength%
-         MatchLongestLength := CurrentLength      
+      CurrentLength := AddToMatchList(A_Index,g_singlematch[A_Index])
+      IfGreater, CurrentLength, %g_MatchLongestLength%
+         g_MatchLongestLength := CurrentLength      
    }
-   StringTrimRight, Match, Match, 1        ; Get rid of the last linefeed 
+   StringTrimRight, g_Match, g_Match, 1        ; Get rid of the last linefeed 
    Return
 }
 
 AddToMatchList(position,value)
 {
-   global DelimiterChar
-   global Match
-   global MatchStart
-   global NumKeyMethod
+   global g_DelimiterChar
+   global g_Match
+   global g_MatchStart
+   global g_NumKeyMethod
    
-   IfEqual, NumKeyMethod, Off
+   IfEqual, g_NumKeyMethod, Off
       prefix =
    else {
-            IfLess, position, %MatchStart%
+            IfLess, position, %g_MatchStart%
                prefix =
             else {
-                  if ( position > ( MatchStart + 9 ) )
+                  if ( position > ( g_MatchStart + 9 ) )
                      prefix = 
-                  else prefix := Mod(position - MatchStart +1,10) . " "
+                  else prefix := Mod(position - g_MatchStart +1,10) . " "
                }
          }
-   Match .= prefix . value . DelimiterChar
+   g_Match .= prefix . value . g_DelimiterChar
    Return, StrLen("8 " . value)
 }
 
@@ -225,7 +226,7 @@ ShowListBox()
 {
    global
 
-   IfNotEqual, Match,
+   IfNotEqual, g_Match,
    {
       Local BorderWidthX
       Local ListBoxActualSize
@@ -240,7 +241,7 @@ ShowListBox()
 
       Rows := GetRows()
       
-      IfGreater, MatchTotal, %Rows%
+      IfGreater, g_MatchTotal, %Rows%
       {
          SysGet, ScrollBarWidth, 2        
          if ScrollBarWidth is not integer
@@ -253,37 +254,37 @@ ShowListBox()
          BorderWidthX = 1
       
       ;Use 8 pixels for each character in width
-      ListBoxSizeX := ListBoxCharacterWidthComputed * MatchLongestLength + ListBoxCharacterWidthComputed + ScrollBarWidth + (BorderWidthX *2)
+      ListBoxSizeX := g_ListBoxCharacterWidthComputed * g_MatchLongestLength + g_ListBoxCharacterWidthComputed + ScrollBarWidth + (BorderWidthX *2)
       
       ListBoxPosX := HCaretX()
       ; + ListBoxOffset Move ListBox down a little so as not to hide the caret. 
-      ListBoxPosY := HCaretY()+ListBoxOffset
+      ListBoxPosY := HCaretY()+prefs_ListBoxOffset
       
-      Loop, %ListBoxRows%
+      Loop, %prefs_ListBoxRows%
       { 
          IfEqual, A_Index, %Rows%
          {
-            GuiControl, ListBoxGui: -Redraw, ListBox%A_Index%
-            GuiControl, ListBoxGui: Move, ListBox%A_Index%, w%ListBoxSizeX%
-            GuiControl, ListBoxGui: ,ListBox%A_Index%, %DelimiterChar%%Match%
-            MatchEnd := MatchStart + (ListBoxRows - 1)
-            IfNotEqual, MatchPos,
+            GuiControl, ListBoxGui: -Redraw, g_ListBox%A_Index%
+            GuiControl, ListBoxGui: Move, g_ListBox%A_Index%, w%ListBoxSizeX%
+            GuiControl, ListBoxGui: ,g_ListBox%A_Index%, %g_DelimiterChar%%g_Match%
+            MatchEnd := g_MatchStart + (prefs_ListBoxRows - 1)
+            IfNotEqual, g_MatchPos,
             {
-               GuiControl, ListBoxGui: Choose, ListBox%A_Index%, %MatchEnd%
-               GuiControl, ListBoxGui: Choose, ListBox%A_Index%, %MatchPos%
+               GuiControl, ListBoxGui: Choose, g_ListBox%A_Index%, %MatchEnd%
+               GuiControl, ListBoxGui: Choose, g_ListBox%A_Index%, %g_MatchPos%
             }
-            GuiControl, ListBoxGui: +AltSubmit +Redraw, ListBox%A_Index%
-            GuiControl, ListBoxGui: Show, ListBox%A_Index%
-            GuiControlGet, ListBoxActualSize, ListBoxGui: Pos, ListBox%A_Index%
+            GuiControl, ListBoxGui: +AltSubmit +Redraw, g_ListBox%A_Index%
+            GuiControl, ListBoxGui: Show, g_ListBox%A_Index%
+            GuiControlGet, ListBoxActualSize, ListBoxGui: Pos, g_ListBox%A_Index%
             Continue
          }
       
-         GuiControl, ListBoxGui: Hide, ListBox%A_Index%
-         GuiControl, ListBoxGui: -Redraw, ListBox%A_Index%
-         GuiControl, ListBoxGui: , ListBox%A_Index%, %DelimiterChar%
+         GuiControl, ListBoxGui: Hide, g_ListBox%A_Index%
+         GuiControl, ListBoxGui: -Redraw, g_ListBox%A_Index%
+         GuiControl, ListBoxGui: , g_ListBox%A_Index%, %g_DelimiterChar%
       }
    
-      ForceWithinMonitorBounds(ListBoxPosX,ListBoxPosY,ListBoxActualSizeH,ListBoxActualSizeW,Rows,ListBoxOffset)
+      ForceWithinMonitorBounds(ListBoxPosX,ListBoxPosY,ListBoxActualSizeH,ListBoxActualSizeW,Rows)
       
       ; In rare scenarios, the Cursor may not have been detected. In these cases, we just won't show the ListBox.
       IF (!(ListBoxPosX) || !(ListBoxPosY))
@@ -293,19 +294,20 @@ ShowListBox()
       
       Gui, ListBoxGui: Show, NoActivate X%ListBoxPosX% Y%ListBoxPosY% H%ListBoxActualSizeH% W%ListBoxActualSizeW%, Word List Appears Here.
       Gui, ListBoxGui: +LastFound +AlwaysOnTop
-      IfEqual, ListBox_ID,
+      IfEqual, g_ListBox_Id,
       {
          EnableKeyboardHotKeys()   
       }
-      WinGet, ListBox_ID, ID, Word List Appears Here.
-      IfNotEqual, ListBoxOpacity, 255
-         WinSet, Transparent, %ListBoxOpacity%, ahk_id %ListBox_ID%
-      WinSet, Disable, , ahk_id %ListBox_ID%
+      WinGet, g_ListBox_Id, ID, Word List Appears Here.
+      IfNotEqual, prefs_ListBoxOpacity, 255
+         WinSet, Transparent, %prefs_ListBoxOpacity%, ahk_id %g_ListBox_Id%
+      WinSet, Disable, , ahk_id %g_ListBox_Id%
    }
 }
 
-ForceWithinMonitorBounds(ByRef ListBoxPosX,ByRef ListBoxPosY,ListBoxActualSizeH,ListBoxActualSizeW,Rows,ListBoxOffset)
+ForceWithinMonitorBounds(ByRef ListBoxPosX,ByRef ListBoxPosY,ListBoxActualSizeH,ListBoxActualSizeW,Rows)
 {
+   global prefs_ListBoxOffset
    ;Grab the number of non-dummy monitors
    SysGet, NumMonitors, 80
    
@@ -326,7 +328,7 @@ ForceWithinMonitorBounds(ByRef ListBoxPosX,ByRef ListBoxPosY,ListBoxActualSizeH,
       }
          
       If ( (ListBoxPosY + ListBoxActualSizeH ) > MonBottom )
-          ListBoxPosY := HCaretY() - Ceil(ListBoxOffset - (ListBoxActualSizeH / Rows )) - ListBoxActualSizeH  
+          ListBoxPosY := HCaretY() - Ceil(prefs_ListBoxOffset - (ListBoxActualSizeH / Rows )) - ListBoxActualSizeH  
          
       Break
    }
@@ -338,11 +340,11 @@ ForceWithinMonitorBounds(ByRef ListBoxPosX,ByRef ListBoxPosY,ListBoxActualSizeH,
 
 GetRows()
 {
-   global MatchTotal
-   global ListBoxRows
-   IfGreater, MatchTotal, %ListBoxRows%
-      Rows := ListBoxRows
-   else Rows := MatchTotal
+   global g_MatchTotal
+   global prefs_ListBoxRows
+   IfGreater, g_MatchTotal, %prefs_ListBoxRows%
+      Rows := prefs_ListBoxRows
+   else Rows := g_MatchTotal
    
    Return, Rows
 }
@@ -351,9 +353,9 @@ GetRows()
 ; function to grab the X position of the caret for the ListBox
 HCaretX() 
 { 
-   global Helper_id
+   global g_Helper_Id
     
-   WinGetPos, HelperX,,,, ahk_id %Helper_id% 
+   WinGetPos, HelperX,,,, ahk_id %g_Helper_Id% 
    if HelperX !=
    { 
       return HelperX
@@ -371,9 +373,9 @@ HCaretX()
 ; function to grab the Y position of the caret for the ListBox
 HCaretY() 
 { 
-   global Helper_id
+   global g_Helper_Id
 
-   WinGetPos,,HelperY,,, ahk_id %Helper_id% 
+   WinGetPos,,HelperY,,, ahk_id %g_Helper_Id% 
    if HelperY != 
    { 
       return HelperY
