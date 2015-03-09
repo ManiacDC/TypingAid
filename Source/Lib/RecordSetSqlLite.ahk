@@ -95,18 +95,18 @@ class RecordSetSqlLite extends DBA.RecordSet
 		Loop, %rc% {
 			ctype := DllCall("SQlite3\sqlite3_column_type", UInt, this._query, Int, A_Index - 1, "Cdecl Int")
 			
-			if (ctype == SQLiteDataType.SQLITE_NULL) {
+			if (ctype == gDBA_SQLiteDataType.SQLITE_NULL) {
 				
 				fields[A_Index] := DBA.DataBase.NULL ;""
 				
-			}else if(ctype == SQLiteDataType.SQLITE_BLOB){
+			}else if(ctype == gDBA_SQLiteDataType.SQLITE_BLOB){
 
 				blobSize := DllCall("SQlite3\sqlite3_column_bytes", UInt, this._query, Int, A_Index -1, "Cdecl UInt")
 				blobPtr := DllCall("SQlite3\sqlite3_column_blob", UInt, this._query, Int, A_Index - 1, "Cdecl Ptr")
 
 				if ( blobPtr )
 				{
-					fields[A_Index] :=  MemoryBuffer.Create( blobPtr, blobSize )
+					fields[A_Index] := MemoryBuffer.Create( blobPtr, blobSize )
 				}else{
 					fields[A_Index] := DBA.DataBase.NULL
 				}

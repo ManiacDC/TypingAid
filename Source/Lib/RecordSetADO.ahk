@@ -12,7 +12,7 @@ class RecordSetADO extends DBA.RecordSet
 		this._adoRS := ComObjCreate("ADODB.Recordset")
 
 		if(editable)
-			this._adoRS.Open(sql, adoConnection, ADO.CursorType.adOpenKeyset, ADO.LockType.adLockOptimistic, ADO.CommandType.adCmdTable)
+			this._adoRS.Open(sql, adoConnection, gDBA_ADO.CursorType.adOpenKeyset, gDBA_ADO.LockType.adLockOptimistic, gDBA_ADO.CommandType.adCmdTable)
 		else
 			this._adoRS.Open(sql, adoConnection)
 	}
@@ -58,7 +58,7 @@ class RecordSetADO extends DBA.RecordSet
 	Delete(){
 		if(this.IsValid() && !this.getEOF())
 		{
-			this._adoRS.Delete(ADO.AffectEnum.adAffectCurrent)
+			this._adoRS.Delete(gDBA_ADO.AffectEnum.adAffectCurrent)
 		}
 	}
 	
@@ -87,7 +87,7 @@ class RecordSetADO extends DBA.RecordSet
 		if(this.IsValid())
 		{
 			this._adoRS.Close()
-			this._adoRS := null
+			this._adoRS := gDBA_null
 		}
 	}
 	

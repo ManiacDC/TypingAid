@@ -6,7 +6,7 @@
 * Provides Static ADO Helper classes and Enums
 *
 */
-class ADO
+class gDBA_ADO
 {
 	class CursorType
 	{

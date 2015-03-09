@@ -20,7 +20,7 @@ class Collection
          for each, item in objs
             this.Insert(item)
       } else
-         throw Exceptions.ArgumentException("Must submit Array!")
+         throw gDBA_Exceptions.ArgumentException("Must submit Array!")
    }
    
    Clear(){

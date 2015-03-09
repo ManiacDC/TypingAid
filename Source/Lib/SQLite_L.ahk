@@ -86,7 +86,7 @@
 #Include <Base>
 #Include <MemoryBuffer>
 
-class SQLiteDataType
+class gDBA_SQLiteDataType
 {
    static SQLITE_INTEGER := 1
    static SQLITE_FLOAT  :=  2
@@ -328,7 +328,7 @@ SQLite_Bind(query, idx, val, type = "auto") {
          type := "text"
    }
    
-   ArchLogger.Log(A_ThisFunc ": Binding value as: " type)
+   gDBA_ArchLogger.Log(A_ThisFunc ": Binding value as: " type)
    
 
    if (type = "int" || type = "Integer")

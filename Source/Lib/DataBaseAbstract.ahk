@@ -168,11 +168,11 @@ class DataBase
 	}
 	
 	IsValid(){
-		throw Exceptions.MustOverride(this.__Class "." A_ThisFunc)
+		throw gDBA_Exceptions.MustOverride(this.__Class "." A_ThisFunc)
 	}
 	
 	Query(sql){
-		throw Exceptions.MustOverride(this.__Class "." A_ThisFunc)
+		throw gDBA_Exceptions.MustOverride(this.__Class "." A_ThisFunc)
 	}
 	
 	QueryValue(sQry){
@@ -190,7 +190,7 @@ class DataBase
 	}
 	
 	OpenRecordSet(sql, editable = false){
-		throw Exceptions.MustOverride(this.__Class "." A_ThisFunc)
+		throw gDBA_Exceptions.MustOverride(this.__Class "." A_ThisFunc)
 	}
 	
 	ToSqlLiteral(value) {
@@ -206,45 +206,45 @@ class DataBase
 	}
 	
 	EscapeString(string){
-		throw Exceptions.MustOverride(this.__Class "." A_ThisFunc)
+		throw gDBA_Exceptions.MustOverride(this.__Class "." A_ThisFunc)
 	}
 	
 	QuoteIdentifier(identifier){
-		throw Exceptions.MustOverride(this.__Class "." A_ThisFunc)
+		throw gDBA_Exceptions.MustOverride(this.__Class "." A_ThisFunc)
 	}
 	
 	BeginTransaction(){
-		throw Exceptions.MustOverride( this.__Class "." A_ThisFunc)
+		throw gDBA_Exceptions.MustOverride( this.__Class "." A_ThisFunc)
 	}
 	
 	EndTransaction(){
-		throw Exceptions.MustOverride(this.__Class "." A_ThisFunc)
+		throw gDBA_Exceptions.MustOverride(this.__Class "." A_ThisFunc)
 	}
 	
 	Rollback(){
-		throw Exceptions.MustOverride(this.__Class "." A_ThisFunc)
+		throw gDBA_Exceptions.MustOverride(this.__Class "." A_ThisFunc)
 	}
 	
 	Insert(record, tableName){
-		throw Exceptions.MustOverride(this.__Class "." A_ThisFunc)
+		throw gDBA_Exceptions.MustOverride(this.__Class "." A_ThisFunc)
 	}
 	
 	InsertMany(records, tableName){
-		throw Exceptions.MustOverride(this.__Class "." A_ThisFunc)
+		throw gDBA_Exceptions.MustOverride(this.__Class "." A_ThisFunc)
 	}
 	
 	Update(fields, constraints, tableName, safe = True){
-		throw Exceptions.MustOverride(this.__Class "." A_ThisFunc)
+		throw gDBA_Exceptions.MustOverride(this.__Class "." A_ThisFunc)
 	}
 	
 	Close(){
-		throw Exceptions.MustOverride(this.__Class "." A_ThisFunc)
+		throw gDBA_Exceptions.MustOverride(this.__Class "." A_ThisFunc)
 	}
 }
 
 class RecordSet
 {
-	_currentRow := null 	; Row
+	_currentRow := gDBA_null 	; Row
 	
 	__delete() {
 		this.Close()
@@ -255,35 +255,35 @@ class RecordSet
 	}
 	
 	AddNew(){
-		throw Exceptions.MustOverride(this.__Class "." A_ThisFunc)
+		throw gDBA_Exceptions.MustOverride(this.__Class "." A_ThisFunc)
 	}
 	
 	MoveNext(){
-		throw Exceptions.MustOverride(this.__Class "." A_ThisFunc)
+		throw gDBA_Exceptions.MustOverride(this.__Class "." A_ThisFunc)
 	}
 	
 	Delete(){
-		throw Exceptions.MustOverride(this.__Class "." A_ThisFunc)
+		throw gDBA_Exceptions.MustOverride(this.__Class "." A_ThisFunc)
 	}
 	
 	Update(){
-		throw Exceptions.MustOverride(this.__Class "." A_ThisFunc)
+		throw gDBA_Exceptions.MustOverride(this.__Class "." A_ThisFunc)
 	}
 	
 	Close(){
-		throw Exceptions.MustOverride(this.__Class "." A_ThisFunc)
+		throw gDBA_Exceptions.MustOverride(this.__Class "." A_ThisFunc)
 	}
 	
 	getEOF(){
-		throw Exceptions.MustOverride(this.__Class "." A_ThisFunc)
+		throw gDBA_Exceptions.MustOverride(this.__Class "." A_ThisFunc)
 	}
 	
 	IsValid(){
-		throw Exceptions.MustOverride(this.__Class "." A_ThisFunc)
+		throw gDBA_Exceptions.MustOverride(this.__Class "." A_ThisFunc)
 	}
 	
 	getColumnNames(){
-		throw Exceptions.MustOverride(this.__Class "." A_ThisFunc)
+		throw gDBA_Exceptions.MustOverride(this.__Class "." A_ThisFunc)
 	}
 	
 	getCurrentRow(){

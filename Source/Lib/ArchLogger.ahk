@@ -1,24 +1,24 @@
 #Include <Base>
 
-class ArchLogger
+class gDBA_ArchLogger
 {
 	static Logger := new _ArchLoggerFile()
 	
 	SetLogger(newLogger){
-		ArchLogger.Logger := newLogger
+		gDBA_ArchLogger.Logger := newLogger
 	}
 	
 	Log(msg){
 		date := A_DD "." A_MM "." A_YYYY
 		time := A_Hour ":" A_Min
 		
-		ArchLogger.Logger.Log("# " date " ( " time " ) " msg)
+		gDBA_ArchLogger.Logger.Log("# " date " ( " time " ) " msg)
 	}
 }
 
 class _ArchLoggerCallBack
 {
-	callBack := null
+	callBack := gDBA_null
 	
 	Log(msg){
 		this.callBack.( msg )

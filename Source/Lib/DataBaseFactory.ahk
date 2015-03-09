@@ -1,6 +1,6 @@
 class DataBaseFactory
 {
-	static AvaiableTypes := ["SQLite", "MySQL", "ADO"]
+	static AvailableTypes := ["SQLite", "MySQL", "ADO"]
 	
 	/*
 		This static Method returns an Instance of an DataBase derived Object

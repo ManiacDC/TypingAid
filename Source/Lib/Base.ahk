@@ -3,7 +3,7 @@
 ***************************************
 */
 
-global null := 0	; for better readability
+global gDBA_null := 0	; for better readability
 
 /*
 	Check for same (base) Type
@@ -114,7 +114,7 @@ Contains(list, value){
 * Provides some common used Exception Templates
 *
 */
-class Exceptions
+class gDBA_Exceptions
 {
 	NotImplemented(name=""){
 		return Exception("A not implemented Method was called." (name != "" ? ": " name : "") ,-1)

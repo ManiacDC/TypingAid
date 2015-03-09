@@ -5,7 +5,7 @@
 */
 class DataBaseADO extends DBA.DataBase
 {
-	_connection := null
+	_connection := gDBA_null
 	_connectionData := ""
 	
 	__New(connectionString){
@@ -31,7 +31,7 @@ class DataBaseADO extends DBA.DataBase
 		if(this.IsConnected())
 		{
 			this._connection.Close()
-			this._connection := null
+			this._connection := gDBA_null
 		}
 	}
 	
@@ -98,7 +98,7 @@ class DataBaseADO extends DBA.DataBase
 			;Execute( commandtext,ra,options)
 			affectedRows := 0
 			rs := this._connection.Execute(sql, affectedRows)
-			if(IsObject(rs) && rs.State != ADO.ObjectStateEnum.adStateClosed)
+			if(IsObject(rs) && rs.State != gDBA_ADO.ObjectStateEnum.adStateClosed)
 			{
 				ret := this.FetchADORecordSet(rs)
 				rs.Close()
@@ -130,7 +130,7 @@ class DataBaseADO extends DBA.DataBase
 	}
 	
 	FetchADORecordSet(adoRS){
-		tbl := null
+		tbl := gDBA_null
 		if(IsObject(adoRS) && !adoRS.EOF)
 		{
 			columnNames := new Collection()
@@ -167,7 +167,7 @@ class DataBaseADO extends DBA.DataBase
 	
 		rs := ComObjCreate("ADODB.Recordset")
 		/* batch 
-		rs.Open(tableName, this._connection, ADO.CursorType.adOpenKeyset, ADO.LockType.adLockBatchOptimistic, ADO.CommandType.adCmdTable)
+		rs.Open(tableName, this._connection, gDBA_ADO.CursorType.adOpenKeyset, gDBA_ADO.LockType.adLockBatchOptimistic, gDBA_ADO.CommandType.adCmdTable)
 
 		for each, record in records
 		{
@@ -181,7 +181,7 @@ class DataBaseADO extends DBA.DataBase
 		rs.UpdateBatch()
 		*/
 		
-		rs.Open(tableName, this._connection, ADO.CursorType.adOpenKeyset, ADO.LockType.adLockOptimistic, ADO.CommandType.adCmdTable)
+		rs.Open(tableName, this._connection, gDBA_ADO.CursorType.adOpenKeyset, gDBA_ADO.LockType.adLockOptimistic, gDBA_ADO.CommandType.adCmdTable)
 
 		for each, record in records
 		{

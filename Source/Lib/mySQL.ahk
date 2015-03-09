@@ -205,7 +205,7 @@ Mysql_fetch_field(requestResult) {
 Fetches all fields of the resultSet
 */
 MySQL_fetch_fields(requestResult){
-   global MySQL_Field
+   global gDBA_MySQL_Field
    
    fields := []
    fieldCount := MySQL_num_fields(requestResult)
@@ -213,7 +213,7 @@ MySQL_fetch_fields(requestResult){
    Loop, % fieldCount
    {
       fptr := Mysql_fetch_field(requestResult)
-      fields[A_index] := new MySQL_Field(fptr)
+      fields[A_index] := new gDBA_MySQL_Field(fptr)
    }
    return fields
 }
@@ -253,9 +253,6 @@ GetPtrAtAddress(_addr, _offset)
 ;============================================================ 
 __MySQL_Query_Dump(_db, _query)
 {
-   local resultString, result, requestResult, fieldCount
-   local row, lengths, length, fieldPointer, field
-
 
    result := DllCall("libmySQL.dll\mysql_query", "UInt", _db , "AStr", _query)
    
@@ -389,7 +386,7 @@ Public Type API_MYSQL_FIELD
   decimals As Long
 End Type
 */
-class MySQL_Field
+class gDBA_MySQL_Field
 {
    ptr := 0
    

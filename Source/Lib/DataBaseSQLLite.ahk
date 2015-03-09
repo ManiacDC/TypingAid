@@ -28,12 +28,12 @@ class DataBaseSQLLite extends DBA.DataBase
 		{
 			throw Exception("Can not create a DataBaseSQLLite instance, because the connection handle is not valid!")
 		}
-		ArchLogger.Log("New DataBaseSQLLite: Handle @" handleDB)
+		gDBA_ArchLogger.Log("New DataBaseSQLLite: Handle @" handleDB)
 	}
 	
 	
 	Close(){
-		;ArchLogger.Log("DataBaseSQLLite: Close DB Handle @" handleDB)
+		;gDBA_ArchLogger.Log("DataBaseSQLLite: Close DB Handle @" handleDB)
 		return SQLite_CloseDB(this._handleDB)
 	}
 	
@@ -98,7 +98,7 @@ class DataBaseSQLLite extends DBA.DataBase
 	*/
 	Query(sql){
 		
-		ret := null
+		ret := gDBA_null
 		
 			if (RegExMatch(sql, "i)^\s*SELECT\s")){ ; check if this is a selection query
 				
@@ -175,7 +175,7 @@ class DataBaseSQLLite extends DBA.DataBase
 		
 		query := SQLite_Query(this._handleDB, sql) ;prepare the query
 		if ErrorLevel
-			msgbox % errorlevel
+			msgbox % ErrorLevel
 		
 		try
 		{
