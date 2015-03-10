@@ -260,7 +260,11 @@ ValidatePreferences()
    }
    
    if prefs_DisabledAutoCompleteKeys contains N
+   {
       g_NumKeyMethod = Off
+   } else {
+      g_NumKeyMethod = On
+   }
    
    IfNotEqual, prefs_ArrowKeyMethod, Off
       If prefs_DisabledAutoCompleteKeys contains E
