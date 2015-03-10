@@ -975,8 +975,10 @@ BuildTrayMenu(State)
    } else {
       Menu, Tray, add, Resume, ResumeScript
    }
-   IF !(A_IsCompiled)
+   IF (A_IsCompiled)
    {
+      Menu, Tray, add, Exit, ExitScript
+   } else {
       Menu, Tray, Standard
    }
    Menu, Tray, Default, Settings
@@ -1084,12 +1086,15 @@ SuspendOn()
 BuildTrayMenu("Paused")
 Pause, On, 1
 Return
-
    
 ResumeScript:
 Pause, Off
 EnableWinHook()
 BuildTrayMenu("Running")
+Return
+
+ExitScript:
+ExitApp
 Return
    
 SaveScript:
