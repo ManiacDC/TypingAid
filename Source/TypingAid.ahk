@@ -30,7 +30,7 @@ CoordMode, Mouse, Screen
 EvaluateScriptPathAndTitle()
 
 SuspendOn()
-BuildTrayMenu("Running")      
+BuildTrayMenu()      
 
 OnExit, SaveScript
 
@@ -963,18 +963,13 @@ SuspendOff()
 
 ;------------------------------------------------------------------------
 
-BuildTrayMenu(State)
+BuildTrayMenu()
 {
 
    Menu, Tray, DeleteAll
    Menu, Tray, NoStandard
    Menu, Tray, add, Settings, Configuration
-   if (State == "Running")
-   {
-      Menu, Tray, add, Pause, PauseScript
-   } else {
-      Menu, Tray, add, Resume, ResumeScript
-   }
+   Menu, Tray, add, Pause, PauseResumeScript
    IF (A_IsCompiled)
    {
       Menu, Tray, add, Exit, ExitScript
@@ -1080,17 +1075,20 @@ Configuration:
 GoSub, LaunchSettings
 Return
 
-PauseScript:
-DisableWinHook()
-SuspendOn()
-BuildTrayMenu("Paused")
-Pause, On, 1
-Return
-   
-ResumeScript:
-Pause, Off
-EnableWinHook()
-BuildTrayMenu("Running")
+PauseResumeScript:
+if (g_PauseState == "Paused")
+{
+   g_PauseState =
+   Pause, Off
+   EnableWinHook()
+   Menu, tray, Uncheck, Pause
+} else {
+   g_PauseState = Paused
+   DisableWinHook()
+   SuspendOn()
+   Menu, tray, Check, Pause
+   Pause, On, 1
+}
 Return
 
 ExitScript:
