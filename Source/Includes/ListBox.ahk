@@ -398,6 +398,11 @@ CheckIfCaretNotDetectable()
    IfLess, NumMonitors, 1
       NumMonitors = 1
    
+   if !(A_CaretX)
+   {
+      Return, 1
+   }
+   
    ;if the X caret position is equal to the leftmost border of the monitor +1, we can't detect the caret position.
    Loop, %NumMonitors%
    {
