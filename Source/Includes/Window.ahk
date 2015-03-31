@@ -43,8 +43,14 @@ WinChanged(hWinEventHook, event, wchwnd, idObject, idChild, dwEventThread, dwmsE
 {
    global prefs_DetectMouseClickMove
    global g_OldCaretY
+   global g_inSettings
    
    If (event <> 3)
+   {
+      return
+   }
+   
+   if (g_inSettings = true )
    {
       return
    }

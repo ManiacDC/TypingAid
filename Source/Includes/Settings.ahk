@@ -2,6 +2,7 @@
 ; by HugoV / Maniac
 
 LaunchSettings:
+DisableWinHook()
 Menu, Tray, Disable, Settings
 g_InSettings := true
 ClearAllVars(True)
@@ -713,6 +714,7 @@ Cancel:
 Gui, MenuGui:Destroy
 g_InSettings := false
 Menu, Tray, Enable, Settings
+EnableWinHook()
 Return
 
 Save:

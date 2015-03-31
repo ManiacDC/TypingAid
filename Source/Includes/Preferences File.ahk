@@ -401,7 +401,7 @@ ParseTerminatingCharacters()
    g_TerminatingEndKeys := TempEndKeys
 }
 
-SavePreferences(ByRef PrefsToSave)
+SavePreferences(PrefsToSave)
 {
    global
    local index
