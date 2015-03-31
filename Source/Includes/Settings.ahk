@@ -26,7 +26,8 @@ ConstructGui()
    Global Menu_ArrowKeyMethodOptionsText, Menu_CaseCorrection, Menu_ListBoxOpacityUpDown, Menu_SendMethodOptionsCode, Menu_SendMethodC
    Global Menu_CtrlEnter, Menu_CtrlSpace, Menu_Enter, Menu_NumberKeys, Menu_RightArrow, Menu_Tab
    Global g_WM_SETCURSOR, g_WM_MOUSEMOVE, g_ScriptTitle
-   static VisitForum
+   ; Must be global for colors to function, colors will not function if static
+   Global Menu_VisitForum
    
    Menu_CaseCorrection=
    Menu_ArrowKeyMethodOptionsText=
@@ -93,7 +94,7 @@ ConstructGui()
    MenuRowHelpY := MenuRowY - MenuHelpIndentY
    MenuRowEditY := MenuRowY + MenuEditIndentY
 
-   Gui, Font, s8, Arial
+   Gui, MenuGui:Font, s8, Arial
 
    Gui, MenuGui:Add, Tab2, x2 w%MenuTabWidth% h%MenuTabHeight%, General Settings|Wordlist Box|Programs|Advanced (Experts Only)|About && Help
 
@@ -559,13 +560,13 @@ Full (untested) for UTF-8 character set.
    if (g_ScriptTitle == "TypingAid")
    {
       Gui, MenuGui:Font, cBlack bold
-      Gui, MenuGui:Add, Text, x%MenuGroup2of2EditX% Yp-10 gVisitForum, %g_ScriptTitle%
+      Gui, MenuGui:Add, Text, x%MenuGroup2of2EditX% Yp-10, %g_ScriptTitle%
       Gui, MenuGui:Font, cBlack normal
 
-      Gui, MenuGui:Add, Text, xp+60 Yp gVisitForum, is free software, support forum at
+      Gui, MenuGui:Add, Text, xp+60 Yp, is free software, support forum at
       Gui, MenuGui:Font, cGreen 
-      ;the vVisitForum variable is necessary for the link highlighting
-      Gui, MenuGui:Add, Text, x%MenuGroup2of2EditX% Yp+%MenuTextMenuRowY% gVisitForum vVisitForum, www.autohotkey.com (click here)
+      ;the vMenu_VisitForum variable is necessary for the link highlighting
+      Gui, MenuGui:Add, Text, x%MenuGroup2of2EditX% Yp+%MenuTextMenuRowY% vMenu_VisitForum gVisitForum, www.autohotkey.com (click here)
       Gui, MenuGui:Font, cBlack 
    }
    
@@ -871,6 +872,13 @@ HandleMessage( p_w, p_l, p_m, p_hw )
       return
    } else if ( p_m = g_WM_MOUSEMOVE )
 	{
+      if (Help_Hover || URL_Hover)
+      {
+         
+			Gui, MenuGui:Font, cGreen     ;;; xyz
+			GuiControl, MenuGui:Font, %Old_GuiControl% ;;; xyz
+      }
+      
       if ( SubStr(A_GuiControl, 1, 9) == "helpinfo_" )
 		{
 			if !(Help_Hover)
@@ -882,10 +890,10 @@ HandleMessage( p_w, p_l, p_m, p_hw )
 				old_cursor := DllCall( "SetCursor", "uint", h_cursor_help )
 				Help_Hover = true
 				URL_Hover = 
-				Gui, Font, cBlue        ;;; xyz
-				GuiControl, Font, %A_GuiControl% ;;; xyz
+				Gui, MenuGui:Font, cBlue        ;;; xyz
+				GuiControl, MenuGui:Font, %A_GuiControl% ;;; xyz
 			}
-		} else if (A_GuiControl = "VisitForum")
+		} else if (A_GuiControl = "Menu_VisitForum")
 		{	
 			if !(URL_Hover)
 			{
@@ -896,17 +904,15 @@ HandleMessage( p_w, p_l, p_m, p_hw )
 				old_cursor := DllCall( "SetCursor", "uint", h_cursor_hand )
 				URL_Hover = true
 				Help_Hover =
-				Gui, Font, cBlue        ;;; xyz
-				GuiControl, Font, %A_GuiControl% ;;; xyz
+				Gui, MenuGui:Font, cBlue        ;;; xyz
+				GuiControl, MenuGui:Font, %A_GuiControl% ;;; xyz
 			}
 				
 		} else if (Help_Hover || URL_Hover)
-		{
+      {
 			DllCall( "SetCursor", "uint", h_old_cursor )
 			Help_Hover=
 			URL_Hover=
-			Gui, Font, cGreen     ;;; xyz
-			GuiControl, Font, %Old_GuiControl% ;;; xyz
 			h_old_cursor=
 		}
 		IF !(h_old_cursor)
