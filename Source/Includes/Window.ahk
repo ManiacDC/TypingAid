@@ -111,12 +111,7 @@ GetIncludedActiveWindowGuts()
             }
          }
          
-         ;Force unload of Keyboard Hook and WinEventHook
-         Input
-         SuspendOn()
-         CloseListBox()
-         MaybeSaveHelperWindowPos()
-         DisableWinHook()
+         InactivateAll()
          ;Wait for any window to be active
          WinWaitActive, , , , ZZZYouWillNeverFindThisStringInAWindowTitleZZZ
          Continue
@@ -127,12 +122,7 @@ GetIncludedActiveWindowGuts()
          Break
       If CheckForActive(ActiveProcess,ActiveTitle)
          Break
-      ;Force unload of Keyboard Hook and WinEventHook
-      Input
-      SuspendOn()
-      CloseListBox()
-      MaybeSaveHelperWindowPos()
-      DisableWinHook()
+      InactivateAll()
       SetTitleMatchMode, 3 ; set the title match mode to exact so we can detect a window title change
       ; Wait for the current window to no longer be active
       WinWaitNotActive, %ActiveTitle% ahk_id %ActiveId%

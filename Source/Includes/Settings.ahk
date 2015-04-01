@@ -2,13 +2,18 @@
 ; by HugoV / Maniac
 
 LaunchSettings:
-DisableWinHook()
+InactivateAll()
 Menu, Tray, Disable, Settings
 g_InSettings := true
 ClearAllVars(True)
 Menu_OldLearnCount := prefs_LearnCount
+; initialize this to make sure the object exists
 Menu_ChangedPrefs := Object()
 ConstructGui()
+; clear and re-initialize variables after constructing the GUI as some controls call the edit flag immediately
+Menu_ChangedPrefs =
+Menu_ChangedPrefs := Object()
+Menu_ValueChanged := false
 Return
 
 ConstructGui()
@@ -555,7 +560,7 @@ Full (untested) for UTF-8 character set.
    Gui, MenuGui:Add, GroupBox, x%MenuGroup1BoxX%           y%MenuRowY%     w%MenuTwoColGroupWidth% h50 , Configuration
    Gui, MenuGui:Add, Button,   x%MenuGroup1EditX%          y%MenuRowEditY% w%MenuRowThreeButtonWidth%    gSave   , Save && Exit
    Gui, MenuGui:Add, Button,   xp+%MenuRowThreeButtonNext% yp          w%MenuRowThreeButtonWidth%    gRestore, Restore default
-   Gui, MenuGui:Add, Button,   xp+%MenuRowThreeButtonNext% yp          w%MenuRowThreeButtonWidth%    gCancel , Cancel
+   Gui, MenuGui:Add, Button,   xp+%MenuRowThreeButtonNext% yp          w%MenuRowThreeButtonWidth%    gCancelButton , Cancel
 
    if (g_ScriptTitle == "TypingAid")
    {
@@ -711,11 +716,24 @@ RestoreDefaults()
 
 MenuGuiGuiEscape:
 MenuGuiGuiClose:
+CancelButton:
+if (Menu_ValueChanged == true)
+{
+   MsgBox, 4, Cancel, Changes will not be saved. Cancel anyway?
+   IfMsgBox, Yes
+   {
+      gosub, Cancel
+   }
+} else {
+   gosub, Cancel
+}
+return
+
 Cancel:
 Gui, MenuGui:Destroy
 g_InSettings := false
 Menu, Tray, Enable, Settings
-EnableWinHook()
+GetIncludedActiveWindow()
 Return
 
 Save:
@@ -829,6 +847,7 @@ ApplyChanges()
 }   
 
 EditValue:
+Menu_ValueChanged := true
 IF (A_GuiControl && !(SubStr(A_GuiControl ,1 ,5) == "Menu_") )
 {
    Menu_ChangedPrefs[A_GuiControl] := %A_GuiControl%

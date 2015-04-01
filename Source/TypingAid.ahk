@@ -65,8 +65,6 @@ if !(g_WinChangedCallback)
    MsgBox, Failed to register callback function
    ExitApp
 }
-
-EnableWinHook()
    
 ;Find the ID of the window we are using
 GetIncludedActiveWindow()
@@ -932,6 +930,16 @@ EvaluateScriptPathAndTitle()
 }
 
 ;------------------------------------------------------------------------
+
+InactivateAll()
+{
+   ;Force unload of Keyboard Hook and WinEventHook
+   Input
+   SuspendOn()
+   CloseListBox()
+   MaybeSaveHelperWindowPos()
+   DisableWinHook()
+}
 
 SuspendOn()
 {
