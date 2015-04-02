@@ -2,6 +2,10 @@
 ; by HugoV / Maniac
 
 LaunchSettings:
+if (g_InSettings == true)
+{
+   return
+}
 InactivateAll()
 Menu, Tray, Disable, Settings
 g_InSettings := true
