@@ -286,7 +286,7 @@ ConstructGui()
    MenuRowEditY := MenuRowY + MenuEditIndentY
 
    Gui, MenuGui:Add, GroupBox, x%MenuGroup1BoxX% y%MenuRowY% w%MenuTwoColGroupWidth% h%MenuRowHeight% , Sub-strings to not learn
-   Gui, MenuGui:Add, Edit, x%MenuGroup1EditX% y%MenuRowEditY% w%MenuTwoColEditWidth% vprefs_DoNotLearnStrings Password gEditValue, %prefs_DoNotLearnStrings%
+   Gui, MenuGui:Add, Edit, x%MenuGroup1EditX% y%MenuRowEditY% w%MenuTwoColEditWidth% r1 vprefs_DoNotLearnStrings Password gEditValue, %prefs_DoNotLearnStrings%
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup1of2HelpX% y%MenuRowHelpY% vhelpinfo_DoNotLearnStrings gHelpMe, %MenuGuiHelpIcon%
    Gui, MenuGui:Font, cBlack
@@ -382,7 +382,7 @@ ConstructGui()
    MenuRowEditY := MenuRowY + MenuEditIndentY
 
    Gui, MenuGui:Add, GroupBox, x%MenuGroup1BoxX% y%MenuRowY% w%MenuOneColGroupWidth% h%MenuRowHeight% , Window titles you want %g_ScriptTitle% enabled for
-   Gui, MenuGui:Add, Edit, x%MenuGroup1EditX% y%MenuRowEditY% w%MenuOneColEditWidthEdit% vprefs_IncludeProgramTitles gEditValue, %prefs_IncludeProgramTitles%
+   Gui, MenuGui:Add, Edit, x%MenuGroup1EditX% y%MenuRowEditY% w%MenuOneColEditWidthEdit% r1 vprefs_IncludeProgramTitles gEditValue, %prefs_IncludeProgramTitles%
    Gui, MenuGui:Add, Button, x%MenuOneColEditButton% yp w130 gSetEnableTitles, Edit
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup1of1HelpX% y%MenuRowHelpY% vhelpinfo_IncludeProgramTitles gHelpMe, %MenuGuiHelpIcon%
@@ -393,7 +393,7 @@ ConstructGui()
    MenuRowEditY := MenuRowY + MenuEditIndentY
 
    Gui, MenuGui:Add, GroupBox, x%MenuGroup1BoxX% y%MenuRowY% w%MenuOneColGroupWidth% h%MenuRowHeight% , Window titles you want %g_ScriptTitle% disabled for
-   Gui, MenuGui:Add, Edit, x%MenuGroup1EditX% y%MenuRowEditY% w%MenuOneColEditWidthEdit% vprefs_ExcludeProgramTitles gEditValue, %prefs_ExcludeProgramTitles%
+   Gui, MenuGui:Add, Edit, x%MenuGroup1EditX% y%MenuRowEditY% w%MenuOneColEditWidthEdit% r1 vprefs_ExcludeProgramTitles gEditValue, %prefs_ExcludeProgramTitles%
    Gui, MenuGui:Add, Button, x%MenuOneColEditButton% yp w130 gSetDisableTitles, Edit
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup1of1HelpX% y%MenuRowHelpY% vhelpinfo_ExcludeProgramTitles gHelpMe, %MenuGuiHelpIcon%
@@ -404,7 +404,7 @@ ConstructGui()
    MenuRowEditY := MenuRowY + MenuEditIndentY
 
    Gui, MenuGui:Add, GroupBox, x%MenuGroup1BoxX% y%MenuRowY% w%MenuOneColGroupWidth% h%MenuRowHeight% , Processes you want %g_ScriptTitle% enabled for
-   Gui, MenuGui:Add, Edit, x%MenuGroup1EditX% y%MenuRowEditY% w%MenuOneColEditWidthEdit% vprefs_IncludeProgramExecutables gEditValue, %prefs_IncludeProgramExecutables%
+   Gui, MenuGui:Add, Edit, x%MenuGroup1EditX% y%MenuRowEditY% w%MenuOneColEditWidthEdit% r1 vprefs_IncludeProgramExecutables gEditValue, %prefs_IncludeProgramExecutables%
    Gui, MenuGui:Add, Button, x%MenuOneColEditButton% yp w130 gSetEnableProcess, Edit
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup1of1HelpX% y%MenuRowHelpY% vhelpinfo_IncludeProgramExecutables gHelpMe, %MenuGuiHelpIcon%
@@ -415,7 +415,7 @@ ConstructGui()
    MenuRowEditY := MenuRowY + MenuEditIndentY
 
    Gui, MenuGui:Add, GroupBox, x%MenuGroup1BoxX% y%MenuRowY% w%MenuOneColGroupWidth% h%MenuRowHeight% , Processes you want %g_ScriptTitle% disabled for
-   Gui, MenuGui:Add, Edit, x%MenuGroup1EditX% y%MenuRowEditY% w%MenuOneColEditWidthEdit% vprefs_ExcludeProgramExecutables gEditValue, %prefs_ExcludeProgramExecutables%
+   Gui, MenuGui:Add, Edit, x%MenuGroup1EditX% y%MenuRowEditY% w%MenuOneColEditWidthEdit% r1 vprefs_ExcludeProgramExecutables gEditValue, %prefs_ExcludeProgramExecutables%
    Gui, MenuGui:Add, Button, x%MenuOneColEditButton% yp w130 gSetDisableProcess, Edit
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup1of1HelpX% y%MenuRowHelpY% vhelpinfo_ExcludeProgramExecutables gHelpMe, %MenuGuiHelpIcon%
@@ -428,7 +428,7 @@ ConstructGui()
    ;HelperWindowProgramTitles
 
    Gui, MenuGui:Add, GroupBox, x%MenuGroup1BoxX% y%MenuRowY% w%MenuOneColGroupWidth% h%MenuRowHeight% , Window titles you want the helper window enabled for
-   Gui, MenuGui:Add, Edit, x%MenuGroup1EditX% y%MenuRowEditY% w%MenuOneColEditWidthEdit% vprefs_HelperWindowProgramTitles gEditValue, %prefs_HelperWindowProgramTitles%
+   Gui, MenuGui:Add, Edit, x%MenuGroup1EditX% y%MenuRowEditY% w%MenuOneColEditWidthEdit% r1 vprefs_HelperWindowProgramTitles gEditValue, %prefs_HelperWindowProgramTitles%
    Gui, MenuGui:Add, Button, x%MenuOneColEditButton% yp w130 gSetHelpTitles, Edit
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup1of1HelpX% y%MenuRowHelpY% vhelpinfo_HelperWindowProgramTitles gHelpMe, %MenuGuiHelpIcon%
@@ -441,7 +441,7 @@ ConstructGui()
    ;HelperWindowProgramExecutables
 
    Gui, MenuGui:Add, GroupBox, x%MenuGroup1BoxX% y%MenuRowY% w%MenuOneColGroupWidth% h%MenuRowHeight% , Processes you want the helper window enabled for
-   Gui, MenuGui:Add, Edit, x%MenuGroup1EditX% y%MenuRowEditY% w%MenuOneColEditWidthEdit% vprefs_HelperWindowProgramExecutables gEditValue, %prefs_HelperWindowProgramExecutables%
+   Gui, MenuGui:Add, Edit, x%MenuGroup1EditX% y%MenuRowEditY% w%MenuOneColEditWidthEdit% r1 vprefs_HelperWindowProgramExecutables gEditValue, %prefs_HelperWindowProgramExecutables%
    Gui, MenuGui:Add, Button, x%MenuOneColEditButton% yp w130 gSetHelpProcess, Edit
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup1of1HelpX% y%MenuRowHelpY% vhelpinfo_HelperWindowProgramExecutables gHelpMe, %MenuGuiHelpIcon%
@@ -456,7 +456,7 @@ ConstructGui()
    MenuRowEditY := MenuRowY + MenuEditIndentY
 
    Gui, MenuGui:Add, GroupBox, x%MenuGroup1BoxX% y%MenuRowY% w%MenuOneColGroupWidth% h%MenuRowHeight% , Terminating Characters (see http://www.autohotkey.com/docs/KeyList.htm)
-   Gui, MenuGui:Add, Edit, x%MenuGroup1EditX% y%MenuRowEditY% w%MenuOneColEditWidth% vprefs_TerminatingCharacters gEditValue, %prefs_TerminatingCharacters%
+   Gui, MenuGui:Add, Edit, x%MenuGroup1EditX% y%MenuRowEditY% w%MenuOneColEditWidth% r1 vprefs_TerminatingCharacters gEditValue, %prefs_TerminatingCharacters%
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup1of1HelpX% y%MenuRowHelpY% vhelpinfo_TerminatingCharacters gHelpMe, %MenuGuiHelpIcon%
    Gui, MenuGui:Font, cBlack
@@ -466,7 +466,7 @@ ConstructGui()
    MenuRowHelpY := MenuRowY - MenuHelpIndentY
 
    Gui, MenuGui:Add, GroupBox, x%MenuGroup1BoxX% y%MenuRowY% w%MenuOneColGroupWidth% h%MenuRowHeight% , Force New Word Characters (comma separated)
-   Gui, MenuGui:Add, Edit, x%MenuGroup1EditX% y%MenuRowEditY% w%MenuOneColEditWidth% vprefs_ForceNewWordCharacters gEditValue, %prefs_ForceNewWordCharacters%
+   Gui, MenuGui:Add, Edit, x%MenuGroup1EditX% y%MenuRowEditY% w%MenuOneColEditWidth% r1 vprefs_ForceNewWordCharacters gEditValue, %prefs_ForceNewWordCharacters%
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup1of1HelpX% y%MenuRowHelpY% vhelpinfo_ForceNewWordCharacters gHelpMe, %MenuGuiHelpIcon%
    Gui, MenuGui:Font, cBlack
@@ -609,6 +609,13 @@ GetList(TitleType,GetExe)
    global Menu_TitleType
    global Menu_InProcessList
    global g_ScriptTitle
+   global prefs_IncludeProgramTitles
+   global prefs_ExcludeProgramTitles
+   global prefs_IncludeProgramExecutables
+   global prefs_ExcludeProgramExecutables
+   global prefs_HelperWindowProgramTitles
+   global prefs_HelperWindowProgramExecutables
+   
    Menu_InProcessList := true
    Menu_TitleType := TitleType
    If (GetExe =1)
@@ -636,7 +643,7 @@ GetList(TitleType,GetExe)
    }	
    GetExe=0
    
-   GuiControlGet, MenuTitleList, MenuGui: , prefs_%Menu_TitleType%
+   GuiControlGet, MenuTitleList, MenuGui: , %Menu_TitleType%
 	
    Sort,RunningList, D| U	
    Gui, ProcessList:+OwnerMenuGui
