@@ -275,7 +275,7 @@ ConstructGui()
    Gui, MenuGui:Add, Text, x%MenuGroup2of3HelpX% y%MenuRowHelpY% vhelpinfo_DetectMouseClickMove gHelpMe, %MenuGuiHelpIcon%
    Gui, MenuGui:Font, cBlack
 
-   Gui, MenuGui:Add, GroupBox, x%MenuGroup3of3BoxX% y%MenuRowY% w%MenuThreeColGroupWidth% h%MenuRowHeight% , Type space after autcomplete
+   Gui, MenuGui:Add, GroupBox, x%MenuGroup3of3BoxX% y%MenuRowY% w%MenuThreeColGroupWidth% h%MenuRowHeight% , Type space after autocomplete
    Menu_AutoSpaceOptions=|On|Off|
    StringReplace,  Menu_AutoSpaceOptions, Menu_AutoSpaceOptions, |%prefs_AutoSpace%|,|%prefs_AutoSpace%||
    StringTrimLeft, Menu_AutoSpaceOptions, Menu_AutoSpaceOptions, 1
@@ -496,42 +496,42 @@ Words should be stored in a file named 'Wordlist.txt' which should be located in
 
 In addition to being able to use the number keys to select a word, you can select words from the drop-down via the Up/Down arrows. Hitting Up on the first item will bring you to the last and hitting Down on the last item will bring you to the first. Hitting Page Up will bring you up 10 items, or to the first item. Hitting Page Down will bring you down 10 items, or to the last item. You can hit Tab, Right Arrow, Ctrl-Space, or Ctrl-Enter to autocomplete the selected word. This feature can be disabled or have some of its behavior modified via the Preferences file.
 
-The script will learn words as you type them if LearnMode=On in the preferences file. If you type a word more than 5 times (or as defined in the preferences.ini file) in a single session the word will be permanently added to the list of learnedd words. Learned words will always appear below predefined words, but will be ranked and ordered among other learned words based on the frequency you type them. You can permanently learn a word by highlighting a word and hitting Ctrl-Shift-C (this works even if LearnMode=Off). You may use Ctrl-Shift-Del to remove the currently selected Learned Word.
+The script will learn words as you type them if "Learn new words as you type" is set to On in Settings. If you type a word more than 5 times (or as defined in "Minimum length of word to learn") in a single session the word will be permanently added to the list of learned words. Learned words will always appear below predefined words, but will be ranked and ordered among other learned words based on the frequency you type them. You can permanently learn a word by highlighting a word and hitting Ctrl-Shift-C (this works even if "Learn new words as you type" is set to Off). You may use Ctrl-Shift-Del to remove the currently selected Learned Word.
 Learned words are stored in the WordlistLearned.db sqlite3 database. Learned words are backed up in WordlistLearned.txt. To modify the list of Learned words manually, delete the WordlistLearned.db database, then manually edit the WordlistLearned.txt file. On the next launch of the script, the WordlistLearned.db database will be rebuilt.
 
-The script will automatically create a file named preferences.ini in the script directory. This file allows for customization of the script.
-To allow for distribution of standardized preferences, a Defaults.ini may be distributed with the same format as Preferences.ini. If the Defaults.ini is present, Preferences.ini will not be created. A user may override the Defaults.ini by manually creating a Preferences.ini.
+When Settings are changed, the script will automatically create a file named Preferences.ini in the script directory. This file allows for sharing settings between users. Users are encouraged to only edit settings by using the Settings window.
+To allow for distribution of standardized preferences, a Defaults.ini may be distributed with the same format as Preferences.ini. If the Defaults.ini is present, this will override the hardcoded defaults in the script. A user may override the Defaults.ini by changing settings in the Settings window.
 
 Customizable features include (see also detailed description below)
 
-   * List of programs for which you want %g_ScriptTitle% enabled.
-   * List of programs for which you do not want %g_ScriptTitle% enabled.
-   * Number of characters before the list of words appears.
-   * Number of times you must press a number hotkey to select the associated word (options are 1 and 2, 2 has had minimal testing).
    * Enable or disable learning mode.
-   * Number of times you must type a word before it is permanently learned.
    * Number of characters a word needs to have in order to be learned.
-   * List of strings which will prevent any word which contains one of these strings from being learned.
+   * Number of times you must type a word before it is permanently learned.
+   * Number of items to show in the list at once.
+   * Number of characters before the list of words appears.
+   * Change the method used to send the word to the screen.
    * Enable, disable, or customize the arrow key's functionality.
    * Disable certain keys for autocompleting a word selected via the arrow keys.
-   * Enable or disable the resetting of the List Box on a mouseclick.
    * Change whether the script simply completes or actually replaces the word (capitalization change based on the wordlist file)
+   * Enable or disable the resetting of the Wordlist Box on a mouseclick.
    * Change whether a space should be automatically added after the autocompleted word or not.
+   * List of strings which will prevent any word which contains one of these strings from being learned.
    * Change whether the typed word should appear in the word list or not.
-   * Change the method used to send the word to the screen.
+   * Number of pixels below the caret to display the Wordlist Box.
+   * Wordlist Box Default Font of fixed (Courier New) or variable (Tahoma) width.
+   * Wordlist Box Font Size.
+   * Wordlist Box Opacity setting to set the transparency of the List Box.
+   * Wordlist Box Character Width to override the computed character width.
+   * Wordlist Box Default Font override.
+   * List of programs for which you want %g_ScriptTitle% enabled.
+   * List of programs for which you do not want %g_ScriptTitle% enabled.
+   * List of programs for which you want the Helper Window to automatically open.
    * List of characters which terminate a word.
    * List of characters which terminate a word and start a new word.
-   * List of programs for which you want the Helper Window to automatically open.
-   * Number of pixels below the caret to display the List Box.
-   * List Box Default Font of fixed (Courier New) or variable (Tahoma) width.
-   * List Box Default Font override.
-   * List Box Font Size.
-   * List Box Character Width to override the computed character width.
-   * List Box Opacity setting to set the transparency of the List Box.
-   * List Box Rows to define the number of items to show in the list at once.
-
+   * Number of times you must press a number hotkey to select the associated word (options are 1 and 2, 2 is buggy).
+   
 Unicode Support:
-Full (untested) for UTF-8 character set.
+Full support for UTF-8 character set.
    )
    
    helpinfo_HelpText = %helpinfo_Intro%`r`n`r`n%helpinfo_IncludeProgramExecutables%`r`n`r`n%helpinfo_IncludeProgramTitles%`r`n`r`n%helpinfo_ExcludeProgramExecutables%`r`n`r`n%helpinfo_ExcludeProgramTitles%`r`n`r`n%helpinfo_Length%`r`n`r`n%helpinfo_NumPresses%`r`n`r`n%helpinfo_LearnMode%`r`n`r`n%helpinfo_LearnCount%`r`n`r`n%helpinfo_LearnLength%`r`n`r`n%helpinfo_ArrowKeyMethod%`r`n`r`n%helpinfo_DisabledAutoCompleteKeys%`r`n`r`n%helpinfo_DetectMouseClickMove%`r`n`r`n%helpinfo_NoBackSpace%`r`n`r`n%helpinfo_AutoSpace%`r`n`r`n%helpinfo_SendMethod%`r`n`r`n%helpinfo_TerminatingCharacters%`r`n`r`n%helpinfo_ForceNewWordCharacters%`r`n`r`n%helpinfo_ListBoxOffset%`r`n`r`n%helpinfo_ListBoxFontFixed%`r`n`r`n%helpinfo_ListBoxFontOverride%`r`n`r`n%helpinfo_ListBoxFontSize%`r`n`r`n%helpinfo_ListBoxCharacterWidth%`r`n`r`n%helpinfo_ListBoxOpacity%`r`n`r`n%helpinfo_ListBoxRows%`r`n`r`n%helpinfo_HelperWindowProgramExecutables%`r`n`r`n%helpinfo_HelperWindowProgramTitles%

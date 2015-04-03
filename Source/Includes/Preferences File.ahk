@@ -433,36 +433,100 @@ SavePreferences(PrefsToSave)
 ConstructHelpStrings()
 {
    global
-   
-helpinfo_IncludeProgramExecutables=
+
+helpinfo_LearnMode=
 (
-;IncludeProgramExecutables is a list of executable (.exe) files that %g_ScriptTitle% should be enabled for.
-;If one the executables matches the current program, %g_ScriptTitle% is enabled for that program.
+;"Learn new words as you type" defines whether or not the script should learn new words as you type them, either On or Off.
 )
 
-helpinfo_IncludeProgramTitles=
+helpinfo_LearnLength=
 (
-;IncludeProgramTitles is a list of strings (separated by | ) to find in the title of the window you want %g_ScriptTitle% enabled for.
-;If one of the strings is found in the title, %g_ScriptTitle% is enabled for that window.
+;"Minimum length of words to learn" is the minimum number of characters in a word for it to be learned. This must be at least Length+1.
 )
 
-helpinfo_ExcludeProgramExecutables=
+helpinfo_LearnCount=
 (
-;ExcludeProgramExecutables is a list of executable (.exe) files that %g_ScriptTitle% should be disabled for.
-;If one the executables matches the current program, %g_ScriptTitle% is disabled for that program.
+;"Add to wordlist after X times" defines the number of times you have to type a word within a single session for it to be learned permanently.
 )
 
-helpinfo_ExcludeProgramTitles=
+helpinfo_ListBoxRows=
 (
-;ExcludeProgramTitles is a list of strings (separated by | ) to find in the title of the window you want %g_ScriptTitle% disabled for.
-;If one of the strings is found in the title, %g_ScriptTitle% is disabled for that window.
+;"Maximum number of results to show" is the maximum number of rows to show in the ListBox. This value can range from 3 to 30.
 )
 
 helpinfo_Length=
 (
-;Length is the minimum number of characters that need to be typed before the program shows a List of words.
-;Generally, the higher this number the better the performance will be.
-;For example, if you need to autocomplete "as soon as possible" in the word list, set this to 2, type 'as' and a list will appear.
+;"Show wordlist after X characters" is the minimum number of characters that need to be typed before the program shows a List of words.
+;For example, if you need to autocomplete "assemble" in the word list, set this to 2, type 'as' and a list will appear.
+)
+
+helpinfo_SendMethod=
+(
+;"Send Method" is used to change the way the program sends the keys to the screen, this is included for compatibility reasons.
+;Try changing this only when you encounter a problem with key sending during autocompletion.
+;  1 = Fast method that reliably buffers key hits while sending. HAS BEEN KNOWN TO NOT FUNCTION ON SOME MACHINES.
+;      If the script detects that this method will not work on the machine, it will switch to method 2.
+;      (Might not work with characters that cannot be typed using the current keyboard layout.)
+;  2 = Fastest method with unreliable keyboard buffering while sending. Has been known to not function on some machines.
+;  3 = Slowest method, will not buffer or accept keyboard input while sending. Most compatible method.
+;The options below use the clipboard to copy and paste the data to improve speed, but will leave an entry in any clipboard 
+;history tracking routines you may be running. Data on the clipboard *will* be preserved prior to autocompletion.
+;  4 = Same as 1 above.
+;  5 = Same as 2 above, doesn't work on some machines.
+;  6 = Same as 3 above.
+;  7 = Alternate method.
+)
+
+helpinfo_DisabledAutoCompleteKeys=
+(
+;"Auto Complete Keys" is used to enable or disable hotkeys for autocompleting the selected item in the list.
+)
+
+helpinfo_ArrowKeyMethod=
+(
+;"Wordlist row highlighting" is the way the arrow keys are handled when a list is shown.
+;Options are:
+;  Off - only use the number keys
+;  First - resets the highlighted row to the beginning whenever you type a new character
+;  LastWord - keeps the highlighted row on the prior selected word if it's still in the list, else resets to the beginning
+;  LastPosition - maintains the highlighted row's position
+)
+
+helpinfo_NoBackSpace=
+(
+;"Case correction" is used to correct the case of any previously typed characters.
+;  On - characters you have already typed will be backspaced and replaced with the case of the word you have chosen.
+;  Off - characters you have already typed will not be changed
+)
+
+helpinfo_DetectMouseClickMove=
+(
+;"Monitor mouse clicks" is used to detect when the cursor is moved with the mouse.
+; On - %g_ScriptTitle% will not work when used with an On-Screen keyboard.
+; Off - %g_ScriptTitle% will not detect when the cursor is moved within the same line using the mouse, and scrolling the text will clear the list.
+)
+
+helpinfo_AutoSpace=
+(
+;"Type space after autocomplete" is used to automatically add a space to the end of an autocompleted word.
+; On - Add a space to the end of the autocompleted word.
+; Off - Do not add a space to the end of the autocompleted word.
+)
+
+helpinfo_DoNotLearnStrings=
+(
+;"Sub-strings to not learn" is a comma separated list of strings. Any words which contain any of these strings will not be learned.
+;This can be used to prevent the program from learning passwords or other critical information.
+;For example, if you have ord98 in "Sub-strings to not learn", password987 will not be learned.
+)
+
+helpinfo_SuppressMatchingWord=
+(
+;"Suppress matching word" is used to suppress a word from the Word list if it matches the typed word.
+;  If "Case correction" is On, then the match is case-sensitive.
+;  If "Case correction" is Off, then the match is case in-sensitive.
+; On - Suppress matching word from the word list.
+; Off - Do not suppress matching word from the word list.
 )
 
 helpinfo_NumPresses=
@@ -470,116 +534,85 @@ helpinfo_NumPresses=
 ;NumPresses is the number of times the number hotkey must be tapped for the word to be selected, either 1 or 2.
 )
 
-helpinfo_LearnMode=
+helpinfo_ListBoxOffset=
 (
-;LearnMode defines whether or not the script should learn new words as you type them, either On or Off.
+;"List appears X pixels below cursor" is the number of pixels below the top of the caret (vertical blinking line) to display the list.
 )
 
-helpinfo_LearnCount=
+helpinfo_ListBoxFontFixed=
 (
-;LearnCount defines the number of times you have to type a word within a single session for it to be learned permanently.
+;"Fixed width font in list" controls whether a fixed or variable character font width is used.
+;(e.g., in fixed width, "i" and "w" take the same number of pixels)
 )
 
-helpinfo_LearnLength=
+helpinfo_ListBoxFontSize=
 (
-;LearnLength is the minimum number of characters in a word for it to be learned. This must be at least Length+1.
+;"Font size in list" controls the size of the font in the list.
 )
 
-helpinfo_DoNotLearnStrings=
+helpinfo_ListBoxOpacity=
 (
-;DoNotLearnStrings is a comma separated list of strings. Any words which contain any of these strings will not be learned.
-;This can be used to prevent the program from learning passwords or other critical information.
-;For example, if you have ord98 in DoNotLearnStrings, password987 will not be learned.
+;"list opacity" is how transparent (see-through) the Wordlist Box should be. Use a value of 255 to make it so the
+;Wordlist Box is fully ypaque, or use a value of 0 to make it so the Wordlist Box cannot be seen at all.
 )
 
-helpinfo_ArrowKeyMethod=
+helpinfo_ListBoxCharacterWidth=
 (
-;ArrowKeyMethod is the way the arrow keys are handled when a list is shown.
-;Options are:
-;  Off - you can only use the number keys
-;  First - resets the selection cursor to the beginning whenever you type a new character
-;  LastWord - keeps the selection cursor on the prior selected word if it's still in the list, else resets to the beginning
-;  LastPosition - maintains the selection cursor's position
+;"List character width override" is the width (in pixels) of one character in the Wordlist Box.
+;This number should only need to be changed if the box containing the list is not the correct width.
+;Some things which may cause this to need to be changed would include:
+; 1. Changing the Font DPI in Windows
+; 2. Changing the "Fixed width font in list" setting
+; 3. Changing the "Font size in list" setting
+;Leave this blank to let %g_ScriptTitle% try to compute the width.
 )
 
-helpinfo_DisabledAutoCompleteKeys=
+helpinfo_ListBoxFontOverride=
 (
-;DisabledAutoCompleteKeys is used to disable certain hotkeys from autocompleting the selected item in the list.
-;Place the character listed for each key you want to disable in the list.
-; ex: DisabledAutoCompleteKeys=ST
-;will disable Ctrl+Space and Tab.
-;  E = Ctrl + Enter
-;  S = Ctrl + Space
-;  T = Tab
-;  R = Right Arrow
-;  N = Number Keys
-;  U = Enter
+;"list font" is used to specify a font for the Wordlist Box to use. The default for Fixed is Courier,
+;and the default for Variable is Tahoma.
 )
 
-helpinfo_DetectMouseClickMove=
+helpinfo_IncludeProgramTitles=
 (
-;DetectMouseClickMove is used to detect when the cursor is moved with the mouse.
-; On - %g_ScriptTitle% will not work when used with an On-Screen keyboard.
-; Off - %g_ScriptTitle% will not detect when the cursor is moved within the same line using the mouse, and scrolling the text will clear the list.
+;"Window titles you want %g_ScriptTitle% enabled for" is a list of strings (separated by | ) to find in the title of the window you want %g_ScriptTitle% enabled for.
+;If one of the strings is found in the title, %g_ScriptTitle% is enabled for that window.
 )
 
-helpinfo_NoBackSpace=
+helpinfo_ExcludeProgramTitles=
 (
-;NoBackSpace is used to make %g_ScriptTitle% not backspace any of the previously typed characters
-;(ie, do not change the case of any previously typed characters).
-;  On - characters you have already typed will not be changed
-;  Off - characters you have already typed will be backspaced and replaced with the case of the word you have chosen.
+;"Window titles you want %g_ScriptTitle% disabled for" is a list of strings (separated by | ) to find in the title of the window you want %g_ScriptTitle% disabled for.
+;If one of the strings is found in the title, %g_ScriptTitle% is disabled for that window.
+)
+   
+helpinfo_IncludeProgramExecutables=
+(
+;"Processes you want %g_ScriptTitle% enabled for" is a list of executable (.exe) files that %g_ScriptTitle% should be enabled for.
+;If one the executables matches the current program, %g_ScriptTitle% is enabled for that program.
 )
 
-helpinfo_AutoSpace=
+helpinfo_ExcludeProgramExecutables=
 (
-;AutoSpace is used to automatically add a space to the end of an autocompleted word.
-; On - Add a space to the end of the autocompleted word.
-; Off - Do not add a space to the end of the autocompleted word.
+;"Processes you want %g_ScriptTitle% disabled for" is a list of executable (.exe) files that %g_ScriptTitle% should be disabled for.
+;If one the executables matches the current program, %g_ScriptTitle% is disabled for that program.
 )
 
-helpinfo_SuppressMatchingWord=
+helpinfo_HelperWindowProgramTitles=
 (
-;SuppressMatchingWord is used to suppress a word from the Word list if it matches the typed word.
-;  If NoBackspace=On, then the match is case in-sensitive.
-;  If NoBackspace=Off, then the match is case-sensitive.
-; On - Suppress matching words from the word list.
-; Off - Do not suppress matching words from the word list.
+;"Window titles you want the helper window enabled for" is a list of strings (separated by | ) to find in the title of the window that the helper window should be automatically enabled for.
+;If one of the strings is found in the title, the helper window will pop up automatically for that program.
 )
 
-helpinfo_SendMethod=
+helpinfo_HelperWindowProgramExecutables=
 (
-;SendMethod is used to change the way the program sends the keys to the screen, this is included for compatibility reasons.
-;Try changing this only when you encounter a problem with key sending during autocompletion.
-;  1 = Fast method that reliably buffers key hits while sending. HAS BEEN KNOWN TO NOT FUNCTION ON SOME MACHINES.
-;      (Might not work with characters that cannot be typed using the current keyboard layout.)
-;  2 = Fastest method with unreliable keyboard buffering while sending. Has been known to not function on some machines.
-;  3 = Slowest method, will not buffer or accept keyboard input while sending. Most compatible method.
-;The options below use the clipboard to copy and paste the data to improve speed, but will leave an entry in any clipboard 
-;history tracking routines you may be running. Data on the clipboard *will* be preserved prior to autocompletion.
-;  1C = Same as 1 above.
-;  2C = Same as 2 above, doesn't work on some machines.
-;  3C = Same as 3 above.
-;  4C = Alternate method.
+;"Processes you want the helper window enabled for" is a list of executable (.exe) files that the helper window should be automatically enabled for.
+;If one the executables matches the current program, the helper window will pop up automatically for that program.
 )
 
 helpinfo_TerminatingCharacters=
 (
-;TerminatingCharacters is a list of characters (EndKey) which will signal the program that you are done typing a word.
-;You probably need to change this only when you want to recognize and type accented (diacritic) or Unicode characters
-;or if you are using this with certain programming languages.
-;
-;For support of special characters, remove the key that is used to type the diacritic symbol (or the character) from the right hand side. 
-;For example, if on your keyboard layout, " is used before typing ë, ; is used to type ñ, remove them from the right hand side.
-;
-;After this, %g_ScriptTitle% can recognize the special character. The side-effect is that, it cannot complete words typed after 
-;the symbol, (e.g. "word... ) If you need to complete a word after a quotation mark, first type two quotation marks "" then 
-;press left and type the word in the middle.
-;
-;If unsure, below is a setting for you to copy and use directly:
-;
-;Universal setting that works for many languages with accented or Unicode characters:
-;{enter}{space}{bs}{esc}{tab}{Home}{End}{PgUp}{PdDn}{Up}{Dn}{Left}{Right}¿?¡!()$
+;"Terminating Characters" is a list of characters (EndKey) which will signal the program that you are done typing a word.
+;You probably need to change this only when using this with certain programming languages.
 ;
 ;Default setting:
 ;%dft_TerminatingCharacters%
@@ -593,7 +626,7 @@ helpinfo_TerminatingCharacters=
 
 helpinfo_ForceNewWordCharacters=
 (
-;ForceNewWordCharacters is a comma separated list of characters which forces the program to start a new word whenever
+;"Force New Word Characters" is a comma separated list of characters which forces the program to start a new word whenever
 ;one of those characters is typed. Any words which begin with one of these characters will never be learned (even
 ;if learning is enabled). If you were typing a word when you hit one of these characters that word will be learned
 ;if learning is enabled.
@@ -601,75 +634,29 @@ helpinfo_ForceNewWordCharacters=
 ; ex: ForceNewWordCharacters=@,:,#
 )
 
-helpinfo_ListBoxOffset=
-(
-;ListBoxOffset is the number of pixels below the top of the caret (vertical blinking line) to display the list.
-)
-
-helpinfo_ListBoxFontFixed=
-(
-;ListBoxFontFixed controls whether a fixed or variable character font width is used.
-;(ie, in fixed width, "i" and "w" take the same number of pixels)
-)
-
-helpinfo_ListBoxFontOverride=
-(
-;ListBoxFontOverride is used to specify a font for the List Box to use. The default for Fixed is Courier,
-;and the default for Variable is Tahoma.
-)
-
-helpinfo_ListBoxFontSize=
-(
-;ListBoxFontSize controls the size of the font in the list.
-)
-
-helpinfo_ListBoxCharacterWidth=
-(
-;ListBoxCharacterWidth is the width (in pixels) of one character in the List Box.
-;This number should only need to be changed if the box containing the list is not the correct width.
-;Some things which may cause this to need to be changed would include:
-; 1. Changing the Font DPI in Windows
-; 2. Changing the ListBoxFontFixed setting
-; 3. Changing the ListBoxFontSize setting
-;Leave this blank to let %g_ScriptTitle% try to compute the width.
-)
-
-helpinfo_ListBoxOpacity=
-(
-;ListBoxOpacity is how transparent (see-through) the ListBox should be. Use a value of 255 to make it so the
-;ListBox is fully Opaque, or use a value of 0 to make it so the ListBox cannot be seen at all.
-)
-
-helpinfo_ListBoxRows=
-(
-;ListBoxRows is the maximum number of rows to show in the ListBox. This value can range from 3 to 30.
-)
-
-helpinfo_HelperWindowProgramExecutables=
-(
-;HelperWindowProgramExecutables is a list of executable (.exe) files that the HelperWindow should be automatically enabled for.
-;If one the executables matches the current program, the HelperWindow will pop up automatically for that program.
-)
-
-helpinfo_HelperWindowProgramTitles=
-(
-;HelperWindowProgramTitles is a list of strings (separated by | ) to find in the title of the window that the HelperWindow should be automatically enabled for.
-;If one of the strings is found in the title, the HelperWindow will pop up automatically for that program.
-)
-
+; temporarily removed from the help string
+;`r`n`r`n %helpinfo_NumPresses%
 helpinfo_FullHelpString =
 (
-%helpinfo_IncludeProgramExecutables% `r`n`r`n %helpinfo_IncludeProgramTitles% `r`n`r`n %helpinfo_ExcludeProgramExecutables% `r`n`r`n %helpinfo_ExcludeProgramTitles%
+%helpinfo_LearnMode% `r`n`r`n %helpinfo_LearnLength% `r`n`r`n %helpinfo_LearnCount%
 
-%helpinfo_Length% `r`n`r`n %helpinfo_NumPresses% `r`n`r`n %helpinfo_LearnMode% `r`n`r`n %helpinfo_LearnCount% `r`n`r`n %helpinfo_LearnLength% `r`n`r`n %helpinfo_DoNotLearnStrings%
+%helpinfo_ListBoxRows% `r`n`r`n %helpinfo_Length% `r`n`r`n %helpinfo_SendMethod%
 
-%helpinfo_ArrowKeyMethod% `r`n`r`n %helpinfo_DisabledAutoCompleteKeys% `r`n`r`n %helpinfo_DetectMouseClickMove% `r`n`r`n %helpinfo_NoBackSpace% `r`n`r`n %helpinfo_AutoSpace%
+%helpinfo_DisabledAutoCompleteKeys% `r`n`r`n %helpinfo_ArrowKeyMethod% `r`n`r`n
 
-%helpinfo_SuppressMatchingWord% `r`n`r`n %helpinfo_SendMethod% `r`n`r`n %helpinfo_TerminatingCharacters% `r`n`r`n %helpinfo_ForceNewWordCharacters% `r`n`r`n %helpinfo_ListBoxOffset%
+%helpinfo_NoBackSpace% `r`n`r`n %helpinfo_DetectMouseClickMove% `r`n`r`n %helpinfo_AutoSpace%
 
-%helpinfo_ListBoxFontFixed% `r`n`r`n %helpinfo_ListBoxFontOverride% `r`n`r`n %helpinfo_ListBoxFontSize% `r`n`r`n %helpinfo_ListBoxCharacterWidth% `r`n`r`n %helpinfo_ListBoxOpacity%
+%helpinfo_DoNotLearnStrings% `r`n`r`n %helpinfo_SuppressMatchingWord%
 
-%helpinfo_ListBoxRows% `r`n`r`n %helpinfo_HelperWindowProgramExecutables% `r`n`r`n %helpinfo_HelperWindowProgramTitles%
+%helpinfo_ListBoxOffset% `r`n`r`n %helpinfo_ListBoxFontFixed% `r`n`r`n %helpinfo_ListBoxFontSize%
+
+%helpinfo_ListBoxOpacity% `r`n`r`n %helpinfo_ListBoxCharacterWidth% `r`n`r`n %helpinfo_ListBoxFontOverride%
+
+%helpinfo_IncludeProgramTitles% `r`n`r`n %helpinfo_ExcludeProgramTitles% `r`n`r`n %helpinfo_IncludeProgramExecutables% `r`n`r`n %helpinfo_ExcludeProgramExecutables%
+
+%helpinfo_HelperWindowProgramTitles% `r`n`r`n %helpinfo_HelperWindowProgramExecutables%
+
+%helpinfo_TerminatingCharacters% `r`n`r`n %helpinfo_ForceNewWordCharacters% 
 )
 
 }
