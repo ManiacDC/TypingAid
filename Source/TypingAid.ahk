@@ -948,10 +948,10 @@ SuspendOn()
    Menu, Tray, Tip, %g_ScriptTitle% - Inactive
    If A_IsCompiled
    {
-      Menu, tray, Icon, %A_ScriptName%,3,1
+      Menu, tray, Icon, %A_ScriptFullPath%,3,1
    } else
    {
-      Menu, tray, icon, %g_ScriptTitle%-Inactive.ico, ,1
+      Menu, tray, Icon, %A_ScriptDir%\%g_ScriptTitle%-Inactive.ico, ,1
    }
 }
 
@@ -962,10 +962,10 @@ SuspendOff()
    Menu, Tray, Tip, %g_ScriptTitle% - Active
    If A_IsCompiled
    {
-      Menu, tray, Icon, %A_ScriptName%,1,1
+      Menu, tray, Icon, %A_ScriptFullPath%,1,1
    } else
    {
-      Menu, tray, icon, %g_ScriptTitle%-Active.ico, ,1
+      Menu, tray, Icon, %A_ScriptDir%\%g_ScriptTitle%-Active.ico, ,1
    }
 }   
 
