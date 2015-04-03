@@ -407,8 +407,16 @@ SavePreferences(PrefsToSave)
    local index
    local element
    local KeyName
+   local PrefsExist
    
    ValidatePreferences()
+   
+   IfExist, %g_PrefsFile%
+   {
+      PrefsExist := true
+   } else {
+      PrefsExist := false
+   }
       
    for index, element in PrefsToSave
    {
@@ -421,7 +429,11 @@ SavePreferences(PrefsToSave)
    
       If (%element% == dft_%KeyName%)
       {
-         IniDelete, %g_PrefsFile%,% g_PrefsSections[KeyName], %KeyName%
+         ; Make sure preferences already exist so we don't create 0 byte file
+         if (PrefsExist == true)
+         {
+            IniDelete, %g_PrefsFile%,% g_PrefsSections[KeyName], %KeyName%
+         }
       } else {
          IniWrite,% %element%, %g_PrefsFile%,% g_PrefsSections[KeyName], %KeyName%
       }
