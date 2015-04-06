@@ -600,13 +600,13 @@ helpinfo_ExcludeProgramTitles=
 helpinfo_IncludeProgramExecutables=
 (
 ;"Processes you want %g_ScriptTitle% enabled for" is a list of executable (.exe) files that %g_ScriptTitle% should be enabled for.
-;If one the executables matches the current program, %g_ScriptTitle% is enabled for that program.
+;If one of the executables matches the current program, %g_ScriptTitle% is enabled for that program.
 )
 
 helpinfo_ExcludeProgramExecutables=
 (
 ;"Processes you want %g_ScriptTitle% disabled for" is a list of executable (.exe) files that %g_ScriptTitle% should be disabled for.
-;If one the executables matches the current program, %g_ScriptTitle% is disabled for that program.
+;If one of the executables matches the current program, %g_ScriptTitle% is disabled for that program.
 )
 
 helpinfo_HelperWindowProgramTitles=
@@ -618,7 +618,7 @@ helpinfo_HelperWindowProgramTitles=
 helpinfo_HelperWindowProgramExecutables=
 (
 ;"Processes you want the helper window enabled for" is a list of executable (.exe) files that the helper window should be automatically enabled for.
-;If one the executables matches the current program, the helper window will pop up automatically for that program.
+;If one of the executables matches the current program, the helper window will pop up automatically for that program.
 )
 
 helpinfo_TerminatingCharacters=

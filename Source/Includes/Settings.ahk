@@ -670,7 +670,7 @@ GetList(TitleType,GetExe)
 
 VisitForum:
 MsgBox , 36 , Visit %g_ScriptTitle% forum (www.autohotkey.com), Do you want to visit the %g_ScriptTitle% forum on www.autohotkey.com?
-IfMsgBox Yes
+IfMsgBox, Yes
 	Run, http://www.autohotkey.com/board/topic/49517-ahk-11typingaid-v2198-word-autocompletion-utility/
 Return
 
@@ -1004,6 +1004,18 @@ return
 AddNew1()
 {
    GuiControlGet, MenuOutputVar, ProcessList:,Edit1
+   ControlGet, MenuTitleList, List, , ListBox1
+   StringReplace, MenuTitleList, MenuTitleList, `n, |, All
+   MenuTitleList := "|" . MenuTitleList . "|"
+   
+   SearchString := "|" . MenuOutputVar . "|"
+   
+   IfInString, MenuTitleList, |%MenuOutputVar%|
+   {
+      MsgBox, 16, , Duplicate entry.
+      return
+   }
+   
    GuiControl, ProcessList:, ListBox1, %MenuOutputVar%|
    GuiControl, ProcessList:, Edit1, 
    ControlFocus, Edit1
@@ -1019,7 +1031,7 @@ RemoveNew1()
    GuiControlGet, MenuOutputVar, ProcessList:, Listbox1
    ControlGet, MenuTitleList, List, , ListBox1
    StringReplace, MenuTitleList, MenuTitleList, `n, |, All
-   MenuTitleList := "|" MenuTitleList "|"
+   MenuTitleList := "|" . MenuTitleList . "|"
    StringReplace, MenuTitleList, MenuTitleList, |%MenuOutputVar%|, |, all
    StringTrimRight, MenuTitleList, MenuTitleList, 1
    GuiControl, ProcessList:, ListBox1, |
