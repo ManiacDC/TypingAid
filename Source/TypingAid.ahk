@@ -138,15 +138,19 @@ ProcessKey(InputChar,EndKey)
    ;If we have no window activated for typing, we don't want to do anything with the typed character
    IfEqual, g_Active_Id,
    {
-      GetIncludedActiveWindow()
-      Return
+      if (!GetIncludedActiveWindow())
+      {
+         Return
+      }
    }
 
 
    IF !( ReturnWinActive() )
    {
-      GetIncludedActiveWindow()
-      Return
+      if (!GetIncludedActiveWindow())
+      {
+         Return
+      }
    }
    
    IfEqual, g_Active_Id, %g_Helper_Id%

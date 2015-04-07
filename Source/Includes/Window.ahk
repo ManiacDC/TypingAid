@@ -78,10 +78,12 @@ WinChanged(hWinEventHook, event, wchwnd, idObject, idChild, dwEventThread, dwmsE
 ;------------------------------------------------------------------------
 
 ; Wrapper function to ensure we always enable the WinEventHook after waiting for an active window
+; Returns true if the current window is included
 GetIncludedActiveWindow()
 {
-   GetIncludedActiveWindowGuts()
+   CurrentWindowIsActive := GetIncludedActiveWindowGuts()
    EnableWinHook()
+   Return, CurrentWindowIsActive
 }
 
 GetIncludedActiveWindowGuts()
@@ -95,6 +97,8 @@ GetIncludedActiveWindowGuts()
    Process, Priority,,Normal
    ;Wait for Included Active Window
    
+   CurrentWindowIsActive := true
+   
    Loop
    {
       WinGet, ActiveId, ID, A
@@ -107,10 +111,11 @@ GetIncludedActiveWindowGuts()
             IfEqual, g_MouseWin_Id, %g_ListBox_Id% 
             {
                WinActivate, ahk_id %g_Active_Id%
-               Return
+               Return, CurrentWindowIsActive
             }
          }
          
+         CurrentWindowIsActive := false
          InactivateAll()
          ;Wait for any window to be active
          WinWaitActive, , , , ZZZYouWillNeverFindThisStringInAWindowTitleZZZ
@@ -122,6 +127,8 @@ GetIncludedActiveWindowGuts()
          Break
       If CheckForActive(ActiveProcess,ActiveTitle)
          Break
+      
+      CurrentWindowIsActive := false
       InactivateAll()
       SetTitleMatchMode, 3 ; set the title match mode to exact so we can detect a window title change
       ; Wait for the current window to no longer be active
@@ -136,7 +143,7 @@ GetIncludedActiveWindowGuts()
    {
       g_Active_Id :=  ActiveId
       g_Active_Title := ActiveTitle
-      Return
+      Return, CurrentWindowIsActive
    }
    
    ;if we are in the Helper Window, we don't want to re-enable script functions
@@ -167,7 +174,7 @@ GetIncludedActiveWindowGuts()
          }
    g_Active_Id :=  ActiveId
    g_Active_Title := ActiveTitle
-   Return
+   Return, CurrentWindowIsActive
 }
 
 CheckForActive(ActiveProcess,ActiveTitle)
@@ -224,7 +231,7 @@ ReturnWinActive()
    global g_InSettings
    
    IF g_InSettings
-      Return,
+      Return
    
    WinGet, Temp_id, ID, A
    WinGetTitle, Temp_Title, ahk_id %Temp_id%
