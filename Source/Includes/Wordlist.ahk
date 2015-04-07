@@ -191,12 +191,7 @@ AddWordToList(AddWord,ForceCountNewOnly,ForceLearn=false, ByRef LearnedWordsCoun
             CountValue := prefs_LearnCount ;set the count to LearnCount so it gets written to the file
          }
          
-         IfEqual, prefs_LearnMode, On
-         {
-            g_WordListDB.Query("INSERT INTO words VALUES ('" . AddWordIndex . "','" . AddWord . "','" . CountValue . "');")
-         } else {
-            g_WordListDB.Query("INSERT INTO words (wordindexed,word) VALUES ('" . AddWordIndex . "','" . AddWord . "');")
-         }
+         g_WordListDB.Query("INSERT INTO words VALUES ('" . AddWordIndex . "','" . AddWord . "','" . CountValue . "');")
       } else {
          IfEqual, prefs_LearnMode, On
          {

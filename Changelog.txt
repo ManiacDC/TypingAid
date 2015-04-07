@@ -1,3 +1,18 @@
+*2.20.0 4/7/2015
+** Added a Settings window (thanks to HugoV for doing much of the coding).
+** Changed the learned words to use an SQLite3 databas backend. This should help with future enhancements
+** Changing settings no longer requires a script restart
+** Added Active/Inactive Notification Area icons
+** Added working Pause functionality
+** Detecting Window switches now uses Windows Event Hooks, rather than a timer
+** Added weighting based on number of characters left to type
+** Changed license to GPLv3 for compatibility with AhkDBA SQLite3 interface
+** Added the ability to learn words with no alpha characters when hitting Ctrl-Shift-C, or to read them in from Wordlist.txt
+** Fixed Wordlist drawing on the mouse when unable to detect the caret position
+** Fixed words not being learned when hitting Ctrl-Shift-C while Learning is off
+** Large amounts of code refactoring, including renaming all global variables and fixing function scope
+** Fixed having length of 1 not work with ForceNewWordCharacters
+
 *2.19.9 12/18/2014
 ** Fixed bug when creating TerminatingCharacters when generating preferences file. Broken TerminatingCharacters will be repaired if not already modified.
 ** Added "Threading" during the input loop to cause less missed keys

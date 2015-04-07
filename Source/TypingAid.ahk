@@ -1,15 +1,17 @@
 ;  TypingAid
-;  http://www.autohotkey.com/forum/viewtopic.php?t=53630
+;  http://www.autohotkey.com/board/topic/49517-ahk-11typingaid-v2199-word-autocompletion-utility/
 ;
 ;  Press 1 to 0 keys to autocomplete the word upon suggestion 
 ;  Or use the Up/Down keys to select an item
 ;  (0 will match suggestion 10) 
 ;                              Credits:
-;                               -Jordi S
-;                               -Maniac
-;                               -hugov
-;                               -kakarukeys
-;                               -Asaptrad
+;                                -Maniac
+;                                -Jordi S
+;                                -hugov
+;                                -kakarukeys
+;                                -Asaptrad
+;                                -j4hangir
+;                                -Theclaw
 ;___________________________________________ 
 
 ; Press 1 to 0 keys to autocomplete the word upon suggestion 
@@ -281,29 +283,21 @@ RecomputeMatches()
    
    WhereQuery := " WHERE wordindexed GLOB '" . WordMatch . "*' " . SuppressMatchingWordQuery
    
-   IfEqual, prefs_LearnMode, Off
+   NormalizeTable := g_WordListDB.Query("SELECT MIN(count) AS normalize FROM Words" . WhereQuery . "AND count IS NOT NULL LIMIT " . LimitTotalMatches . ";")
+   
+   for each, row in NormalizeTable.Rows
    {
-      WhereQuery .= " AND count IS NULL"
-      OrderByQuery := " ORDER BY ROWID, Word"
-   } else {
-   
-      NormalizeTable := g_WordListDB.Query("SELECT MIN(count) AS normalize FROM Words" . WhereQuery . "AND count IS NOT NULL LIMIT " . LimitTotalMatches . ";")
-   
-      for each, row in NormalizeTable.Rows
-      {
-         Normalize := row[1]
-      }
-      
-      IfEqual, Normalize,
-      {
-         Normalize := 0
-      }
-      
-      WordLen := StrLen(g_Word)
-      OrderByQuery := " ORDER BY CASE WHEN count IS NULL then ROWID else 'z' end, CASE WHEN count IS NOT NULL then ( (count - " . Normalize . ") * ( 1 - ( '0.75' / (LENGTH(word) - " . WordLen . ")))) end DESC, Word"
+      Normalize := row[1]
    }
-   
-   
+      
+   IfEqual, Normalize,
+   {
+      Normalize := 0
+   }
+      
+   WordLen := StrLen(g_Word)
+   OrderByQuery := " ORDER BY CASE WHEN count IS NULL then ROWID else 'z' end, CASE WHEN count IS NOT NULL then ( (count - " . Normalize . ") * ( 1 - ( '0.75' / (LENGTH(word) - " . WordLen . ")))) end DESC, Word"
+      
    Matches := g_WordListDB.Query("SELECT word FROM Words" . WhereQuery . OrderByQuery . " LIMIT " . LimitTotalMatches . ";")
    
    g_singlematch := Object()
@@ -423,14 +417,13 @@ InitializeHotKeys()
    IfNotEqual, prefs_LearnMode, On
    {
       Hotkey, $^+Delete, Off
-   
-      HotKey, $^+c, Off
    } else {
-      HotKey, $^+c, On
       Hotkey, $^+Delete, Off
       ; We only want Ctrl-Shift-Delete enabled when the listbox is showing.
       g_EnabledKeyboardHotKeys .= "$^+Delete" . g_DelimiterChar
    }
+   
+   HotKey, $^+c, On
    
    IfEqual, prefs_ArrowKeyMethod, Off
    {
