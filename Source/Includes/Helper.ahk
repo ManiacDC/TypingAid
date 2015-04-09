@@ -3,9 +3,9 @@
 MaybeOpenOrCloseHelperWindow(ActiveProcess,ActiveTitle,ActiveId)
 {
    ; This is called when switching the active window
-   global HelperManual
+   global g_HelperManual
    
-   IfNotEqual, HelperManual,
+   IfNotEqual, g_HelperManual,
    {
       MaybeCreateHelperWindow()
       Return
@@ -13,9 +13,9 @@ MaybeOpenOrCloseHelperWindow(ActiveProcess,ActiveTitle,ActiveId)
 
    IF ( CheckHelperWindowAuto(ActiveProcess,ActiveTitle) )
    {
-      global HelperClosedWindowIds
+      global g_HelperClosedWindowIds
       ; Remove windows which were closed
-      Loop, Parse, HelperClosedWindowIDs, |
+      Loop, Parse, g_HelperClosedWindowIDs, |
       {
          IfEqual, A_LoopField,
             Continue
@@ -26,12 +26,12 @@ MaybeOpenOrCloseHelperWindow(ActiveProcess,ActiveTitle,ActiveId)
          }
       }
       
-      HelperClosedWindowIDs = %TempHelperClosedWindowIDs%
+      g_HelperClosedWindowIDs = %TempHelperClosedWindowIDs%
       TempHelperClosedWindowIDs =
       
       SearchText := "|" . ActiveId . "|"
       
-      IfInString, HelperClosedWindowIDs, %SearchText%
+      IfInString, g_HelperClosedWindowIDs, %SearchText%
       {
          MaybeSaveHelperWindowPos()
       } else MaybeCreateHelperWindow()
@@ -44,16 +44,16 @@ MaybeOpenOrCloseHelperWindow(ActiveProcess,ActiveTitle,ActiveId)
 
 CheckHelperWindowAuto(ActiveProcess,ActiveTitle)
 {
-   global HelperWindowProgramExecutables
-   global HelperWindowProgramTitles
+   global prefs_HelperWindowProgramExecutables
+   global prefs_HelperWindowProgramTitles
    
-   Loop, Parse, HelperWindowProgramExecutables, |
+   Loop, Parse, prefs_HelperWindowProgramExecutables, |
    {
       IfEqual, ActiveProcess, %A_LoopField%
          Return, true
    }
 
-   Loop, Parse, HelperWindowProgramTitles, |
+   Loop, Parse, prefs_HelperWindowProgramTitles, |
    {
       IfInString, ActiveTitle, %A_LoopField%
          Return, true
@@ -65,36 +65,32 @@ CheckHelperWindowAuto(ActiveProcess,ActiveTitle)
 MaybeOpenOrCloseHelperWindowManual()
 {
    ;Called when we hit Ctrl-Shift-H
-   
-   ;make sure we are in decimal format in case ConvertWordToAscii was interrupted
-   IfEqual, A_FormatInteger, H
-      SetFormat,Integer,D
       
-   global Helper_id
-   global HelperManual
+   global g_Helper_Id
+   global g_HelperManual
    
    ;If a helper window already exists 
-   IfNotEqual, Helper_id,
+   IfNotEqual, g_Helper_Id,
    {
       ; If we've forced a manual helper open, close it. Else mark it as forced open manually
-      IfNotEqual, HelperManual,
+      IfNotEqual, g_HelperManual,
       {
          HelperWindowClosed()
-      } else HelperManual=1
+      } else g_HelperManual=1
    } else {
-            global Active_id
-            WinGetTitle, ActiveTitle, ahk_id %Active_id%
-            WinGet, ActiveProcess, ProcessName, ahk_id %Active_id%
+            global g_Active_Id
+            WinGetTitle, ActiveTitle, ahk_id %g_Active_Id%
+            WinGet, ActiveProcess, ProcessName, ahk_id %g_Active_Id%
             ;Check for Auto Helper, and if Auto clear closed flag and open
             IF ( CheckHelperWindowAuto(ActiveProcess,ActiveTitle) )
             {
-               global HelperClosedWindowIDs
-               SearchText := "|" . Active_id . "|"
-               StringReplace, HelperClosedWindowIDs, HelperClosedWindowIDs, %SearchText%
+               global g_HelperClosedWindowIDs
+               SearchText := "|" . g_Active_Id . "|"
+               StringReplace, g_HelperClosedWindowIDs, g_HelperClosedWindowIDs, %SearchText%
                
             } else {
                      ; else Open a manually opened helper window
-                     HelperManual=1
+                     g_HelperManual=1
                   }
             MaybeCreateHelperWindow()
          }
@@ -107,28 +103,24 @@ MaybeOpenOrCloseHelperWindowManual()
 ;Create helper window for showing ListBox
 MaybeCreateHelperWindow()
 {
-   Global Helper_id
-   global HelperGui
+   Global g_Helper_Id
+   Global g_XY
    ;Don't open a new Helper Window if One is already open
-   IfNotEqual, Helper_id,
+   IfNotEqual, g_Helper_Id,
       Return
       
-   ;make sure we are in decimal format in case ConvertWordToAscii was interrupted
-   IfEqual, A_FormatInteger, H
-      SetFormat,Integer,D
-   Global XY
-   Gui, %HelperGui%:+Owner -MinimizeBox -MaximizeBox +AlwaysOnTop
-   Gui, %HelperGui%:+LabelHelper_
-   Gui, %HelperGui%:Add, Text,,List appears here 
-   IfNotEqual, XY, 
+   Gui, HelperGui:+Owner -MinimizeBox -MaximizeBox +AlwaysOnTop
+   Gui, HelperGui:+LabelHelper_
+   Gui, HelperGui:Add, Text,,List appears here 
+   IfNotEqual, g_XY, 
    {
-      StringSplit, Pos, XY, `, 
-      Gui, %HelperGui%:Show, X%Pos1% Y%Pos2% NoActivate
+      StringSplit, Pos, g_XY, `, 
+      Gui, HelperGui:Show, X%Pos1% Y%Pos2% NoActivate
    } else {
-            Gui, %HelperGui%:Show, NoActivate
+            Gui, HelperGui:Show, NoActivate
          }
-   WinGet, Helper_id, ID,,List appears here 
-   WinSet, Transparent, 125, ahk_id %Helper_id%
+   WinGet, g_Helper_Id, ID,,List appears here 
+   WinSet, Transparent, 125, ahk_id %g_Helper_Id%
    return 
 }
 
@@ -140,28 +132,25 @@ Return
 
 HelperWindowClosed()
 {
-   ;make sure we are in decimal format in case ConvertWordToAscii was interrupted
-   IfEqual, A_FormatInteger, H
-      SetFormat,Integer,D
-   global Helper_id
-   global HelperManual
-   IfNotEqual, Helper_id,
+   global g_Helper_Id
+   global g_HelperManual
+   IfNotEqual, g_Helper_Id,
    {
-      ;Check LastActiveIdBeforeHelper and not Active_id in case we are on the Helper Window
-      global LastActiveIdBeforeHelper
-      WinGetTitle, ActiveTitle, ahk_id %LastActiveIdBeforeHelper%
-      WinGet, ActiveProcess, ProcessName, ahk_id %LastActiveIdBeforeHelper%
+      ;Check g_LastActiveIdBeforeHelper and not g_Active_Id in case we are on the Helper Window
+      global g_LastActiveIdBeforeHelper
+      WinGetTitle, ActiveTitle, ahk_id %g_LastActiveIdBeforeHelper%
+      WinGet, ActiveProcess, ProcessName, ahk_id %g_LastActiveIdBeforeHelper%
       
       If ( CheckHelperWindowAuto(ActiveProcess,ActiveTitle) )
       {
-         global HelperClosedWindowIDs
+         global g_HelperClosedWindowIDs
          
-         SearchText := "|" . LastActiveIdBeforeHelper . "|"         
-         IfNotInString HelperClosedWindowIDs, %SearchText%
-            HelperClosedWindowIDs .= SearchText
+         SearchText := "|" . g_LastActiveIdBeforeHelper . "|"         
+         IfNotInString g_HelperClosedWindowIDs, %SearchText%
+            g_HelperClosedWindowIDs .= SearchText
       }
    
-      HelperManual=   
+      g_HelperManual=   
    
       MaybeSaveHelperWindowPos()
    }
@@ -172,17 +161,16 @@ HelperWindowClosed()
 
 MaybeSaveHelperWindowPos()
 {
-   global Helper_id
-   global HelperGui
-   IfNotEqual, Helper_id, 
+   global g_Helper_Id
+   IfNotEqual, g_Helper_Id, 
    {
-      global XY
-      global XYSaved
-      WinGetPos, hX, hY, , , ahk_id %Helper_id%
-      XY = %hX%`,%hY%
-      XYSaved = 1
-      Helper_id = 
-      Gui, %HelperGui%:Hide
+      global g_XY
+      global g_XYSaved
+      WinGetPos, hX, hY, , , ahk_id %g_Helper_Id%
+      g_XY = %hX%`,%hY%
+      g_XYSaved = 1
+      g_Helper_Id = 
+      Gui, HelperGui:Hide
    }
    Return
 }

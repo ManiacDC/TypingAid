@@ -1,19 +1,67 @@
 ;These functions and labels are related to the active window
 
+EnableWinHook()
+{
+   global g_WinChangedEventHook
+   global g_WinChangedCallback
+   ; Set a hook to check for a changed window
+   If !(g_WinChangedEventHook)
+   {
+      DllCall("CoInitializeEx", Ptr, 0, Uint, 0)
+      g_WinChangedEventHook := DllCall("SetWinEventHook", Uint, 0x0003, Uint, 0x0003, Ptr, 0, Uint, g_WinChangedCallback, Uint, 0, Uint, 0, Uint, 0x0002)
+      
+      if !(g_WinChangedEventHook)
+      {
+         MsgBox, Failed to register Event Hook!
+         ExitApp
+      }
+   }
+   
+   Return
+}
 
-; Timed function to detect change of focus (and remove ListBox when changing active window) 
-Winchanged: 
-   ;make sure we are in decimal format in case ConvertWordToAscii was interrupted
-   IfEqual, A_FormatInteger, H
-      SetFormat,Integer,D
+DisableWinHook()
+{
+   global g_WinChangedEventHook
+   
+   if (g_WinChangedEventHook)
+   {
+      if (DllCall("UnhookWinEvent", Uint, g_WinChangedEventHook))
+      {
+         DllCall("CoUninitialize")
+         g_WinChangedEventHook =
+      } else {
+         MsgBox, Failed to Unhook WinEvent!
+         ExitApp
+      }
+   }
+   return
+}
+
+; Hook function to detect change of focus (and remove ListBox when changing active window) 
+WinChanged(hWinEventHook, event, wchwnd, idObject, idChild, dwEventThread, dwmsEventTime)
+{
+   global prefs_DetectMouseClickMove
+   global g_OldCaretY
+   global g_inSettings
+   
+   If (event <> 3)
+   {
+      return
+   }
+   
+   if (g_inSettings = true )
+   {
+      return
+   }
    
    IF ( ReturnWinActive() )
    {
-      IfNotEqual, DetectMouseClickMove, On 
+      IfNotEqual, prefs_DetectMouseClickMove, On 
       {
-         IfNotEqual, OldCaretY,
+         IfNotEqual, g_OldCaretY,
          {
-            if ( OldCaretY != HCaretY() )
+            if ( g_OldCaretY != HCaretY() )
             {
                CloseListBox()
             }
@@ -24,22 +72,32 @@ Winchanged:
             GetIncludedActiveWindow()
          }
    Return
+}
+   
    
 ;------------------------------------------------------------------------
 
+; Wrapper function to ensure we always enable the WinEventHook after waiting for an active window
+; Returns true if the current window is included
 GetIncludedActiveWindow()
 {
-   ;make sure we are in decimal format in case ConvertWordToAscii was interrupted
-   IfEqual, A_FormatInteger, H
-      SetFormat,Integer,D
-   global Helper_id
-   global Active_id
-   global Active_Title
-   global LastActiveIdBeforeHelper
-   global ListBox_ID
-   global MouseWin_ID
+   CurrentWindowIsActive := GetIncludedActiveWindowGuts()
+   EnableWinHook()
+   Return, CurrentWindowIsActive
+}
+
+GetIncludedActiveWindowGuts()
+{
+   global g_Active_Id
+   global g_Active_Title
+   global g_Helper_Id
+   global g_LastActiveIdBeforeHelper
+   global g_ListBox_Id
+   global g_MouseWin_Id
    Process, Priority,,Normal
    ;Wait for Included Active Window
+   
+   CurrentWindowIsActive := true
    
    Loop
    {
@@ -48,35 +106,32 @@ GetIncludedActiveWindow()
       WinGetTitle, ActiveTitle, ahk_id %ActiveId%
       IfEqual, ActiveId, 
       {
-         IfNotEqual, MouseWin_ID,
-            IfEqual, MouseWin_ID, %ListBox_ID% 
+         IfNotEqual, g_MouseWin_Id,
+         {
+            IfEqual, g_MouseWin_Id, %g_ListBox_Id% 
             {
-               WinActivate, ahk_id %Active_id%
-               Return
+               WinActivate, ahk_id %g_Active_Id%
+               Return, CurrentWindowIsActive
             }
+         }
          
-         ;Force unload of Keyboard Hook
-         Input
-         Suspend, On
-         CloseListBox()
-         MaybeSaveHelperWindowPos()
-         ;Wait for an active window, then check again
+         CurrentWindowIsActive := false
+         InactivateAll()
          ;Wait for any window to be active
          WinWaitActive, , , , ZZZYouWillNeverFindThisStringInAWindowTitleZZZ
          Continue
       }
-      IfEqual, ActiveId, %Helper_id%
+      IfEqual, ActiveId, %g_Helper_Id%
          Break
-      IfEqual, ActiveId, %ListBox_ID%
+      IfEqual, ActiveId, %g_ListBox_Id%
          Break
       If CheckForActive(ActiveProcess,ActiveTitle)
          Break
-      ;Force unload of Keyboard Hook
-      Input
-      Suspend, On
-      CloseListBox()
-      MaybeSaveHelperWindowPos()
+      
+      CurrentWindowIsActive := false
+      InactivateAll()
       SetTitleMatchMode, 3 ; set the title match mode to exact so we can detect a window title change
+      ; Wait for the current window to no longer be active
       WinWaitNotActive, %ActiveTitle% ahk_id %ActiveId%
       SetTitleMatchMode, 2
       ActiveId = 
@@ -84,78 +139,81 @@ GetIncludedActiveWindow()
       ActiveProcess =
    }
 
-   IfEqual, ActiveID, %ListBox_ID%
+   IfEqual, ActiveId, %g_ListBox_Id%
    {
-      Active_id :=  ActiveId
-      Active_Title := ActiveTitle
-      Return
+      g_Active_Id :=  ActiveId
+      g_Active_Title := ActiveTitle
+      Return, CurrentWindowIsActive
    }
    
    ;if we are in the Helper Window, we don't want to re-enable script functions
-   IfNotEqual, ActiveId, %Helper_id%
+   IfNotEqual, ActiveId, %g_Helper_Id%
    {
       ; Check to see if we need to reopen the helper window
       MaybeOpenOrCloseHelperWindow(ActiveProcess,ActiveTitle,ActiveId)
-      Suspend, Off
+      SuspendOff()
       ;Set the process priority back to High
       Process, Priority,,High
-      LastActiveIdBeforeHelper = %ActiveId%
+      g_LastActiveIdBeforeHelper = %ActiveId%
       
    } else {
-            IfNotEqual, Active_id, %Helper_id%
-               LastActiveIdBeforeHelper = %Active_id%               
+            IfNotEqual, g_Active_Id, %g_Helper_Id%
+               g_LastActiveIdBeforeHelper = %g_Active_Id%               
          }
    
-   global LastInput_Id
+   global g_LastInput_Id
    ;Show the ListBox if the old window is the same as the new one
-   IfEqual, ActiveId, %LastInput_Id%
+   IfEqual, ActiveId, %g_LastInput_Id%
    {
-      WinWaitActive, ahk_id %LastInput_id%,,0
+      WinWaitActive, ahk_id %g_LastInput_Id%,,0
       ;Check Caret Position again
-      MouseButtonClick=LButton
-      Gosub, CheckForCaretMove
+      CheckForCaretMove("LButton")
       ShowListBox()      
    } else {
             CloseListBox()
          }
-   Active_id :=  ActiveId
-   Active_Title := ActiveTitle
-   Return
+   g_Active_Id :=  ActiveId
+   g_Active_Title := ActiveTitle
+   Return, CurrentWindowIsActive
 }
 
 CheckForActive(ActiveProcess,ActiveTitle)
 {
    ;Check to see if the Window passes include/exclude tests
-   global ExcludeProgramExecutables
-   global ExcludeProgramTitles
-   global IncludeProgramExecutables
-   global IncludeProgramTitles
+   global g_InSettings
+   global prefs_ExcludeProgramExecutables
+   global prefs_ExcludeProgramTitles
+   global prefs_IncludeProgramExecutables
+   global prefs_IncludeProgramTitles
    
-   Loop, Parse, ExcludeProgramExecutables, |
+   If g_InSettings
+      Return,
+   
+   Loop, Parse, prefs_ExcludeProgramExecutables, |
    {
       IfEqual, ActiveProcess, %A_LoopField%
          Return,
    }
    
-   Loop, Parse, ExcludeProgramTitles, |
+   Loop, Parse, prefs_ExcludeProgramTitles, |
    {
       IfInString, ActiveTitle, %A_LoopField%
          Return,
    }
 
-   IfEqual, IncludeProgramExecutables,
+   IfEqual, prefs_IncludeProgramExecutables,
    {
-      IfEqual, IncludeProgramTitles,
+      IfEqual, prefs_IncludeProgramTitles,
          Return, 1
    }
 
-   Loop, Parse, IncludeProgramExecutables, |
+   Loop, Parse, prefs_IncludeProgramExecutables, |
    {
       IfEqual, ActiveProcess, %A_LoopField%
          Return, 1
    }
 
-   Loop, Parse, IncludeProgramTitles, |
+   Loop, Parse, prefs_IncludeProgramTitles, |
    {
       IfInString, ActiveTitle, %A_LoopField%
          Return, 1
@@ -168,11 +226,16 @@ CheckForActive(ActiveProcess,ActiveTitle)
       
 ReturnWinActive()
 {
-   global Active_id
-   global Active_Title
+   global g_Active_Id
+   global g_Active_Title
+   global g_InSettings
+   
+   IF g_InSettings
+      Return
+   
    WinGet, Temp_id, ID, A
    WinGetTitle, Temp_Title, ahk_id %Temp_id%
-   Last_Title := Active_Title
+   Last_Title := g_Active_Title
    ; remove all asterisks, dashes, and spaces from title in case saved value changes
    StringReplace, Last_Title, Last_Title,*,,All
    StringReplace, Temp_Title, Temp_Title,*,,All
@@ -180,5 +243,5 @@ ReturnWinActive()
    StringReplace, Temp_Title, Temp_Title,%A_Space%,,All
    StringReplace, Last_Title, Last_Title,-,,All
    StringReplace, Temp_Title, Temp_Title,-,,All
-   Return, (( Active_id == Temp_id ) && ( Last_Title == Temp_Title ))
+   Return, (( g_Active_Id == Temp_id ) && ( Last_Title == Temp_Title ))
 }
