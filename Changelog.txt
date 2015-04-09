@@ -1,6 +1,6 @@
 *2.20.0 4/7/2015
 ** Added a Settings window (thanks to HugoV for doing much of the coding).
-** Changed the learned words to use an SQLite3 databas backend. This should help with future enhancements
+** Changed the learned words to use an SQLite3 database backend. This should help with future enhancements
 ** Changing settings no longer requires a script restart
 ** Added Active/Inactive Notification Area icons
 ** Added working Pause functionality
