@@ -543,7 +543,7 @@ helpinfo_SuppressMatchingWord=
 
 helpinfo_NumPresses=
 (
-;NumPresses is the number of times the number hotkey must be tapped for the word to be selected, either 1 or 2.
+;"Number of Presses" is the number of times the number hotkey must be tapped for the word to be selected, either 1 or 2.
 )
 
 helpinfo_ListBoxOffset=
@@ -646,29 +646,29 @@ helpinfo_ForceNewWordCharacters=
 ; ex: ForceNewWordCharacters=@,:,#
 )
 
-; temporarily removed from the help string
-;`r`n`r`n %helpinfo_NumPresses%
 helpinfo_FullHelpString =
 (
-%helpinfo_LearnMode% `r`n`r`n %helpinfo_LearnLength% `r`n`r`n %helpinfo_LearnCount%
+%helpinfo_LearnMode%`r`n`r`n%helpinfo_LearnLength%`r`n`r`n%helpinfo_LearnCount%
 
-%helpinfo_ListBoxRows% `r`n`r`n %helpinfo_Length% `r`n`r`n %helpinfo_SendMethod%
+%helpinfo_ListBoxRows%`r`n`r`n%helpinfo_Length%`r`n`r`n%helpinfo_SendMethod%
 
-%helpinfo_DisabledAutoCompleteKeys% `r`n`r`n %helpinfo_ArrowKeyMethod% `r`n`r`n
+%helpinfo_DisabledAutoCompleteKeys%`r`n`r`n%helpinfo_ArrowKeyMethod%
 
-%helpinfo_NoBackSpace% `r`n`r`n %helpinfo_DetectMouseClickMove% `r`n`r`n %helpinfo_AutoSpace%
+%helpinfo_NoBackSpace%`r`n`r`n%helpinfo_DetectMouseClickMove%`r`n`r`n%helpinfo_AutoSpace%
 
-%helpinfo_DoNotLearnStrings% `r`n`r`n %helpinfo_SuppressMatchingWord%
+%helpinfo_DoNotLearnStrings%`r`n`r`n%helpinfo_SuppressMatchingWord%
 
-%helpinfo_ListBoxOffset% `r`n`r`n %helpinfo_ListBoxFontFixed% `r`n`r`n %helpinfo_ListBoxFontSize%
+%helpinfo_NumPresses%
 
-%helpinfo_ListBoxOpacity% `r`n`r`n %helpinfo_ListBoxCharacterWidth% `r`n`r`n %helpinfo_ListBoxFontOverride%
+%helpinfo_ListBoxOffset%`r`n`r`n%helpinfo_ListBoxFontFixed%`r`n`r`n%helpinfo_ListBoxFontSize%
 
-%helpinfo_IncludeProgramTitles% `r`n`r`n %helpinfo_ExcludeProgramTitles% `r`n`r`n %helpinfo_IncludeProgramExecutables% `r`n`r`n %helpinfo_ExcludeProgramExecutables%
+%helpinfo_ListBoxOpacity%`r`n`r`n%helpinfo_ListBoxCharacterWidth%`r`n`r`n%helpinfo_ListBoxFontOverride%
 
-%helpinfo_HelperWindowProgramTitles% `r`n`r`n %helpinfo_HelperWindowProgramExecutables%
+%helpinfo_IncludeProgramTitles%`r`n`r`n%helpinfo_ExcludeProgramTitles%`r`n`r`n%helpinfo_IncludeProgramExecutables%`r`n`r`n%helpinfo_ExcludeProgramExecutables%
 
-%helpinfo_TerminatingCharacters% `r`n`r`n %helpinfo_ForceNewWordCharacters% 
+%helpinfo_HelperWindowProgramTitles%`r`n`r`n%helpinfo_HelperWindowProgramExecutables%
+
+%helpinfo_TerminatingCharacters%`r`n`r`n%helpinfo_ForceNewWordCharacters% 
 )
 
 }

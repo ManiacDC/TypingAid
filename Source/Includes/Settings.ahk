@@ -22,21 +22,22 @@ Return
 
 ConstructGui()
 {
-   Global prefs_ArrowKeyMethod, prefs_AutoSpace, prefs_DetectMouseClickMove, prefs_DisabledAutoCompleteKeys, prefs_DoNotLearnStrings
-   Global helpinfo_ArrowKeyMethod, helpinfo_AutoSpace, helpinfo_DetectMouseClickMove, helpinfo_DisabledAutoCompleteKeys, helpinfo_DoNotLearnStrings
-   Global prefs_ForceNewWordCharacters, prefs_LearnCount, prefs_LearnLength, prefs_LearnMode, prefs_Length
-   Global helpinfo_ForceNewWordCharacters, helpinfo_LearnCount, helpinfo_LearnLength, helpinfo_LearnMode, helpinfo_Length
-   Global prefs_NoBackSpace, prefs_SendMethod, prefs_SuppressMatchingWord, prefs_TerminatingCharacters
-   Global helpinfo_NoBackSpace, helpinfo_SendMethod, helpinfo_SuppressMatchingWord, helpinfo_TerminatingCharacters
-   Global prefs_ExcludeProgramExecutables, prefs_ExcludeProgramTitles, prefs_IncludeProgramExecutables, prefs_IncludeProgramTitles, prefs_HelperWindowProgramExecutables, prefs_HelperWindowProgramTitles
-   Global helpinfo_ExcludeProgramExecutables, helpinfo_ExcludeProgramTitles, helpinfo_IncludeProgramExecutables, helpinfo_IncludeProgramTitles, helpinfo_HelperWindowProgramExecutables, helpinfo_HelperWindowProgramTitles
-   Global prefs_ListBoxCharacterWidth, prefs_ListBoxFontFixed, prefs_ListBoxFontOverride, prefs_ListBoxFontSize, prefs_ListBoxOffset, prefs_ListBoxOpacity, prefs_ListBoxRows
-   Global helpinfo_ListBoxCharacterWidth, helpinfo_ListBoxFontFixed, helpinfo_ListBoxFontOverride, helpinfo_ListBoxFontSize, helpinfo_ListBoxOffset, helpinfo_ListBoxOpacity, helpinfo_ListBoxRows
-   Global Menu_ArrowKeyMethodOptionsText, Menu_CaseCorrection, Menu_ListBoxOpacityUpDown, Menu_SendMethodOptionsCode, Menu_SendMethodC
-   Global Menu_CtrlEnter, Menu_CtrlSpace, Menu_Enter, Menu_NumberKeys, Menu_RightArrow, Menu_Tab
-   Global g_WM_SETCURSOR, g_WM_MOUSEMOVE, g_ScriptTitle
+   global prefs_ArrowKeyMethod, prefs_AutoSpace, prefs_DetectMouseClickMove, prefs_DisabledAutoCompleteKeys, prefs_DoNotLearnStrings
+   global helpinfo_ArrowKeyMethod, helpinfo_AutoSpace, helpinfo_DetectMouseClickMove, helpinfo_DisabledAutoCompleteKeys, helpinfo_DoNotLearnStrings
+   global prefs_ForceNewWordCharacters, prefs_LearnCount, prefs_LearnLength, prefs_LearnMode, prefs_Length
+   global helpinfo_ForceNewWordCharacters, helpinfo_LearnCount, helpinfo_LearnLength, helpinfo_LearnMode, helpinfo_Length
+   global prefs_NoBackSpace, prefs_NumPresses, prefs_SendMethod, prefs_SuppressMatchingWord, prefs_TerminatingCharacters
+   global helpinfo_NoBackSpace, helpinfo_NumPresses, helpinfo_SendMethod, helpinfo_SuppressMatchingWord, helpinfo_TerminatingCharacters
+   global prefs_ExcludeProgramExecutables, prefs_ExcludeProgramTitles, prefs_IncludeProgramExecutables, prefs_IncludeProgramTitles, prefs_HelperWindowProgramExecutables, prefs_HelperWindowProgramTitles
+   global helpinfo_ExcludeProgramExecutables, helpinfo_ExcludeProgramTitles, helpinfo_IncludeProgramExecutables, helpinfo_IncludeProgramTitles, helpinfo_HelperWindowProgramExecutables, helpinfo_HelperWindowProgramTitles
+   global prefs_ListBoxCharacterWidth, prefs_ListBoxFontFixed, prefs_ListBoxFontOverride, prefs_ListBoxFontSize, prefs_ListBoxOffset, prefs_ListBoxOpacity, prefs_ListBoxRows
+   global helpinfo_ListBoxCharacterWidth, helpinfo_ListBoxFontFixed, helpinfo_ListBoxFontOverride, helpinfo_ListBoxFontSize, helpinfo_ListBoxOffset, helpinfo_ListBoxOpacity, helpinfo_ListBoxRows
+   global helpinfo_FullHelpString
+   global Menu_ArrowKeyMethodOptionsText, Menu_CaseCorrection, Menu_ListBoxOpacityUpDown, Menu_SendMethodOptionsCode, Menu_SendMethodC
+   global Menu_CtrlEnter, Menu_CtrlSpace, Menu_Enter, Menu_NumberKeys, Menu_RightArrow, Menu_Tab
+   global g_WM_SETCURSOR, g_WM_MOUSEMOVE, g_ScriptTitle
    ; Must be global for colors to function, colors will not function if static
-   Global Menu_VisitForum
+   global Menu_VisitForum
    
    Menu_CaseCorrection=
    Menu_ArrowKeyMethodOptionsText=
@@ -304,8 +305,19 @@ ConstructGui()
    Gui, MenuGui:Add, Text, x%MenuGroup2of2HelpX% y%MenuRowHelpY% vhelpinfo_SuppressMatchingWord gHelpMe, %MenuGuiHelpIcon%
    Gui, MenuGui:Font, cBlack
 
-   ;NumPresses
-   ;   
+
+   MenuRowY := MenuRowY + MenuRowHeight + MenuSeparatorY
+   MenuRowHelpY := MenuRowY - MenuHelpIndentY
+   MenuRowEditY := MenuRowY + MenuEditIndentY
+
+   Gui, MenuGui:Add, GroupBox, x%MenuGroup1BoxX% y%MenuRowY% w%MenuThreeColGroupWidth% h%MenuRowHeight% , Number of Presses
+   Menu_NumPressesOptions=|1|2|
+   StringReplace,  Menu_NumPressesOptions, Menu_NumPressesOptions, |%prefs_NumPresses%|,|%prefs_NumPresses%||
+   StringTrimLeft, Menu_NumPressesOptions, Menu_NumPressesOptions, 1
+   Gui, MenuGui:Add, DDL, x%MenuGroup1EditX% y%MenuRowEditY% r5 vprefs_NumPresses gEditValue, %Menu_NumPressesOptions%
+   Gui, MenuGui:Font, cGreen
+   Gui, MenuGui:Add, Text, x%MenuGroup1of3HelpX% y%MenuRowHelpY% vhelpinfo_NumPresses gHelpMe, %MenuGuiHelpIcon%
+   Gui, MenuGui:Font, cBlack
 
    Gui, MenuGui:Tab, 2 ; listbox ---------------------------------------------------------
 
@@ -534,7 +546,7 @@ Unicode Support:
 Full support for UTF-8 character set.
    )
    
-   helpinfo_HelpText = %helpinfo_Intro%`r`n`r`n%helpinfo_IncludeProgramExecutables%`r`n`r`n%helpinfo_IncludeProgramTitles%`r`n`r`n%helpinfo_ExcludeProgramExecutables%`r`n`r`n%helpinfo_ExcludeProgramTitles%`r`n`r`n%helpinfo_Length%`r`n`r`n%helpinfo_NumPresses%`r`n`r`n%helpinfo_LearnMode%`r`n`r`n%helpinfo_LearnCount%`r`n`r`n%helpinfo_LearnLength%`r`n`r`n%helpinfo_ArrowKeyMethod%`r`n`r`n%helpinfo_DisabledAutoCompleteKeys%`r`n`r`n%helpinfo_DetectMouseClickMove%`r`n`r`n%helpinfo_NoBackSpace%`r`n`r`n%helpinfo_AutoSpace%`r`n`r`n%helpinfo_SendMethod%`r`n`r`n%helpinfo_TerminatingCharacters%`r`n`r`n%helpinfo_ForceNewWordCharacters%`r`n`r`n%helpinfo_ListBoxOffset%`r`n`r`n%helpinfo_ListBoxFontFixed%`r`n`r`n%helpinfo_ListBoxFontOverride%`r`n`r`n%helpinfo_ListBoxFontSize%`r`n`r`n%helpinfo_ListBoxCharacterWidth%`r`n`r`n%helpinfo_ListBoxOpacity%`r`n`r`n%helpinfo_ListBoxRows%`r`n`r`n%helpinfo_HelperWindowProgramExecutables%`r`n`r`n%helpinfo_HelperWindowProgramTitles%
+   helpinfo_HelpText = %helpinfo_Intro%`r`n`r`n%helpinfo_FullHelpString%
 
    Loop, Parse, helpinfo_HelpText,`n, `r
    {

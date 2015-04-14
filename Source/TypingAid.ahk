@@ -645,6 +645,26 @@ CheckWord(Key)
          SuspendOff()
          Return
       }
+
+      ; If active window has different window ID from before the input, blank word 
+      ; (well, assign the number pressed to the word) 
+      if ( ReturnWinActive() = )
+      { 
+         SendCompatible(Key . KeyAgain,0)
+         ProcessKey(Key,"")
+         ProcessKey(KeyAgain,"")
+         SuspendOff()
+         Return 
+      } 
+   
+      if ReturnLineWrong() ;Make sure we are still on the same line
+      { 
+         SendCompatible(Key . KeyAgain,0)
+         ProcessKey(Key,"")
+         ProcessKey(KeyAgain,"")
+         SuspendOff()
+         Return 
+      } 
    }
 
    SendWord(WordIndex)
