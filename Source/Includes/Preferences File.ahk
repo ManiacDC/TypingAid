@@ -32,6 +32,7 @@ ReadPreferences(RestoreDefaults = false,RestorePreferences = false)
    global dft_DetectMouseClickMove
    global dft_NoBackSpace
    global dft_AutoSpace
+   global dft_ShowLearnedFirst
    global dft_SuppressMatchingWord
    global dft_SendMethod
    global dft_TerminatingCharacters
@@ -61,6 +62,7 @@ ReadPreferences(RestoreDefaults = false,RestorePreferences = false)
    global prefs_DetectMouseClickMove
    global prefs_NoBackSpace
    global prefs_AutoSpace
+   global prefs_ShowLearnedFirst
    global prefs_SuppressMatchingWord
    global prefs_SendMethod
    global prefs_TerminatingCharacters
@@ -122,6 +124,7 @@ ReadPreferences(RestoreDefaults = false,RestorePreferences = false)
       dft_DetectMouseClickMove,prefs_DetectMouseClickMove,Settings,On
       dft_NoBackSpace,prefs_NoBackSpace,Settings,On
       dft_AutoSpace,prefs_AutoSpace,Settings,Off
+      dft_ShowLearnedFirst,prefs_ShowLearnedFirst,Settings,Off
       dft_SuppressMatchingWord,prefs_SuppressMatchingWord,Settings,Off
       dft_SendMethod,prefs_SendMethod,Settings,1
       dft_TerminatingCharacters,prefs_TerminatingCharacters,Settings,`%dft_TerminatingCharacters`%
@@ -218,8 +221,8 @@ ValidatePreferences()
    global dft_AutoSpace, dft_DetectMouseClickMove, dft_LearnCount, dft_LearnLength, dft_LearnMode, dft_Length
    global prefs_ListBoxCharacterWidth, prefs_ListBoxFontFixed, prefs_ListBoxFontSize, prefs_ListBoxOffset, prefs_ListBoxOpacity, prefs_ListBoxRows
    global dft_ListBoxCharacterWidth, dft_ListBoxFontFixed, dft_ListBoxFontSize, dft_ListBoxOffset, dft_ListBoxOpacity, dft_ListBoxRows
-   global prefs_NoBackSpace, prefs_NumPresses, prefs_SendMethod, prefs_SuppressMatchingWord, prefs_TerminatingCharacters
-   global dft_NoBackSpace, dft_NumPresses, dft_SendMethod, dft_SuppressMatchingWord, dft_TerminatingCharacters
+   global prefs_NoBackSpace, prefs_NumPresses, prefs_SendMethod, prefs_ShowLearnedFirst, prefs_SuppressMatchingWord, prefs_TerminatingCharacters
+   global dft_NoBackSpace, dft_NumPresses, dft_SendMethod, dft_ShowLearnedFirst, dft_SuppressMatchingWord, dft_TerminatingCharacters
    
    if prefs_Length is not integer
    {
@@ -287,6 +290,9 @@ ValidatePreferences()
       
    If prefs_AutoSpace not in On,Off
       prefs_AutoSpace := dft_AutoSpace
+   
+   if prefs_ShowLearnedFirst not in On,Off
+      prefs_ShowLearnedFirst := dft_ShowLearnedFirst
    
    if prefs_SuppressMatchingWord not in On,Off
       prefs_SuppressMatchingWord := dft_SuppressMatchingWord
@@ -543,7 +549,12 @@ helpinfo_SuppressMatchingWord=
 
 helpinfo_NumPresses=
 (
-;"Number of Presses" is the number of times the number hotkey must be tapped for the word to be selected, either 1 or 2.
+;"Number of presses" is the number of times the number hotkey must be tapped for the word to be selected, either 1 or 2.
+)
+
+helpinfo_ShowLearnedFirst=
+(
+;"Show learned words first" controls whether the learned words appear before or after the words from Wordlist.txt.
 )
 
 helpinfo_ListBoxOffset=
@@ -658,7 +669,7 @@ helpinfo_FullHelpString =
 
 %helpinfo_DoNotLearnStrings%`r`n`r`n%helpinfo_SuppressMatchingWord%
 
-%helpinfo_NumPresses%
+%helpinfo_NumPresses%`r`n`r`n%helpinfo_ShowLearnedFirst%
 
 %helpinfo_ListBoxOffset%`r`n`r`n%helpinfo_ListBoxFontFixed%`r`n`r`n%helpinfo_ListBoxFontSize%
 

@@ -26,8 +26,8 @@ ConstructGui()
    global helpinfo_ArrowKeyMethod, helpinfo_AutoSpace, helpinfo_DetectMouseClickMove, helpinfo_DisabledAutoCompleteKeys, helpinfo_DoNotLearnStrings
    global prefs_ForceNewWordCharacters, prefs_LearnCount, prefs_LearnLength, prefs_LearnMode, prefs_Length
    global helpinfo_ForceNewWordCharacters, helpinfo_LearnCount, helpinfo_LearnLength, helpinfo_LearnMode, helpinfo_Length
-   global prefs_NoBackSpace, prefs_NumPresses, prefs_SendMethod, prefs_SuppressMatchingWord, prefs_TerminatingCharacters
-   global helpinfo_NoBackSpace, helpinfo_NumPresses, helpinfo_SendMethod, helpinfo_SuppressMatchingWord, helpinfo_TerminatingCharacters
+   global prefs_NoBackSpace, prefs_NumPresses, prefs_SendMethod, prefs_ShowLearnedFirst, prefs_SuppressMatchingWord, prefs_TerminatingCharacters
+   global helpinfo_NoBackSpace, helpinfo_NumPresses, helpinfo_SendMethod, helpinfo_ShowLearnedFirst, helpinfo_SuppressMatchingWord, helpinfo_TerminatingCharacters
    global prefs_ExcludeProgramExecutables, prefs_ExcludeProgramTitles, prefs_IncludeProgramExecutables, prefs_IncludeProgramTitles, prefs_HelperWindowProgramExecutables, prefs_HelperWindowProgramTitles
    global helpinfo_ExcludeProgramExecutables, helpinfo_ExcludeProgramTitles, helpinfo_IncludeProgramExecutables, helpinfo_IncludeProgramTitles, helpinfo_HelperWindowProgramExecutables, helpinfo_HelperWindowProgramTitles
    global prefs_ListBoxCharacterWidth, prefs_ListBoxFontFixed, prefs_ListBoxFontOverride, prefs_ListBoxFontSize, prefs_ListBoxOffset, prefs_ListBoxOpacity, prefs_ListBoxRows
@@ -310,13 +310,22 @@ ConstructGui()
    MenuRowHelpY := MenuRowY - MenuHelpIndentY
    MenuRowEditY := MenuRowY + MenuEditIndentY
 
-   Gui, MenuGui:Add, GroupBox, x%MenuGroup1BoxX% y%MenuRowY% w%MenuThreeColGroupWidth% h%MenuRowHeight% , Number of Presses
+   Gui, MenuGui:Add, GroupBox, x%MenuGroup1BoxX% y%MenuRowY% w%MenuThreeColGroupWidth% h%MenuRowHeight% , Number of presses
    Menu_NumPressesOptions=|1|2|
    StringReplace,  Menu_NumPressesOptions, Menu_NumPressesOptions, |%prefs_NumPresses%|,|%prefs_NumPresses%||
    StringTrimLeft, Menu_NumPressesOptions, Menu_NumPressesOptions, 1
    Gui, MenuGui:Add, DDL, x%MenuGroup1EditX% y%MenuRowEditY% r5 vprefs_NumPresses gEditValue, %Menu_NumPressesOptions%
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup1of3HelpX% y%MenuRowHelpY% vhelpinfo_NumPresses gHelpMe, %MenuGuiHelpIcon%
+   Gui, MenuGui:Font, cBlack
+
+   Gui, MenuGui:Add, GroupBox, x%MenuGroup2of3BoxX% y%MenuRowY% w%MenuThreeColGroupWidth% h%MenuRowHeight% , Show learned words first
+   Menu_ShowLearnedFirstOptions=|On|Off|
+   StringReplace,  Menu_ShowLearnedFirstOptions, Menu_ShowLearnedFirstOptions, |%prefs_ShowLearnedFirst%|,|%prefs_ShowLearnedFirst%||
+   StringTrimLeft, Menu_ShowLearnedFirstOptions, Menu_ShowLearnedFirstOptions, 1
+   Gui, MenuGui:Add, DDL, x%MenuGroup2of3EditX% y%MenuRowEditY% w%MenuThreeColEditWidth% vprefs_ShowLearnedFirst gEditValue, %Menu_ShowLearnedFirstOptions%
+   Gui, MenuGui:Font, cGreen
+   Gui, MenuGui:Add, Text, x%MenuGroup2of3HelpX% y%MenuRowHelpY% vhelpinfo_ShowLearnedFirst gHelpMe, %MenuGuiHelpIcon%
    Gui, MenuGui:Font, cBlack
 
    Gui, MenuGui:Tab, 2 ; listbox ---------------------------------------------------------

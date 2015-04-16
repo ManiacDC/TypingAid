@@ -257,6 +257,7 @@ RecomputeMatches()
    global prefs_LearnMode
    global prefs_ListBoxRows
    global prefs_NoBackSpace
+   global prefs_ShowLearnedFirst
    global prefs_SuppressMatchingWord
    
    SavePriorMatchPosition()
@@ -300,7 +301,15 @@ RecomputeMatches()
    }
       
    WordLen := StrLen(g_Word)
-   OrderByQuery := " ORDER BY CASE WHEN count IS NULL then ROWID else 'z' end, CASE WHEN count IS NOT NULL then ( (count - " . Normalize . ") * ( 1 - ( '0.75' / (LENGTH(word) - " . WordLen . ")))) end DESC, Word"
+   OrderByQuery := " ORDER BY CASE WHEN count IS NULL then "
+   IfEqual, prefs_ShowLearnedFirst, On
+   {
+      OrderByQuery .= "ROWID + 1 else 0"
+   } else {
+      OrderByQuery .= "ROWID else 'z'"
+   }
+   
+   OrderByQuery .= " end, CASE WHEN count IS NOT NULL then ( (count - " . Normalize . ") * ( 1 - ( '0.75' / (LENGTH(word) - " . WordLen . ")))) end DESC, Word"
       
    Matches := g_WordListDB.Query("SELECT word FROM Words" . WhereQuery . OrderByQuery . " LIMIT " . LimitTotalMatches . ";")
    
