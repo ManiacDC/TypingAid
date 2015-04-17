@@ -192,8 +192,8 @@ ReadPreferences(RestoreDefaults = false,RestorePreferences = false)
       {
          prefs_IncludeProgramTitles = %Etitle%
       } else {
-               prefs_IncludeProgramTitles .= "|" . Etitle
-            }
+         prefs_IncludeProgramTitles .= "|" . Etitle
+      }
       
       Etitle=      
    }
@@ -307,9 +307,9 @@ ValidatePreferences()
       {
          prefs_SendMethod = 2
       } else IfEqual, prefs_SendMethod, 1C
-            {
-               prefs_SendMethod = 2C   
-            }
+      {
+         prefs_SendMethod = 2C   
+      }
    }
    
    IfEqual, prefs_TerminatingCharacters,

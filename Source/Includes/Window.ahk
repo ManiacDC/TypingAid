@@ -41,14 +41,22 @@ DisableWinHook()
 ; Hook function to detect change of focus (and remove ListBox when changing active window) 
 WinChanged(hWinEventHook, event, wchwnd, idObject, idChild, dwEventThread, dwmsEventTime)
 {
-   global prefs_DetectMouseClickMove
-   global g_OldCaretY
    global g_inSettings
+   global g_ManualActivate
+   global g_OldCaretY
+   global prefs_DetectMouseClickMove
    
    If (event <> 3)
    {
       return
    }
+   
+   if (g_ManualActivate = true)
+   {
+      ; ignore activations we've set up manually and clear the flag
+      g_ManualActivate = 
+      return
+   }      
    
    if (g_inSettings = true )
    {
@@ -69,8 +77,8 @@ WinChanged(hWinEventHook, event, wchwnd, idObject, idChild, dwEventThread, dwmsE
       }
       
    } else {
-            GetIncludedActiveWindow()
-         }
+      GetIncludedActiveWindow()
+   }
    Return
 }
    
@@ -157,9 +165,9 @@ GetIncludedActiveWindowGuts()
       g_LastActiveIdBeforeHelper = %ActiveId%
       
    } else {
-            IfNotEqual, g_Active_Id, %g_Helper_Id%
-               g_LastActiveIdBeforeHelper = %g_Active_Id%               
-         }
+      IfNotEqual, g_Active_Id, %g_Helper_Id%
+         g_LastActiveIdBeforeHelper = %g_Active_Id%               
+   }
    
    global g_LastInput_Id
    ;Show the ListBox if the old window is the same as the new one
@@ -170,8 +178,8 @@ GetIncludedActiveWindowGuts()
       CheckForCaretMove("LButton")
       ShowListBox()      
    } else {
-            CloseListBox()
-         }
+      CloseListBox()
+   }
    g_Active_Id :=  ActiveId
    g_Active_Title := ActiveTitle
    Return, CurrentWindowIsActive

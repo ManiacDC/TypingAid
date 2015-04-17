@@ -32,8 +32,21 @@ ListBoxClick:
 ListBoxClickItem()
 {
    Local TempRows
+   Local Temp_id
    TempRows := GetRows()
    GuiControlGet, g_MatchPos, , g_ListBox%TempRows%
+   
+   if (g_Active_Id) {
+      WinGet, Temp_id, ID, A   
+      IfEqual, Temp_id, %g_ListBox_Id%
+      {
+         ;set so we don't process this activation
+         g_ManualActivate := true
+         WinActivate, ahk_id %g_Active_Id%
+      }
+   }
+   
+   EvaluateUpDown("$LButton")
    Return
 }
 
@@ -77,27 +90,22 @@ SavePriorMatchPosition()
    global g_singlematch
    global prefs_ArrowKeyMethod
    
-   IfNotEqual, g_MatchPos, 
+   if !(g_MatchPos)
    {
-      IfEqual, prefs_ArrowKeyMethod, LastWord
-      {
-         g_OldMatch := g_singlematch[g_MatchPos]
-         g_OldMatchStart = 
-      } else {
-               IfEqual, prefs_ArrowKeyMethod, LastPosition
-               {
-                  g_OldMatch := g_MatchPos
-                  g_OldMatchStart := g_MatchStart
-               } else {
-                        g_OldMatch =
-                        g_OldMatchStart =
-                     }
-            }
-   
+      g_OldMatch =
+      g_OldMatchStart = 
+   } else IfEqual, prefs_ArrowKeyMethod, LastWord
+   {
+      g_OldMatch := g_singlematch[g_MatchPos]
+      g_OldMatchStart = 
+   } else IfEqual, prefs_ArrowKeyMethod, LastPosition
+   {
+      g_OldMatch := g_MatchPos
+      g_OldMatchStart := g_MatchStart
    } else {
-            g_OldMatch =
-            g_OldMatchStart = 
-         }
+      g_OldMatch =
+      g_OldMatchStart =
+   }
       
    Return
 }
@@ -120,57 +128,57 @@ SetupMatchPosition()
          g_MatchPos = 
          g_MatchStart = 1
       } else {
-               g_MatchPos = 1
-               g_MatchStart = 1
-            }
-   } Else IfEqual, prefs_ArrowKeyMethod, Off
-         {
-            g_MatchPos = 
+         g_MatchPos = 1
+         g_MatchStart = 1
+      }
+   } else IfEqual, prefs_ArrowKeyMethod, Off
+   {
+      g_MatchPos = 
+      g_MatchStart = 1
+   } else IfEqual, prefs_ArrowKeyMethod, LastPosition
+   {
+      IfGreater, g_OldMatch, %g_MatchTotal%
+      {
+         g_MatchStart := g_MatchTotal - (prefs_ListBoxRows - 1)
+         IfLess, g_MatchStart, 1
             g_MatchStart = 1
-         } else IfEqual, prefs_ArrowKeyMethod, LastPosition
-               {
-                  IfGreater, g_OldMatch, %g_MatchTotal%
-                  {
-                     g_MatchStart := g_MatchTotal - (prefs_ListBoxRows - 1)
-                     IfLess, g_MatchStart, 1
-                        g_MatchStart = 1
-                     g_MatchPos := g_MatchTotal
-                  } else {
-                           g_MatchStart := g_OldMatchStart
-                           If ( g_MatchStart > (g_MatchTotal - (prefs_ListBoxRows - 1) ))
-                           {
-                              g_MatchStart := g_MatchTotal - (prefs_ListBoxRows - 1)
-                              IfLess, g_MatchStart, 1
-                                 g_MatchStart = 1
-                           }
-                           g_MatchPos := g_OldMatch
-                        }
-                     
-               } else IfEqual, prefs_ArrowKeyMethod, LastWord
-                     {
-                        ListPosition =
-                        Loop, %g_MatchTotal%
-                        {
-                           if ( g_OldMatch == g_singlematch[A_Index] )
-                           {
-                              ListPosition := A_Index
-                              Break
-                           }
-                        }
-                        IfEqual, ListPosition, 
-                        {
-                           g_MatchPos = 1
-                           g_MatchStart = 1
-                        } Else {
-                                 g_MatchStart := ListPosition - (prefs_ListBoxRows - 1)
-                                 IfLess, g_MatchStart, 1
-                                    g_MatchStart = 1
-                                 g_MatchPos := ListPosition
-                              }
-                     } else {
-                              g_MatchPos = 1
-                              g_MatchStart = 1
-                           }
+         g_MatchPos := g_MatchTotal
+      } else {
+         g_MatchStart := g_OldMatchStart
+         If ( g_MatchStart > (g_MatchTotal - (prefs_ListBoxRows - 1) ))
+         {
+            g_MatchStart := g_MatchTotal - (prefs_ListBoxRows - 1)
+            IfLess, g_MatchStart, 1
+               g_MatchStart = 1
+         }
+         g_MatchPos := g_OldMatch
+      }
+   
+   } else IfEqual, prefs_ArrowKeyMethod, LastWord
+   {
+      ListPosition =
+      Loop, %g_MatchTotal%
+      {
+         if ( g_OldMatch == g_singlematch[A_Index] )
+         {
+            ListPosition := A_Index
+            Break
+         }
+      }
+      IfEqual, ListPosition, 
+      {
+         g_MatchPos = 1
+         g_MatchStart = 1
+      } Else {
+         g_MatchStart := ListPosition - (prefs_ListBoxRows - 1)
+         IfLess, g_MatchStart, 1
+            g_MatchStart = 1
+         g_MatchPos := ListPosition
+      }
+   } else {
+      g_MatchPos = 1
+      g_MatchStart = 1
+   }
              
    g_OldMatch = 
    g_OldMatchStart = 
@@ -205,16 +213,18 @@ AddToMatchList(position,value)
    global g_NumKeyMethod
    
    IfEqual, g_NumKeyMethod, Off
+   {
       prefix =
-   else {
-            IfLess, position, %g_MatchStart%
-               prefix =
-            else {
-                  if ( position > ( g_MatchStart + 9 ) )
-                     prefix = 
-                  else prefix := Mod(position - g_MatchStart +1,10) . " "
-               }
-         }
+   } else IfLess, position, %g_MatchStart%
+   {
+      prefix =
+   } else if ( position > ( g_MatchStart + 9 ) )
+   {
+      prefix = 
+   } else {
+      prefix := Mod(position - g_MatchStart +1,10) . " "
+   }
+   
    g_Match .= prefix . value . g_DelimiterChar
    Return, StrLen("8 " . value)
 }
@@ -301,7 +311,6 @@ ShowListBox()
       WinGet, g_ListBox_Id, ID, Word List Appears Here.
       IfNotEqual, prefs_ListBoxOpacity, 255
          WinSet, Transparent, %prefs_ListBoxOpacity%, ahk_id %g_ListBox_Id%
-      WinSet, Disable, , ahk_id %g_ListBox_Id%
    }
 }
 

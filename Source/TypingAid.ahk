@@ -192,45 +192,43 @@ ProcessKey(InputChar,EndKey)
          Return
       
       StringLen, len, g_Word
-      IfNotEqual, len, 0
-      { 
-         IfEqual, len, 1   
-         { 
-            ClearAllVars(true)
-         } else {
-                  StringTrimRight, g_Word, g_Word, 1
-                }     
+      IfEqual, len, 1   
+      {
+         ClearAllVars(true)
+      } else IfNotEqual, len, 0
+      {
+         StringTrimRight, g_Word, g_Word, 1
       }
    } else if ( ( EndKey == "Max" ) && !(InStr(g_TerminatingCharactersParsed, InputChar)) )
-         {
-            ; If active window has different window ID from the last input,
-            ;learn and blank word, then assign number pressed to the word
-            IfNotEqual, g_LastInput_Id, %g_Active_Id%
-            {
-               AddWordToList(g_Word,0)
-               ClearAllVars(true)
-               g_Word := InputChar
-               g_LastInput_Id := g_Active_Id
-               Return
-            }
-         
-            if InputChar in %prefs_ForceNewWordCharacters%
-            {
-               AddWordToList(g_Word,0)
-               ClearAllVars(true)
-               g_Word := InputChar
-            } else { 
-                  g_Word .= InputChar
-                  }
-         } else {
-                  ;Don't do anything if we aren't in the original window and aren't starting a new word
-                  IfNotEqual, g_LastInput_Id, %g_Active_Id%
-                     Return
-                     
-                  AddWordToList(g_Word,0)
-                  ClearAllVars(true)
-                  Return
-                }
+   {
+      ; If active window has different window ID from the last input,
+      ;learn and blank word, then assign number pressed to the word
+      IfNotEqual, g_LastInput_Id, %g_Active_Id%
+      {
+         AddWordToList(g_Word,0)
+         ClearAllVars(true)
+         g_Word := InputChar
+         g_LastInput_Id := g_Active_Id
+         Return
+      }
+   
+      if InputChar in %prefs_ForceNewWordCharacters%
+      {
+         AddWordToList(g_Word,0)
+         ClearAllVars(true)
+         g_Word := InputChar
+      } else { 
+         g_Word .= InputChar
+      }
+   } else IfNotEqual, g_LastInput_Id, %g_Active_Id%
+   {
+      ;Don't do anything if we aren't in the original window and aren't starting a new word
+      Return
+   } else {
+      AddWordToList(g_Word,0)
+      ClearAllVars(true)
+      Return
+   }
                 
    ;Wait till minimum letters 
    IF ( StrLen(g_Word) < prefs_Length )
@@ -573,7 +571,7 @@ CheckWord(Key)
 
    ; If active window has different window ID from before the input, blank word 
    ; (well, assign the number pressed to the word) 
-   if ( ReturnWinActive() = )
+   if !(ReturnWinActive())
    { 
       SendCompatible(Key,0)
       ProcessKey(Key,"")
@@ -657,7 +655,7 @@ CheckWord(Key)
 
       ; If active window has different window ID from before the input, blank word 
       ; (well, assign the number pressed to the word) 
-      if ( ReturnWinActive() = )
+      if !(ReturnWinActive())
       { 
          SendCompatible(Key . KeyAgain,0)
          ProcessKey(Key,"")
@@ -700,8 +698,11 @@ EvaluateUpDown(Key)
    
    IfEqual, prefs_ArrowKeyMethod, Off
    {
-      SendKey(Key)
-      Return
+      if (Key != "$LButton")
+      {
+         SendKey(Key)
+         Return
+      }
    }
    
    IfEqual, g_Match,
@@ -716,7 +717,7 @@ EvaluateUpDown(Key)
       Return
    }
 
-   if ( ReturnWinActive() = )
+   if !(ReturnWinActive())
    {
       SendKey(Key)
       ClearAllVars(false)
@@ -737,31 +738,27 @@ EvaluateUpDown(Key)
       Return
    }
    
-   if ( ( Key = "$^Enter" ) || ( Key = "$Tab" ) || ( Key = "$^Space" ) || ( Key = "$Right") || ( Key = "$Enter") )
+   if ( ( Key = "$^Enter" ) || ( Key = "$Tab" ) || ( Key = "$^Space" ) || ( Key = "$Right") || ( Key = "$Enter") || ( Key = "$LButton") )
    {
       IfEqual, Key, $^Enter
       {
          KeyTest = E
-      } else {
-               IfEqual, Key, $Tab
-               {
-                  KeyTest = T
-               } else {
-                        IfEqual, Key, $^Space
-                        {   
-                           KeyTest = S 
-                        } else {
-                                 IfEqual, Key, $Right
-                                 {
-                                    KeyTest = R
-                                 } else {
-                                          IfEqual, Key, $Enter
-                                             KeyTest = U
-                                       }
-                              }
-                           
-                     }
-            }
+      } else IfEqual, Key, $Tab
+      {
+         KeyTest = T
+      } else IfEqual, Key, $^Space
+      {   
+         KeyTest = S 
+      } else IfEqual, Key, $Right
+      {
+         KeyTest = R
+      } else IfEqual, Key, $Enter
+      {
+         KeyTest = U
+      } else IfEqual, Key, $LButton
+      {
+         KeyTest = L
+      }
       
       if prefs_DisabledAutoCompleteKeys contains %KeyTest%
       {
@@ -795,65 +792,58 @@ EvaluateUpDown(Key)
          IfLess, g_MatchStart, 1
             g_MatchStart = 1
          g_MatchPos := g_MatchTotal
+      } else IfLess, g_MatchPos, %g_MatchStart%
+      {
+         g_MatchStart --
+      }      
+   } else IfEqual, Key, $Down
+   {
+      g_MatchPos++
+      IfGreater, g_MatchPos, %g_MatchTotal%
+      {
+         g_MatchStart =1
+         g_MatchPos =1
+      } Else If ( g_MatchPos > ( g_MatchStart + (prefs_ListBoxRows - 1) ) )
+      {
+         g_MatchStart ++
+      }            
+   } else IfEqual, Key, $PgUp
+   {
+      IfEqual, g_MatchPos, 1
+      {
+         g_MatchPos := g_MatchTotal - (prefs_ListBoxRows - 1)
+         g_MatchStart := g_MatchTotal - (prefs_ListBoxRows - 1)
+      } Else {
+         g_MatchPos-=prefs_ListBoxRows   
+         g_MatchStart-=prefs_ListBoxRows
+      }
+      
+      IfLess, g_MatchPos, 1
+         g_MatchPos = 1
+      IfLess, g_MatchStart, 1
+         g_MatchStart = 1
+      
+   } else IfEqual, Key, $PgDn
+   {
+      IfEqual, g_MatchPos, %g_MatchTotal%
+      {
+         g_MatchPos := prefs_ListBoxRows
+         g_MatchStart := 1
       } else {
-               IfLess, g_MatchPos, %g_MatchStart%
-                  g_MatchStart --
-            }      
-   } else {
-            IfEqual, Key, $Down
-            {
-               g_MatchPos++
-               IfGreater, g_MatchPos, %g_MatchTotal%
-               {
-                  g_MatchStart =1
-                  g_MatchPos =1
-               } Else {
-                        If ( g_MatchPos > ( g_MatchStart + (prefs_ListBoxRows - 1) ) )
-                           g_MatchStart ++
-                     }            
-             
-            } else {
-                     IfEqual, Key, $PgUp
-                     {
-                        IfEqual, g_MatchPos, 1
-                        {
-                           g_MatchPos := g_MatchTotal - (prefs_ListBoxRows - 1)
-                           g_MatchStart := g_MatchTotal - (prefs_ListBoxRows - 1)
-                        } Else {
-                                 g_MatchPos-=prefs_ListBoxRows   
-                                 g_MatchStart-=prefs_ListBoxRows
-                              }
-                        
-                        IfLess, g_MatchPos, 1
-                           g_MatchPos = 1
-                        IfLess, g_MatchStart, 1
-                           g_MatchStart = 1
-                        
-                     } else {
-                              IfEqual, Key, $PgDn
-                              {
-                                 IfEqual, g_MatchPos, %g_MatchTotal%
-                                 {
-                                    g_MatchPos := prefs_ListBoxRows
-                                    g_MatchStart := 1
-                                 } else {
-                                          g_MatchPos+=prefs_ListBoxRows
-                                          g_MatchStart+=prefs_ListBoxRows
-                                       }
-                                 
-                                 IfGreater, g_MatchPos, %g_MatchTotal%
-                                    g_MatchPos := g_MatchTotal
-                                    
-                                 If ( g_MatchStart > ( g_MatchTotal - (prefs_ListBoxRows - 1) ) )
-                                 {
-                                    g_MatchStart := g_MatchTotal - (prefs_ListBoxRows - 1)   
-                                    IfLess, g_MatchStart, 1
-                                       g_MatchStart = 1
-                                 }
-                              }
-                           }
-                  }
-         }
+         g_MatchPos+=prefs_ListBoxRows
+         g_MatchStart+=prefs_ListBoxRows
+      }
+   
+      IfGreater, g_MatchPos, %g_MatchTotal%
+         g_MatchPos := g_MatchTotal
+   
+      If ( g_MatchStart > ( g_MatchTotal - (prefs_ListBoxRows - 1) ) )
+      {
+         g_MatchStart := g_MatchTotal - (prefs_ListBoxRows - 1)   
+         IfLess, g_MatchStart, 1
+            g_MatchStart = 1
+      }
+   }
    
    IfEqual, g_MatchStart, %PreviousMatchStart%
    {

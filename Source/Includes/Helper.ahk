@@ -78,22 +78,22 @@ MaybeOpenOrCloseHelperWindowManual()
          HelperWindowClosed()
       } else g_HelperManual=1
    } else {
-            global g_Active_Id
-            WinGetTitle, ActiveTitle, ahk_id %g_Active_Id%
-            WinGet, ActiveProcess, ProcessName, ahk_id %g_Active_Id%
-            ;Check for Auto Helper, and if Auto clear closed flag and open
-            IF ( CheckHelperWindowAuto(ActiveProcess,ActiveTitle) )
-            {
-               global g_HelperClosedWindowIDs
-               SearchText := "|" . g_Active_Id . "|"
-               StringReplace, g_HelperClosedWindowIDs, g_HelperClosedWindowIDs, %SearchText%
+      global g_Active_Id
+      WinGetTitle, ActiveTitle, ahk_id %g_Active_Id%
+      WinGet, ActiveProcess, ProcessName, ahk_id %g_Active_Id%
+      ;Check for Auto Helper, and if Auto clear closed flag and open
+      IF ( CheckHelperWindowAuto(ActiveProcess,ActiveTitle) )
+      {
+         global g_HelperClosedWindowIDs
+         SearchText := "|" . g_Active_Id . "|"
+         StringReplace, g_HelperClosedWindowIDs, g_HelperClosedWindowIDs, %SearchText%
                
-            } else {
-                     ; else Open a manually opened helper window
-                     g_HelperManual=1
-                  }
-            MaybeCreateHelperWindow()
-         }
+      } else {
+         ; else Open a manually opened helper window
+         g_HelperManual=1
+      }
+      MaybeCreateHelperWindow()
+   }
       
    Return
 }
@@ -117,8 +117,8 @@ MaybeCreateHelperWindow()
       StringSplit, Pos, g_XY, `, 
       Gui, HelperGui:Show, X%Pos1% Y%Pos2% NoActivate
    } else {
-            Gui, HelperGui:Show, NoActivate
-         }
+      Gui, HelperGui:Show, NoActivate
+   }
    WinGet, g_Helper_Id, ID,,List appears here 
    WinSet, Transparent, 125, ahk_id %g_Helper_Id%
    return 

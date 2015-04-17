@@ -66,7 +66,7 @@ ReadWordList()
          IfEqual, WordlistConverted, 1
          {
             break
-         } Else {
+         } else {
             LearnedWordsCount=0
             g_LegacyLearnedWords=1 ; Set Flag that we need to convert wordlist file
          }
@@ -192,24 +192,22 @@ AddWordToList(AddWord,ForceCountNewOnly,ForceLearn=false, ByRef LearnedWordsCoun
          }
          
          g_WordListDB.Query("INSERT INTO words VALUES ('" . AddWordIndex . "','" . AddWord . "','" . CountValue . "');")
-      } else {
-         IfEqual, prefs_LearnMode, On
+      } else IfEqual, prefs_LearnMode, On
+      {
+         IfEqual, ForceCountNewOnly, 1                     
          {
-            IfEqual, ForceCountNewOnly, 1                     
+            For each, row in AddWordInList.Rows
             {
-               For each, row in AddWordInList.Rows
-               {
-                  CountValue := row[3]
-                  break
-               }
-               
-               IF ( CountValue < prefs_LearnCount )
-               {
-                  g_WordListDB.QUERY("UPDATE words SET count = ('" . prefs_LearnCount . "') WHERE word = '" . AddWord . "');")
-               }
-            } else {
-               UpdateWordCount(AddWord,0) ;Increment the word count if it's already in the list and we aren't forcing it on
+               CountValue := row[3]
+               break
             }
+               
+            IF ( CountValue < prefs_LearnCount )
+            {
+               g_WordListDB.QUERY("UPDATE words SET count = ('" . prefs_LearnCount . "') WHERE word = '" . AddWord . "');")
+            }
+         } else {
+            UpdateWordCount(AddWord,0) ;Increment the word count if it's already in the list and we aren't forcing it on
          }
       }
    }

@@ -5,14 +5,13 @@ SendKey(Key)
    IfEqual, Key, $^Enter
    {
       Key = ^{Enter}
+   } else IfEqual, Key, $^Space
+   { 
+      Key = ^{Space}
    } else {
-            IfEqual, Key, $^Space
-            { 
-               Key = ^{Space}
-            } else {
-                     Key := "{" . SubStr(Key, 2) . "}"
-                  }
-         }
+      Key := "{" . SubStr(Key, 2) . "}"
+   }
+   
    SendCompatible(Key,1)
    Return
 }
@@ -37,9 +36,19 @@ SendWord(WordIndex)
 SendFull(SendValue,BackSpaceLen)
 {
    global g_Active_Id
+   global g_ListBox_Id
    global prefs_AutoSpace
    global prefs_NoBackSpace
    global prefs_SendMethod
+      
+   WinGet, Current_Active, ID, A
+   
+   IfEqual, Current_Active, %g_ListBox_Id%
+   {
+      ;set so we don't process this activation
+      g_ManualActivate := true
+      WinActivate, ahk_id %g_Active_Id%
+   }
    
    ; If we are not backspacing, remove the typed characters from the string to send
    IfNotEqual, prefs_NoBackSpace, Off
@@ -84,27 +93,23 @@ SendFull(SendValue,BackSpaceLen)
    
    IfEqual, prefs_NoBackSpace, Off
       sending = {BS %BackSpaceLen%}{Ctrl Down}v{Ctrl Up}
-   Else sending = {Ctrl Down}v{Ctrl Up}
+   else sending = {Ctrl Down}v{Ctrl Up}
    
    IfEqual, prefs_SendMethod, 1C
    {
       sending := "{Shift Down}{Shift Up}{Shift Down}{Shift Up}" . sending
       SendPlay, %sending% ; First do the backspaces, Then send word via clipboard
+   } else IfEqual, prefs_SendMethod, 2C
+   {
+      SendInput, %sending% ; First do the backspaces, Then send word via clipboard
+   } else IfEqual, prefs_SendMethod, 3C
+   {
+      SendEvent, %sending% ; First do the backspaces, Then send word via clipboard
    } else {
-            IfEqual, prefs_SendMethod, 2C
-            {
-               SendInput, %sending% ; First do the backspaces, Then send word via clipboard
-            } else {
-                     IfEqual, prefs_SendMethod, 3C
-                     {
-                        SendEvent, %sending% ; First do the backspaces, Then send word via clipboard
-                     } Else {                      
-                              ControlGetFocus, ActiveControl, ahk_id %g_Active_Id%
-                              IfNotEqual, ActiveControl,
-                                 ControlSend, %ActiveControl%, %sending%, ahk_id %g_Active_Id%
-                           }
-                  }
-         }
+      ControlGetFocus, ActiveControl, ahk_id %g_Active_Id%
+      IfNotEqual, ActiveControl,
+         ControlSend, %ActiveControl%, %sending%, ahk_id %g_Active_Id%
+   }
          
    Clipboard := ClipboardSave
    Return

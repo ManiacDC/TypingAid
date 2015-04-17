@@ -645,26 +645,26 @@ GetList(TitleType,GetExe)
    Menu_TitleType := TitleType
    If (GetExe =1)
    {
-	  WinGet, id, list,,, Program Manager
-	  Loop, %id%
-	  {
-		 tmptitle=
-		 tmpid := id%A_Index%
-		 WinGet, tmptitle, ProcessName, ahk_id %tmpid%
-		 If (tmptitle <> "")
-			   RunningList .= tmptitle "|"
-	  }
+      WinGet, id, list,,, Program Manager
+      Loop, %id%
+      {
+         tmptitle=
+         tmpid := id%A_Index%
+         WinGet, tmptitle, ProcessName, ahk_id %tmpid%
+         If (tmptitle <> "")
+            RunningList .= tmptitle "|"
+      }
    } Else If (GetExe = 0) ; get list of active window titles
    {
-	  WinGet, id, list,,, Program Manager
-	  Loop, %id%
-	  {
-		 tmptitle=
-		 tmpid := id%A_Index%
-		 WinGetTitle, tmptitle, ahk_id %tmpid%
-		 If (tmptitle <> "")
-			   RunningList .= tmptitle "|"
-	  }
+      WinGet, id, list,,, Program Manager
+      Loop, %id%
+      {
+         tmptitle=
+         tmpid := id%A_Index%
+         WinGetTitle, tmptitle, ahk_id %tmpid%
+         If (tmptitle <> "")
+            RunningList .= tmptitle "|"
+      }
    }	
    GetExe=0
    
@@ -898,8 +898,7 @@ HelpMe()
       IF ( SubStr(A_LoopField, 1,1) = ";")
       {
          Menu_Help .= SubStr(A_LoopField,2) . "`r`n"
-      } else
-      {
+      } else {
          Menu_Help .= A_LoopField . "`r`n"
       }
    }
