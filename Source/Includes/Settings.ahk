@@ -14,6 +14,10 @@ Menu_OldLearnCount := prefs_LearnCount
 ; initialize this to make sure the object exists
 Menu_ChangedPrefs := Object()
 ConstructGui()
+; Call "HandleMessage" when script receives WM_SETCURSOR message
+OnMessage(g_WM_SETCURSOR, "HandleSettingsMessage")
+; Call "HandleMessage" when script receives WM_MOUSEMOVE message
+OnMessage(g_WM_MOUSEMOVE, "HandleSettingsMessage")
 ; clear and re-initialize variables after constructing the GUI as some controls call the edit flag immediately
 Menu_ChangedPrefs =
 Menu_ChangedPrefs := Object()
@@ -35,7 +39,7 @@ ConstructGui()
    global helpinfo_FullHelpString
    global Menu_ArrowKeyMethodOptionsText, Menu_CaseCorrection, Menu_ListBoxOpacityUpDown, Menu_SendMethodOptionsCode, Menu_SendMethodC
    global Menu_CtrlEnter, Menu_CtrlSpace, Menu_Enter, Menu_NumberKeys, Menu_RightArrow, Menu_Tab
-   global g_WM_SETCURSOR, g_WM_MOUSEMOVE, g_ScriptTitle
+   global g_ScriptTitle
    ; Must be global for colors to function, colors will not function if static
    global Menu_VisitForum
    
@@ -43,14 +47,6 @@ ConstructGui()
    Menu_ArrowKeyMethodOptionsText=
    
    MenuFontList:=Writer_enumFonts() ; see note at function for credit
- 
-   ; Call "HandleMessage" when script receives WM_SETCURSOR message
-   g_WM_SETCURSOR = 0x20
-   OnMessage( g_WM_SETCURSOR, "HandleMessage" )
-
-   ; Call "HandleMessage" when script receives WM_MOUSEMOVE message
-   g_WM_MOUSEMOVE = 0x200
-   OnMessage( g_WM_MOUSEMOVE, "HandleMessage" )
 
    MenuGuiWidth=700
    MenuGuiHeight=480
@@ -763,6 +759,12 @@ return
 
 Cancel:
 Gui, MenuGui:Destroy
+; Clear WM_SETCURSOR action
+OnMessage(g_WM_SETCURSOR, "")
+; Clear WM_MOUSEMOVE action
+OnMessage(g_WM_MOUSEMOVE, "")
+;Clear mouse flags
+HandleSettingsMessage("", "", "", "")
 g_InSettings := false
 Menu, Tray, Enable, Settings
 GetIncludedActiveWindow()
@@ -908,16 +910,24 @@ HelpMe()
    
 ; derived from work by shimanov, 2005
 ; http://www.autohotkey.com/forum/viewtopic.php?p=37696#37696
-HandleMessage( p_w, p_l, p_m, p_hw )
+HandleSettingsMessage( p_w, p_l, p_m, p_hw )
 {
-	Global g_WM_SETCURSOR, g_WM_MOUSEMOVE
-	Static Help_Hover, h_cursor_help, URL_Hover, h_cursor_hand, h_old_cursor, Old_GuiControl
+   Global g_WM_SETCURSOR, g_WM_MOUSEMOVE, g_cursor_hand
+   Static Help_Hover, h_cursor_help, URL_Hover, h_old_cursor, Old_GuiControl
    
-	if ( p_m = g_WM_SETCURSOR )
-	{
-		if ( Help_Hover || URL_Hover)
+   ; pass in all blanks to clear flags
+   if ((!p_w) && (!p_l) && (!p_m) && (!p_hw)) {
+      Help_Hover =
+      URL_Hover =
+      h_old_cursor =
+      Old_GuiControl =
+   }
+   
+   if ( p_m = g_WM_SETCURSOR )
+   {
+      if ( Help_Hover || URL_Hover)
          return, true
-	} else if (A_GuiControl == Old_GuiControl)
+   } else if (A_GuiControl == Old_GuiControl)
    {
       return
    } else if ( p_m = g_WM_MOUSEMOVE )
@@ -943,15 +953,11 @@ HandleMessage( p_w, p_l, p_m, p_hw )
 				Gui, MenuGui:Font, cBlue        ;;; xyz
 				GuiControl, MenuGui:Font, %A_GuiControl% ;;; xyz
 			}
-		} else if (A_GuiControl = "Menu_VisitForum")
+		} else if (A_GuiControl == "Menu_VisitForum")
 		{	
 			if !(URL_Hover)
 			{
-				IF !(h_cursor_hand)
-				{
-					h_cursor_hand := DllCall( "LoadImage", ptr, 0, uint, 32649 , uint, 2, int, 0, int, 0, uint, 0x8000 ) 
-				}
-				old_cursor := DllCall( "SetCursor", "uint", h_cursor_hand )
+				old_cursor := DllCall( "SetCursor", "uint", g_cursor_hand )
 				URL_Hover = true
 				Help_Hover =
 				Gui, MenuGui:Font, cBlue        ;;; xyz

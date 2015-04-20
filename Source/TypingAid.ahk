@@ -47,6 +47,14 @@ SetTitleMatchMode, 2
 g_Helper_Id = 
 g_HelperManual = 
 g_DelimiterChar := Chr(2)
+g_WM_SETCURSOR = 0x20
+g_WM_MOUSEMOVE = 0x200
+g_cursor_hand := DllCall( "LoadImage", ptr, 0, uint, 32649 , uint, 2, int, 0, int, 0, uint, 0x8000 ) 
+if (A_PtrSize == 8) {
+   g_SetClassLongFunction := "SetClassLongPtr"
+} else {
+   g_SetClassLongFunction := "SetClassLong"
+}
 AutoTrim, Off 
 
 InitializeListBox()
