@@ -19,7 +19,7 @@ InitializeListBox()
 
    Loop, %prefs_ListBoxRows%
    {
-      GuiControl, -Redraw, g_ListBox%A_Index%
+      GuiControl, ListBoxGui:-Redraw, g_ListBox%A_Index%
       Gui, ListBoxGui: Add, ListBox, vg_ListBox%A_Index% R%A_Index% X0 Y0 gListBoxClick hwndg_ListBoxHwnd%A_Index%
    }
    Return
@@ -34,19 +34,19 @@ ListBoxClickItem()
    Local TempRows
    Local Temp_id
    TempRows := GetRows()
-   GuiControlGet, g_MatchPos, , g_ListBox%TempRows%
    
-   if (g_Active_Id) {
-      WinGet, Temp_id, ID, A   
-      IfEqual, Temp_id, %g_ListBox_Id%
+   GuiControlGet, g_MatchPos, ListBoxGui:, g_ListBox%TempRows%
+   
+   SwitchOffListBoxIfActive()
+   
+   if (A_GuiControlEvent == "Normal")
+   {
+      if prefs_DisabledAutoCompleteKeys not contains L
       {
-         ;set so we don't process this activation
-         g_ManualActivate := true
-         WinActivate, ahk_id %g_Active_Id%
+         EvaluateUpDown("$LButton")   
       }
-   }
+   }   
    
-   EvaluateUpDown("$LButton")
    Return
 }
 
@@ -334,6 +334,8 @@ ShowListBox()
       WinGet, g_ListBox_Id, ID, Word List Appears Here.
       IfNotEqual, prefs_ListBoxOpacity, 255
          WinSet, Transparent, %prefs_ListBoxOpacity%, ahk_id %g_ListBox_Id%
+      if prefs_DisabledAutoCompleteKeys contains L
+         WinSet, Disable, , ahk_id %g_ListBox_Id%
    }
 }
 

@@ -63,6 +63,11 @@ WinChanged(hWinEventHook, event, wchwnd, idObject, idChild, dwEventThread, dwmsE
       return
    }
    
+   if (SwitchOffListBoxIfActive())
+   {
+      return
+   }
+   
    IF ( ReturnWinActive() )
    {
       IfNotEqual, prefs_DetectMouseClickMove, On 
@@ -80,6 +85,25 @@ WinChanged(hWinEventHook, event, wchwnd, idObject, idChild, dwEventThread, dwmsE
       GetIncludedActiveWindow()
    }
    Return
+}
+
+SwitchOffListBoxIfActive()
+{   
+   global g_Active_Id
+   global g_ListBox_Id
+   global g_ManualActivate
+   
+   if (g_Active_Id && g_ListBox_Id) {
+      WinGet, Temp_id, ID, A   
+      IfEqual, Temp_id, %g_ListBox_Id%
+      {
+         ;set so we don't process this activation
+         g_ManualActivate := true
+         WinActivate, ahk_id %g_Active_Id%
+         return, true
+      }
+   }
+   return, false
 }
    
    
@@ -240,6 +264,11 @@ ReturnWinActive()
    
    IF g_InSettings
       Return
+   
+   if (SwitchOffListBoxIfActive())
+   {
+      return, true
+   }
    
    WinGet, Temp_id, ID, A
    WinGetTitle, Temp_Title, ahk_id %Temp_id%

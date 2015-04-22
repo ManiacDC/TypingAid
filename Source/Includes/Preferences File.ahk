@@ -661,15 +661,15 @@ helpinfo_FullHelpString =
 (
 %helpinfo_LearnMode%`r`n`r`n%helpinfo_LearnLength%`r`n`r`n%helpinfo_LearnCount%
 
-%helpinfo_ListBoxRows%`r`n`r`n%helpinfo_Length%`r`n`r`n%helpinfo_SendMethod%
+%helpinfo_DoNotLearnStrings%`r`n`r`n%helpinfo_NumPresses%
 
-%helpinfo_DisabledAutoCompleteKeys%`r`n`r`n%helpinfo_ArrowKeyMethod%
+%helpinfo_DisabledAutoCompleteKeys%`r`n`r`n%helpinfo_SendMethod%
 
 %helpinfo_NoBackSpace%`r`n`r`n%helpinfo_DetectMouseClickMove%`r`n`r`n%helpinfo_AutoSpace%
 
-%helpinfo_DoNotLearnStrings%`r`n`r`n%helpinfo_SuppressMatchingWord%
+%helpinfo_ListBoxRows%`r`n`r`n%helpinfo_Length%`r`n`r`n%helpinfo_ShowLearnedFirst%
 
-%helpinfo_NumPresses%`r`n`r`n%helpinfo_ShowLearnedFirst%
+%helpinfo_ArrowKeyMethod%`r`n`r`n%helpinfo_SuppressMatchingWord%
 
 %helpinfo_ListBoxOffset%`r`n`r`n%helpinfo_ListBoxFontFixed%`r`n`r`n%helpinfo_ListBoxFontSize%
 

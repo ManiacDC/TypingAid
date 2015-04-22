@@ -36,19 +36,11 @@ SendWord(WordIndex)
 SendFull(SendValue,BackSpaceLen)
 {
    global g_Active_Id
-   global g_ListBox_Id
    global prefs_AutoSpace
    global prefs_NoBackSpace
    global prefs_SendMethod
-      
-   WinGet, Current_Active, ID, A
    
-   IfEqual, Current_Active, %g_ListBox_Id%
-   {
-      ;set so we don't process this activation
-      g_ManualActivate := true
-      WinActivate, ahk_id %g_Active_Id%
-   }
+   SwitchOffListBoxIfActive()
    
    ; If we are not backspacing, remove the typed characters from the string to send
    IfNotEqual, prefs_NoBackSpace, Off
