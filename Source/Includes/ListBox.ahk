@@ -329,34 +329,35 @@ ShowListBox()
          return
       }
       
-      Gui, ListBoxGui: Show, NoActivate X%ListBoxPosX% Y%ListBoxPosY% H%ListBoxActualSizeH% W%ListBoxActualSizeW%, Word List Appears Here.
-      Gui, ListBoxGui: +LastFound +AlwaysOnTop
       IfEqual, g_ListBox_Id,
       {
          
-         EnableKeyboardHotKeys()   
          if prefs_DisabledAutoCompleteKeys not contains L
          {
             if (!ListBox_Old_Cursor)
             {
-               ListBox_Old_Cursor := DllCall(g_SetClassLongFunction, "Uint", g_ListBoxHwnd1, "int", -12, "int", g_cursor_hand)
+               ListBox_Old_Cursor := DllCall(g_SetClassLongFunction, "Uint", g_ListBoxHwnd%Rows%, "int", -12, "int", g_cursor_hand)
             }
             
-            Loop, %prefs_ListBoxRows%
-            {
-               DllCall(g_SetClassLongFunction, "Uint", g_ListBoxHwnd%A_Index%, "int", -12, "int", g_cursor_hand)
-            }
+            DllCall(g_SetClassLongFunction, "Uint", g_ListBoxHwnd%Rows%, "int", -12, "int", g_cursor_hand)
             
          ; we only need to set it back to the default cursor if we've ever unset the default cursor
          } else if (ListBox_Old_Cursor)
          {
-            Loop, %prefs_ListBoxRows%
-            {
-               DllCall(g_SetClassLongFunction, "Uint", g_ListBoxHwnd%A_Index%, "int", -12, "int", ListBox_Old_Cursor)
-            }
+            DllCall(g_SetClassLongFunction, "Uint", g_ListBoxHwnd%Rows%, "int", -12, "int", ListBox_Old_Cursor)
          }
             
       }
+      
+      Gui, ListBoxGui: Show, NoActivate X%ListBoxPosX% Y%ListBoxPosY% H%ListBoxActualSizeH% W%ListBoxActualSizeW%, Word List Appears Here.
+      Gui, ListBoxGui: +LastFound +AlwaysOnTop
+      
+      IfEqual, g_ListBox_Id,
+      {
+         
+         EnableKeyboardHotKeys()   
+      }
+      
       WinGet, g_ListBox_Id, ID, Word List Appears Here.
       IfNotEqual, prefs_ListBoxOpacity, 255
          WinSet, Transparent, %prefs_ListBoxOpacity%, ahk_id %g_ListBox_Id%
