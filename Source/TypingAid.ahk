@@ -768,7 +768,9 @@ EvaluateUpDown(Key)
          KeyTest = L
       }
       
-      if prefs_DisabledAutoCompleteKeys contains %KeyTest%
+      if (KeyTest == "L") {
+         ;when hitting LButton, we've already handled this condition         
+      } else if prefs_DisabledAutoCompleteKeys contains %KeyTest%
       {
          SendKey(Key)
          Return     

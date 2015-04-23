@@ -38,7 +38,7 @@ ConstructGui()
    global helpinfo_ListBoxCharacterWidth, helpinfo_ListBoxFontFixed, helpinfo_ListBoxFontOverride, helpinfo_ListBoxFontSize, helpinfo_ListBoxOffset, helpinfo_ListBoxOpacity, helpinfo_ListBoxRows
    global helpinfo_FullHelpString
    global Menu_ArrowKeyMethodOptionsText, Menu_CaseCorrection, Menu_ListBoxOpacityUpDown, Menu_SendMethodOptionsCode, Menu_SendMethodC
-   global Menu_CtrlEnter, Menu_CtrlSpace, Menu_Enter, Menu_MouseClick, Menu_NumberKeys, Menu_RightArrow, Menu_Tab
+   global Menu_CtrlEnter, Menu_CtrlSpace, Menu_Enter, Menu_SingleClick, Menu_NumberKeys, Menu_RightArrow, Menu_Tab
    global g_ScriptTitle
    ; Must be global for colors to function, colors will not function if static
    global Menu_VisitForum
@@ -168,7 +168,7 @@ ConstructGui()
    ;  R = Right Arrow
    ;  N = Number Keys
    ;  U = Enter
-   ;  L = Mouse Click
+   ;  L = Single Click
    Menu_CheckedE=Checked
    Menu_CheckedS=Checked
    Menu_CheckedT=Checked
@@ -198,7 +198,7 @@ ConstructGui()
    Gui, MenuGui:Add, Checkbox, x%MenuGroup1EditX% yp+%MenuTextMenuRowY% vMenu_CtrlEnter gEditValue %Menu_CheckedE%, Ctrl + Enter
    Gui, MenuGui:Add, Checkbox, xp%MenuCheckmarkIndent% yp vMenu_Tab gEditValue %Menu_CheckedT%, Tab
    Gui, MenuGui:Add, Checkbox, xp%MenuCheckmarkIndent% yp vMenu_RightArrow gEditValue %Menu_CheckedR%, Right Arrow
-   Gui, MenuGui:Add, Checkbox, xp%MenuCheckmarkIndent% yp vMenu_MouseClick gEditValue %Menu_CheckedL%, Mouse Click
+   Gui, MenuGui:Add, Checkbox, xp%MenuCheckmarkIndent% yp vMenu_SingleClick gEditValue %Menu_CheckedL%, Single Click
    Gui, MenuGui:Add, Checkbox, x%MenuGroup1EditX% yp+%MenuTextMenuRowY% vMenu_CtrlSpace gEditValue %Menu_CheckedS%, Ctrl + Space
    Gui, MenuGui:Add, Checkbox, xp%MenuCheckmarkIndent% yp vMenu_NumberKeys gEditValue %Menu_CheckedN%, Number Keys
    Gui, MenuGui:Add, Checkbox, xp%MenuCheckmarkIndent% yp vMenu_Enter gEditValue %Menu_CheckedU%, Enter
@@ -844,7 +844,7 @@ SaveSettings()
       prefs_DisabledAutoCompleteKeys .= "N"
    If (Menu_Enter = 0)
       prefs_DisabledAutoCompleteKeys .= "U"
-   If (Menu_MouseClick = 0)
+   If (Menu_SingleClick = 0)
       prefs_DisabledAutoCompleteKeys .= "L"
 
    Loop, parse, Menu_ArrowKeyMethodOptionsText, |

@@ -33,22 +33,48 @@ ListBoxClickItem()
 {
    Local TempRows
    Local Temp_id
+   static DoubleClickTime
+   
    TempRows := GetRows()
    
    GuiControlGet, g_MatchPos, ListBoxGui:, g_ListBox%TempRows%
-   
-   SwitchOffListBoxIfActive()
    
    if (A_GuiControlEvent == "Normal")
    {
       if prefs_DisabledAutoCompleteKeys not contains L
       {
+         SwitchOffListBoxIfActive()
+         EvaluateUpDown("$LButton")   
+      } else {
+         
+         if !(DoubleClickTime)
+         {
+            DoubleClickTime := DllCall("GetDoubleClickTime")
+         }
+         ;When single click is off, we have to wait for the double click time to pass
+         ; before re-activating the edit window to allow double click to work
+         SetTimer, SwitchOffListBoxIfActiveSub, -%DoubleClickTime%
+      }
+         
+   } else if (A_GuiControlEvent == "DoubleClick")
+   {
+      SwitchOffListBoxIfActive()
+      
+      if prefs_DisabledAutoCompleteKeys contains L
+      {
          EvaluateUpDown("$LButton")   
       }
-   }   
+   } else {
+      SwitchOffListBoxIfActive()
+   }
+      
    
    Return
 }
+
+SwitchOffListBoxIfActiveSub:
+SwitchOffListBoxIfActive()
+Return
 
 ListBoxChooseItem(Row)
 {
@@ -334,8 +360,6 @@ ShowListBox()
       WinGet, g_ListBox_Id, ID, Word List Appears Here.
       IfNotEqual, prefs_ListBoxOpacity, 255
          WinSet, Transparent, %prefs_ListBoxOpacity%, ahk_id %g_ListBox_Id%
-      if prefs_DisabledAutoCompleteKeys contains L
-         WinSet, Disable, , ahk_id %g_ListBox_Id%
    }
 }
 
