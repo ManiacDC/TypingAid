@@ -31,9 +31,16 @@ ListBoxClick:
    
 ListBoxClickItem()
 {
+   Local NewClickedItem
    Local TempRows
    Local Temp_id
    static DoubleClickTime
+   
+   if (A_EventInfo == 0 && A_GuiControlEvent == "DoubleClick")
+   {
+      SwitchOffListBoxIfActive()
+      return
+   }
    
    TempRows := GetRows()
    
@@ -46,6 +53,8 @@ ListBoxClickItem()
          SwitchOffListBoxIfActive()
          EvaluateUpDown("$LButton")   
       } else {
+         ; Need to track this as sometimes DoubleClick events return when we never clicked on the first item.
+         NewClickedItem := g_MatchPos
          
          if !(DoubleClickTime)
          {
@@ -62,12 +71,16 @@ ListBoxClickItem()
       
       if prefs_DisabledAutoCompleteKeys contains L
       {
-         EvaluateUpDown("$LButton")   
+         if (g_LastClickedItem == A_EventInfo)
+         {
+            EvaluateUpDown("$LButton")   
+         }
       }
    } else {
       SwitchOffListBoxIfActive()
    }
       
+   g_LastClickedItem := NewClickedItem
    
    Return
 }
