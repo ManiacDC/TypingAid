@@ -918,7 +918,7 @@ HelpMe()
 ; http://www.autohotkey.com/forum/viewtopic.php?p=37696#37696
 HandleSettingsMessage( p_w, p_l, p_m, p_hw )
 {
-   Global g_WM_SETCURSOR, g_WM_MOUSEMOVE, g_cursor_hand
+   Global g_IDC_HELP, g_IMAGE_CURSOR, g_LR_SHARED, g_NULL, g_WM_SETCURSOR, g_WM_MOUSEMOVE, g_cursor_hand
    Static Help_Hover, h_cursor_help, URL_Hover, h_old_cursor, Old_GuiControl
    
    ; pass in all blanks to clear flags
@@ -951,9 +951,9 @@ HandleSettingsMessage( p_w, p_l, p_m, p_hw )
 			{
 				IF !(h_cursor_help)
 				{
-					h_cursor_help := DllCall( "LoadImage", ptr, 0, uint, 32651 , uint, 2, int, 0, int, 0, uint, 0x8000 ) 
+					h_cursor_help := DllCall( "LoadImage", "Ptr", g_NULL, "Uint", g_IDC_HELP , "Uint", g_IMAGE_CURSOR, "Int", g_NULL, "Int", g_NULL, "Uint", g_LR_SHARED ) 
 				}
-				old_cursor := DllCall( "SetCursor", "uint", h_cursor_help )
+				old_cursor := DllCall( "SetCursor", "Uint", h_cursor_help )
 				Help_Hover = true
 				URL_Hover = 
 				Gui, MenuGui:Font, cBlue        ;;; xyz
@@ -972,7 +972,7 @@ HandleSettingsMessage( p_w, p_l, p_m, p_hw )
 				
 		} else if (Help_Hover || URL_Hover)
       {
-			DllCall( "SetCursor", "uint", h_old_cursor )
+			DllCall( "SetCursor", "Uint", h_old_cursor )
 			Help_Hover=
 			URL_Hover=
 			h_old_cursor=
@@ -1075,10 +1075,11 @@ RemoveNew1()
 ; copied from font explorer http://www.autohotkey.com/forum/viewtopic.php?t=57501&highlight=font
 Writer_enumFonts()
 {
+   global g_NULL
    Writer_enumFontsProc(0, 0, 0, 0,"Clear")
-   hDC := DllCall("GetDC", "Uint", 0) 
-   DllCall("EnumFonts", "Uint", hDC, "Uint", 0, "Uint", RegisterCallback("Writer_enumFontsProc", "F"), "Uint", 0) 
-   DllCall("ReleaseDC", "Uint", 0, "Uint", hDC)
+   hDC := DllCall("GetDC", "Uint", g_NULL) 
+   DllCall("EnumFonts", "Uint", hDC, "Uint", g_NULL, "Uint", RegisterCallback("Writer_enumFontsProc", "F"), "Uint", g_NULL) 
+   DllCall("ReleaseDC", "Uint", g_NULL, "Uint", hDC)
 	
    return Writer_enumFontsProc(0, 0, 0, 0, "ReturnS")
 }

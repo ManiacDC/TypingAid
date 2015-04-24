@@ -20,58 +20,55 @@ InitializeListBox()
    Loop, %prefs_ListBoxRows%
    {
       GuiControl, ListBoxGui:-Redraw, g_ListBox%A_Index%
-      Gui, ListBoxGui: Add, ListBox, vg_ListBox%A_Index% R%A_Index% X0 Y0 gListBoxClick hwndg_ListBoxHwnd%A_Index%
+      ;can't use a g-label here as windows sometimes passes the click message when spamming the scrollbar arrows
+      Gui, ListBoxGui: Add, ListBox, vg_ListBox%A_Index% R%A_Index% X0 Y0 hwndg_ListBoxHwnd%A_Index%
    }
+
    Return
 }
-
-ListBoxClick:
-   ListBoxClickItem()
-   Return
    
-ListBoxClickItem()
+ListBoxClickItem(wParam, lParam, msg, ClickedHwnd)
 {
+   global
    Local NewClickedItem
    Local TempRows
-   Local Temp_id
-   static DoubleClickTime
-   
-   if (A_EventInfo == 0 && A_GuiControlEvent == "DoubleClick")
-   {
-      SwitchOffListBoxIfActive()
-      return
-   }
+   static LastClickedItem
    
    TempRows := GetRows()
    
+   if !(ClickedHwnd == g_ListBoxHwnd%TempRows%)
+   {
+      return
+   }
+   
+   ; if we clicked in the scrollbar, jump out
+   if (A_GuiX > (g_ListBoxPosX + g_ListBoxContentWidth))
+   {
+      SetSwitchOffListBoxTimer()
+      Return
+   }
+   
    GuiControlGet, g_MatchPos, ListBoxGui:, g_ListBox%TempRows%
    
-   if (A_GuiControlEvent == "Normal")
+   if (msg == g_WM_LBUTTONUP)
    {
       if prefs_DisabledAutoCompleteKeys not contains L
       {
          SwitchOffListBoxIfActive()
          EvaluateUpDown("$LButton")   
       } else {
-         ; Need to track this as sometimes DoubleClick events return when we never clicked on the first item.
+         ; Track this to make sure we're double clicking on the same item
          NewClickedItem := g_MatchPos
-         
-         if !(DoubleClickTime)
-         {
-            DoubleClickTime := DllCall("GetDoubleClickTime")
-         }
-         ;When single click is off, we have to wait for the double click time to pass
-         ; before re-activating the edit window to allow double click to work
-         SetTimer, SwitchOffListBoxIfActiveSub, -%DoubleClickTime%
+         SetSwitchOffListBoxTimer()
       }
          
-   } else if (A_GuiControlEvent == "DoubleClick")
+   } else if (msg == g_WM_LBUTTONDBLCLK)
    {
       SwitchOffListBoxIfActive()
       
       if prefs_DisabledAutoCompleteKeys contains L
       {
-         if (g_LastClickedItem == A_EventInfo)
+         if (LastClickedItem == g_MatchPos)
          {
             EvaluateUpDown("$LButton")   
          }
@@ -80,14 +77,74 @@ ListBoxClickItem()
       SwitchOffListBoxIfActive()
    }
       
-   g_LastClickedItem := NewClickedItem
+   ; clear or set LastClickedItem
+   LastClickedItem := NewClickedItem
    
    Return
 }
 
+SetSwitchOffListBoxTimer()
+{
+   static DoubleClickTime
+   
+   if !(DoubleClickTime)
+   {
+      DoubleClickTime := DllCall("GetDoubleClickTime")
+   }
+   ;When single click is off, we have to wait for the double click time to pass
+   ; before re-activating the edit window to allow double click to work
+   SetTimer, SwitchOffListBoxIfActiveSub, -%DoubleClickTime%
+}
+   
+
 SwitchOffListBoxIfActiveSub:
 SwitchOffListBoxIfActive()
 Return
+
+ListBoxScroll()
+{
+   global
+   
+   Local MatchEnd
+   Local SI
+   Local TempRows
+   Local Position
+   
+   if (g_ListBox_Id)
+   {
+   
+      TempRows := GetRows()
+      SI:=GetScrollInfo(g_ListBoxHwnd%TempRows%)
+   
+      if (!SI.npos)
+      {
+         return
+      }
+   
+      if (SI.npos == g_MatchStart)
+      {
+         return
+      }
+   
+      g_MatchStart := SI.npos
+   
+      SetSwitchOffListBoxTimer()   
+   }
+}
+
+; based on code by HotKeyIt
+;  http://www.autohotkey.com/board/topic/78829-ahk-l-scrollinfo/
+;  http://www.autohotkey.com/board/topic/55150-class-structfunc-sizeof-updated-010412-ahkv2/
+GetScrollInfo(ctrlhwnd) {
+  global g_SB_VERT
+  global g_SIF_POS
+  SI:=new _Struct("cbSize,fMask,nMin,nMax,nPage,nPos,nTrackPos")
+  SI.cbSize:=sizeof(SI)
+  SI.fMask := g_SIF_POS
+  If !DllCall("GetScrollInfo","PTR",ctrlhwnd,"Int",g_SB_VERT,"PTR",SI[""])
+    Return false
+  else Return SI
+}
 
 ListBoxChooseItem(Row)
 {
@@ -103,19 +160,39 @@ CloseListBox()
    IfNotEqual, g_ListBox_Id,
    {
       Gui, ListBoxGui: Hide
-      g_ListBox_Id = 
-      DisableKeyboardHotKeys()
+      ListBoxEnd()
    }
    Return
 }
 
 DestroyListBox()
 {
-   global g_ListBox_Id
-   g_ListBox_Id =
    Gui, ListBoxGui:Destroy
-   DisableKeyboardHotKeys()
+   ListBoxEnd()
    Return
+}
+
+ListBoxEnd()
+{
+   global g_ScrollEventHook
+   global g_ScrollEventHookThread
+   global g_ListBox_Id
+   global g_WM_LBUTTONUP
+   global g_WM_LBUTTONDBLCLK
+   
+   g_ListBox_Id =
+   
+   OnMessage(g_WM_LBUTTONUP, "")
+   OnMessage(g_WM_LBUTTONDBLCLK, "")
+
+   if (g_ScrollEventHook) {
+      DllCall("UnhookWinEvent", "Uint", g_ScrollEventHook)
+      g_ScrollEventHook =
+      g_ScrollEventHookThread =
+      MaybeCoUninitialize()
+   }
+   DisableKeyboardHotKeys()
+   return
 }
 
 ;------------------------------------------------------------------------
@@ -228,11 +305,28 @@ RebuildMatchList()
 {
    global g_Match
    global g_MatchLongestLength
+   global g_MatchPos
+   global g_MatchStart
    global g_MatchTotal
+   global g_OriginalMatchStart
    global g_singlematch
+   global prefs_ListBoxRows
    
    g_Match = 
    g_MatchLongestLength =
+   
+   if (!g_MatchPos)
+   {
+      ; do nothing
+   } else if (g_MatchPos < g_MatchStart)
+   {
+      g_MatchStart := g_MatchPos
+   } else if (g_MatchPos > (g_MatchStart + (prefs_ListBoxRows - 1)))
+   {
+      g_MatchStart := g_MatchPos - (prefs_ListBoxRows -1)
+   }
+   
+   g_OriginalMatchStart := g_MatchStart
    
    Loop, %g_MatchTotal%
    {
@@ -281,9 +375,9 @@ ShowListBox()
       Local ListBoxActualSize
       Local ListBoxActualSizeH
       Local ListBoxActualSizeW
-      Local ListBoxPosX
       Local ListBoxPosY
       Local ListBoxSizeX
+      Local ListBoxThread
       Local MatchEnd
       Local Rows
       Local ScrollBarWidth
@@ -293,20 +387,22 @@ ShowListBox()
       
       IfGreater, g_MatchTotal, %Rows%
       {
-         SysGet, ScrollBarWidth, 2        
+         SysGet, ScrollBarWidth, %g_SM_CXVSCROLL%
          if ScrollBarWidth is not integer
                ScrollBarWidth = 17         
       } else ScrollBarWidth = 0
    
       ; Grab the internal border width of the ListBox box
-      SysGet, BorderWidthX, 83
+      SysGet, BorderWidthX, %g_SM_CXFOCUSBORDER%
       If BorderWidthX is not integer
          BorderWidthX = 1
       
-      ;Use 8 pixels for each character in width
-      ListBoxSizeX := g_ListBoxCharacterWidthComputed * g_MatchLongestLength + g_ListBoxCharacterWidthComputed + ScrollBarWidth + (BorderWidthX *2)
       
-      ListBoxPosX := HCaretX()
+      ;Use 8 pixels for each character in width
+      ListBoxSizeX := g_ListBoxCharacterWidthComputed * g_MatchLongestLength + g_ListBoxCharacterWidthComputed + ScrollBarWidth + (BorderWidthX * 2)
+      
+      
+      g_ListBoxPosX := HCaretX()
       ; + ListBoxOffset Move ListBox down a little so as not to hide the caret. 
       ListBoxPosY := HCaretY()+prefs_ListBoxOffset
       
@@ -333,11 +429,13 @@ ShowListBox()
          GuiControl, ListBoxGui: -Redraw, g_ListBox%A_Index%
          GuiControl, ListBoxGui: , g_ListBox%A_Index%, %g_DelimiterChar%
       }
-   
-      ForceWithinMonitorBounds(ListBoxPosX,ListBoxPosY,ListBoxActualSizeH,ListBoxActualSizeW,Rows)
+      
+      ForceWithinMonitorBounds(g_ListBoxPosX,ListBoxPosY,ListBoxActualSizeW,ListBoxActualSizeH,Rows)
+      
+      g_ListBoxContentWidth := ListBoxActualSizeW - ScrollBarWidth - BorderWidthX
       
       ; In rare scenarios, the Cursor may not have been detected. In these cases, we just won't show the ListBox.
-      IF (!(ListBoxPosX) || !(ListBoxPosY))
+      IF (!(g_ListBoxPosX) || !(ListBoxPosY))
       {
          return
       }
@@ -349,20 +447,20 @@ ShowListBox()
          {
             if (!ListBox_Old_Cursor)
             {
-               ListBox_Old_Cursor := DllCall(g_SetClassLongFunction, "Uint", g_ListBoxHwnd%Rows%, "int", -12, "int", g_cursor_hand)
+               ListBox_Old_Cursor := DllCall(g_SetClassLongFunction, "Uint", g_ListBoxHwnd%Rows%, "int", g_GCLP_HCURSOR, "int", g_cursor_hand)
             }
             
-            DllCall(g_SetClassLongFunction, "Uint", g_ListBoxHwnd%Rows%, "int", -12, "int", g_cursor_hand)
+            DllCall(g_SetClassLongFunction, "Uint", g_ListBoxHwnd%Rows%, "int", g_GCLP_HCURSOR, "int", g_cursor_hand)
             
          ; we only need to set it back to the default cursor if we've ever unset the default cursor
          } else if (ListBox_Old_Cursor)
          {
-            DllCall(g_SetClassLongFunction, "Uint", g_ListBoxHwnd%Rows%, "int", -12, "int", ListBox_Old_Cursor)
+            DllCall(g_SetClassLongFunction, "Uint", g_ListBoxHwnd%Rows%, "int", g_GCLP_HCURSOR, "int", ListBox_Old_Cursor)
          }
             
       }
       
-      Gui, ListBoxGui: Show, NoActivate X%ListBoxPosX% Y%ListBoxPosY% H%ListBoxActualSizeH% W%ListBoxActualSizeW%, Word List Appears Here.
+      Gui, ListBoxGui: Show, NoActivate X%g_ListBoxPosX% Y%ListBoxPosY% H%ListBoxActualSizeH% W%ListBoxActualSizeW%, Word List Appears Here.
       Gui, ListBoxGui: +LastFound +AlwaysOnTop
       
       IfEqual, g_ListBox_Id,
@@ -372,12 +470,31 @@ ShowListBox()
       }
       
       WinGet, g_ListBox_Id, ID, Word List Appears Here.
+      
+      ListBoxThread := DllCall("GetWindowThreadProcessId", "Ptr", g_ListBox_Id)
+      if (g_ScrollEventHook && (ListBoxThread != g_ScrollEventHookThread))
+      {
+         DllCall("UnhookWinEvent", "Uint", g_ScrollEventHook)
+         g_ScrollEventHook =
+         g_ScrollEventHookThread =
+         MaybeCoUninitialize()
+      }
+         
+      if (!g_ScrollEventHook) {
+         MaybeCoInitializeEx()
+         g_ScrollEventHook := DllCall("SetWinEventHook", "Uint", g_EVENT_SYSTEM_SCROLLINGEND, "Uint", g_EVENT_SYSTEM_SCROLLINGEND, "Ptr", g_NULL, "Uint", g_ListBoxScrollCallback, "Uint", g_PID, "Uint", ListBoxThread, "Uint", g_NULL)
+         g_ScrollEventHookThread := ListBoxThread
+      }
+      
+      OnMessage(g_WM_LBUTTONUP, "ListBoxClickItem")
+      OnMessage(g_WM_LBUTTONDBLCLK, "ListBoxClickItem")
+      
       IfNotEqual, prefs_ListBoxOpacity, 255
          WinSet, Transparent, %prefs_ListBoxOpacity%, ahk_id %g_ListBox_Id%
    }
 }
 
-ForceWithinMonitorBounds(ByRef ListBoxPosX,ByRef ListBoxPosY,ListBoxActualSizeH,ListBoxActualSizeW,Rows)
+ForceWithinMonitorBounds(ByRef ListBoxPosX,ByRef ListBoxPosY,ListBoxActualSizeW,ListBoxActualSizeH,Rows)
 {
    global prefs_ListBoxOffset
    ;Grab the number of non-dummy monitors

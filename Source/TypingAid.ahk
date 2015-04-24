@@ -43,18 +43,36 @@ ReadPreferences()
 
 SetTitleMatchMode, 2
 
+;set windows constants
+g_EVENT_SYSTEM_FOREGROUND := 0x0003
+g_EVENT_SYSTEM_SCROLLINGEND := 0x0013
+g_GCLP_HCURSOR := -12
+g_IDC_HAND := 32649
+g_IDC_HELP := 32651
+g_IMAGE_CURSOR := 2
+g_LR_SHARED := 0x8000
+g_NULL := 0
+g_SB_VERT := 0x1
+g_SIF_POS := 0x4
+g_SM_CXVSCROLL := 2
+g_SM_CXFOCUSBORDER := 83
+g_WINEVENT_SKIPOWNPROCESS := 0x0002
+g_WM_LBUTTONUP := 0x202
+g_WM_LBUTTONDBLCLK := 0x203
+g_WM_MOUSEMOVE := 0x200
+g_WM_SETCURSOR := 0x20
+
 ;setup code
 g_Helper_Id = 
 g_HelperManual = 
 g_DelimiterChar := Chr(2)
-g_WM_SETCURSOR = 0x20
-g_WM_MOUSEMOVE = 0x200
-g_cursor_hand := DllCall( "LoadImage", ptr, 0, uint, 32649 , uint, 2, int, 0, int, 0, uint, 0x8000 ) 
+g_cursor_hand := DllCall( "LoadImage", "Ptr", g_NULL, "Uint", g_IDC_HAND , "Uint", g_IMAGE_CURSOR, "int", g_NULL, "int", g_NULL, "Uint", g_LR_SHARED ) 
 if (A_PtrSize == 8) {
    g_SetClassLongFunction := "SetClassLongPtr"
 } else {
    g_SetClassLongFunction := "SetClassLong"
 }
+g_PID := DllCall("GetCurrentProcessId")
 AutoTrim, Off 
 
 InitializeListBox()
@@ -69,10 +87,17 @@ InitializeHotKeys()
 DisableKeyboardHotKeys()
 
 g_WinChangedCallback := RegisterCallback("WinChanged")
+g_ListBoxScrollCallback := RegisterCallback("ListBoxScroll")
 
 if !(g_WinChangedCallback)
 {
    MsgBox, Failed to register callback function
+   ExitApp
+}
+
+if !(g_ListBoxScrollCallback)
+{
+   MsgBox, Failed to register ListBox Scroll callback function
    ExitApp
 }
    
@@ -698,6 +723,7 @@ EvaluateUpDown(Key)
    global g_MatchPos
    global g_MatchStart
    global g_MatchTotal
+   global g_OriginalMatchStart
    global g_singlematch
    global g_Word
    global prefs_ArrowKeyMethod
@@ -790,7 +816,7 @@ EvaluateUpDown(Key)
       
    }
 
-   PreviousMatchStart := g_MatchStart
+   PreviousMatchStart := g_OriginalMatchStart
    
    IfEqual, Key, $Up
    {   
@@ -863,9 +889,9 @@ EvaluateUpDown(Key)
          ListBoxChooseItem(Rows)
       }
    } else {
-            RebuildMatchList()
-            ShowListBox()
-         }
+      RebuildMatchList()
+      ShowListBox()
+   }
    Return
 }
 
@@ -1034,6 +1060,7 @@ ClearAllVars(ClearWord)
    g_Match= 
    g_MatchPos=
    g_MatchStart= 
+   g_OriginalMatchStart=
    Return
 }
 
@@ -1105,6 +1132,32 @@ MaybeFixFileEncoding(File,Encoding)
 
 ;------------------------------------------------------------------------
 
+MaybeCoInitializeEx()
+{
+   global g_NULL
+   global g_ScrollEventHook
+   global g_WinChangedEventHook
+   
+   if (!g_WinChangedEventHook && !g_ScrollEventHook)
+   {
+      DllCall("CoInitializeEx", "Ptr", g_NULL, "Uint", g_NULL)
+   }
+   
+}
+
+
+MaybeCoUninitialize()
+{
+   global g_WinChangedEventHook
+   global g_ScrollEventHook
+   if (!g_WinChangedEventHook && !g_ScrollEventHook)
+   {
+      DllCall("CoUninitialize")
+   }
+}
+
+;------------------------------------------------------------------------
+
 Configuration:
 GoSub, LaunchSettings
 Return
@@ -1158,3 +1211,4 @@ ExitApp
 #Include %A_ScriptDir%\Includes\Window.ahk
 #Include %A_ScriptDir%\Includes\Wordlist.ahk
 #Include <DBA>
+#Include <_Struct>

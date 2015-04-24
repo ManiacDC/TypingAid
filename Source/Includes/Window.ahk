@@ -2,13 +2,16 @@
 
 EnableWinHook()
 {
+   global g_EVENT_SYSTEM_FOREGROUND
+   global g_NULL
+   global g_WINEVENT_SKIPOWNPROCESS
    global g_WinChangedEventHook
    global g_WinChangedCallback
    ; Set a hook to check for a changed window
    If !(g_WinChangedEventHook)
    {
-      DllCall("CoInitializeEx", Ptr, 0, Uint, 0)
-      g_WinChangedEventHook := DllCall("SetWinEventHook", Uint, 0x0003, Uint, 0x0003, Ptr, 0, Uint, g_WinChangedCallback, Uint, 0, Uint, 0, Uint, 0x0002)
+      MaybeCoInitializeEx()
+      g_WinChangedEventHook := DllCall("SetWinEventHook", "Uint", g_EVENT_SYSTEM_FOREGROUND, "Uint", g_EVENT_SYSTEM_FOREGROUND, "Ptr", g_NULL, "Uint", g_WinChangedCallback, "Uint", g_NULL, "Uint", g_NULL, "Uint", g_WINEVENT_SKIPOWNPROCESS)
       
       if !(g_WinChangedEventHook)
       {
@@ -26,10 +29,10 @@ DisableWinHook()
    
    if (g_WinChangedEventHook)
    {
-      if (DllCall("UnhookWinEvent", Uint, g_WinChangedEventHook))
+      if (DllCall("UnhookWinEvent", "Uint", g_WinChangedEventHook))
       {
-         DllCall("CoUninitialize")
          g_WinChangedEventHook =
+         MaybeCoUninitialize()
       } else {
          MsgBox, Failed to Unhook WinEvent!
          ExitApp
