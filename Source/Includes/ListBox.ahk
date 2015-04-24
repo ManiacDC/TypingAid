@@ -36,7 +36,7 @@ ListBoxClickItem(wParam, lParam, msg, ClickedHwnd)
    
    TempRows := GetRows()
    
-   if !(ClickedHwnd == g_ListBoxHwnd%TempRows%)
+   if (ClickedHwnd != g_ListBoxHwnd%TempRows%)
    {
       return
    }
@@ -101,7 +101,7 @@ SwitchOffListBoxIfActiveSub:
 SwitchOffListBoxIfActive()
 Return
 
-ListBoxScroll()
+ListBoxScroll(Hook, Event, EventHwnd)
 {
    global
    
@@ -114,6 +114,18 @@ ListBoxScroll()
    {
    
       TempRows := GetRows()
+      if (g_ListBoxHwnd%TempRows% != EventHwnd)
+      {
+         return
+      }
+      
+      if (Event == g_EVENT_SYSTEM_SCROLLINGSTART)
+      {
+         ; make sure the timer is clear so we don't switch while scrolling
+         SetTimer, SwitchOffListBoxIfActiveSub, Off
+         return
+      }
+      
       SI:=GetScrollInfo(g_ListBoxHwnd%TempRows%)
    
       if (!SI.npos)
@@ -482,7 +494,7 @@ ShowListBox()
          
       if (!g_ScrollEventHook) {
          MaybeCoInitializeEx()
-         g_ScrollEventHook := DllCall("SetWinEventHook", "Uint", g_EVENT_SYSTEM_SCROLLINGEND, "Uint", g_EVENT_SYSTEM_SCROLLINGEND, "Ptr", g_NULL, "Uint", g_ListBoxScrollCallback, "Uint", g_PID, "Uint", ListBoxThread, "Uint", g_NULL)
+         g_ScrollEventHook := DllCall("SetWinEventHook", "Uint", g_EVENT_SYSTEM_SCROLLINGSTART, "Uint", g_EVENT_SYSTEM_SCROLLINGEND, "Ptr", g_NULL, "Uint", g_ListBoxScrollCallback, "Uint", g_PID, "Uint", ListBoxThread, "Uint", g_NULL)
          g_ScrollEventHookThread := ListBoxThread
       }
       
