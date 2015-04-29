@@ -418,6 +418,8 @@ ShowListBox()
       ; + ListBoxOffset Move ListBox down a little so as not to hide the caret. 
       ListBoxPosY := HCaretY()+prefs_ListBoxOffset
       
+      MatchEnd := g_MatchStart + (prefs_ListBoxRows - 1)
+      
       Loop, %prefs_ListBoxRows%
       { 
          IfEqual, A_Index, %Rows%
@@ -425,7 +427,6 @@ ShowListBox()
             GuiControl, ListBoxGui: -Redraw, g_ListBox%A_Index%
             GuiControl, ListBoxGui: Move, g_ListBox%A_Index%, w%ListBoxSizeX%
             GuiControl, ListBoxGui: ,g_ListBox%A_Index%, %g_DelimiterChar%%g_Match%
-            MatchEnd := g_MatchStart + (prefs_ListBoxRows - 1)
             IfNotEqual, g_MatchPos,
             {
                GuiControl, ListBoxGui: Choose, g_ListBox%A_Index%, %MatchEnd%
