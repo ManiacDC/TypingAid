@@ -1,5 +1,5 @@
 ;  TypingAid
-;  http://www.autohotkey.com/board/topic/49517-ahk-11typingaid-v2199-word-autocompletion-utility/
+;  http://www.autohotkey.com/board/topic/49517-ahk-11typingaid-v2200-word-autocompletion-utility/
 ;
 ;  Press 1 to 0 keys to autocomplete the word upon suggestion 
 ;  Or use the Up/Down keys to select an item
