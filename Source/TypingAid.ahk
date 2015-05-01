@@ -148,6 +148,7 @@ ProcessKey(InputChar,EndKey)
    global g_TerminatingCharactersParsed
    global g_Word
    global prefs_DetectMouseClickMove
+   global prefs_EndWordCharacters
    global prefs_ForceNewWordCharacters
    global prefs_Length
    
@@ -251,9 +252,15 @@ ProcessKey(InputChar,EndKey)
          AddWordToList(g_Word,0)
          ClearAllVars(true)
          g_Word := InputChar
+      } else if InputChar in %prefs_EndWordCharacters%
+      {
+         g_Word .= InputChar
+         AddWordToList(g_Word, 1)
+         ClearAllVars(true)
       } else { 
          g_Word .= InputChar
       }
+      
    } else IfNotEqual, g_LastInput_Id, %g_Active_Id%
    {
       ;Don't do anything if we aren't in the original window and aren't starting a new word

@@ -37,6 +37,7 @@ ReadPreferences(RestoreDefaults = false,RestorePreferences = false)
    global dft_SendMethod
    global dft_TerminatingCharacters
    global dft_ForceNewWordCharacters
+   global dft_EndWordCharacters
    global dft_ListBoxOffSet
    global dft_ListBoxFontFixed
    global dft_ListBoxFontOverride
@@ -67,6 +68,7 @@ ReadPreferences(RestoreDefaults = false,RestorePreferences = false)
    global prefs_SendMethod
    global prefs_TerminatingCharacters
    global prefs_ForceNewWordCharacters
+   global prefs_EndWordCharacters
    global prefs_ListBoxOffset
    global prefs_ListBoxFontFixed
    global prefs_ListBoxFontOverride
@@ -129,6 +131,7 @@ ReadPreferences(RestoreDefaults = false,RestorePreferences = false)
       dft_SendMethod,prefs_SendMethod,Settings,1
       dft_TerminatingCharacters,prefs_TerminatingCharacters,Settings,`%dft_TerminatingCharacters`%
       dft_ForceNewWordCharacters,prefs_ForceNewWordCharacters,Settings,%SpaceVar%
+      dft_EndWordCharacters,prefs_EndWordCharacters,Settings,%SpaceVar%
       dft_ListBoxOffSet,prefs_ListBoxOffset,ListBoxSettings,14
       dft_ListBoxFontFixed,prefs_ListBoxFontFixed,ListBoxSettings,Off
       dft_ListBoxFontOverride,prefs_ListBoxFontOverride,ListBoxSettings,%SpaceVar%
@@ -400,8 +403,8 @@ ParseTerminatingCharacters()
       }
    }
       
-      IfNotEqual, Word,
-         TempCharacters .= Word
+   IfNotEqual, Word,
+      TempCharacters .= Word
    
    g_TerminatingCharactersParsed := TempCharacters
    g_TerminatingEndKeys := TempEndKeys
@@ -640,7 +643,7 @@ helpinfo_TerminatingCharacters=
 ;Default setting:
 ;%dft_TerminatingCharacters%
 ;
-; More information on how to configure TerminatingCharacters:
+; More information on how to configure "Terminating Characters":
 ;A list of keys may be found here:
 ; http://www.autohotkey.com/docs/KeyList.htm
 ;For more details on how to format the list of characters please see the EndKeys section (paragraphs 2,3,4) of:
@@ -652,9 +655,19 @@ helpinfo_ForceNewWordCharacters=
 ;"Force New Word Characters" is a comma separated list of characters which forces the program to start a new word whenever
 ;one of those characters is typed. Any words which begin with one of these characters will never be learned (even
 ;if learning is enabled). If you were typing a word when you hit one of these characters that word will be learned
-;if learning is enabled.
+;if learning is enabled. Characters in "Force New Word Characters" should not be in "Terminating Characters".
 ;Change this only if you know what you are doing, it is probably only useful for certain programming languages.
 ; ex: ForceNewWordCharacters=@,:,#
+))
+
+helpinfo_EndWordCharacters=
+(
+;"End Word Characters" is a comma separated list of characters which forces the program to start end the current
+;word whenever one of those characters is typed. Unlike "Terminating Characters", the character becomes the last
+;character in the typed word. If you were typing a word when you hit one of these characters that word will be 
+;permanently learned. Characters in "Force New Word Characters" should not be in "Terminating Characters".
+;Change this only if you know what you are doing, it is probably only useful for certain programming languages.
+; ex: EndWordCharacters=@,:,#
 )
 
 helpinfo_FullHelpString =
@@ -679,7 +692,7 @@ helpinfo_FullHelpString =
 
 %helpinfo_HelperWindowProgramTitles%`r`n`r`n%helpinfo_HelperWindowProgramExecutables%
 
-%helpinfo_TerminatingCharacters%`r`n`r`n%helpinfo_ForceNewWordCharacters% 
+%helpinfo_TerminatingCharacters%`r`n`r`n%helpinfo_ForceNewWordCharacters%`r`n`r`n%helpinfo_EndWordCharacters%
 )
 
 }

@@ -28,8 +28,8 @@ ConstructGui()
 {
    global prefs_ArrowKeyMethod, prefs_AutoSpace, prefs_DetectMouseClickMove, prefs_DisabledAutoCompleteKeys, prefs_DoNotLearnStrings
    global helpinfo_ArrowKeyMethod, helpinfo_AutoSpace, helpinfo_DetectMouseClickMove, helpinfo_DisabledAutoCompleteKeys, helpinfo_DoNotLearnStrings
-   global prefs_ForceNewWordCharacters, prefs_LearnCount, prefs_LearnLength, prefs_LearnMode, prefs_Length
-   global helpinfo_ForceNewWordCharacters, helpinfo_LearnCount, helpinfo_LearnLength, helpinfo_LearnMode, helpinfo_Length
+   global prefs_EndWordCharacters, prefs_ForceNewWordCharacters, prefs_LearnCount, prefs_LearnLength, prefs_LearnMode, prefs_Length
+   global helpinfo_EndWordCharacters, helpinfo_ForceNewWordCharacters, helpinfo_LearnCount, helpinfo_LearnLength, helpinfo_LearnMode, helpinfo_Length
    global prefs_NoBackSpace, prefs_NumPresses, prefs_SendMethod, prefs_ShowLearnedFirst, prefs_SuppressMatchingWord, prefs_TerminatingCharacters
    global helpinfo_NoBackSpace, helpinfo_NumPresses, helpinfo_SendMethod, helpinfo_ShowLearnedFirst, helpinfo_SuppressMatchingWord, helpinfo_TerminatingCharacters
    global prefs_ExcludeProgramExecutables, prefs_ExcludeProgramTitles, prefs_IncludeProgramExecutables, prefs_IncludeProgramTitles, prefs_HelperWindowProgramExecutables, prefs_HelperWindowProgramTitles
@@ -494,6 +494,16 @@ ConstructGui()
    Gui, MenuGui:Add, Edit, x%MenuGroup1EditX% y%MenuRowEditY% w%MenuOneColEditWidth% r1 vprefs_ForceNewWordCharacters gEditValue, %prefs_ForceNewWordCharacters%
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup1of1HelpX% y%MenuRowHelpY% vhelpinfo_ForceNewWordCharacters gHelpMe, %MenuGuiHelpIcon%
+   Gui, MenuGui:Font, cBlack
+
+   MenuRowY := MenuRowY + MenuRowHeight + MenuSeparatorY
+   MenuRowEditY := MenuRowY + MenuEditIndentY
+   MenuRowHelpY := MenuRowY - MenuHelpIndentY
+
+   Gui, MenuGui:Add, GroupBox, x%MenuGroup1BoxX% y%MenuRowY% w%MenuOneColGroupWidth% h%MenuRowHeight% , End Word Characters (comma separated)
+   Gui, MenuGui:Add, Edit, x%MenuGroup1EditX% y%MenuRowEditY% w%MenuOneColEditWidth% r1 vprefs_EndWordCharacters gEditValue, %prefs_EndWordCharacters%
+   Gui, MenuGui:Font, cGreen
+   Gui, MenuGui:Add, Text, x%MenuGroup1of1HelpX% y%MenuRowHelpY% vhelpinfo_EndWordCharacters gHelpMe, %MenuGuiHelpIcon%
    Gui, MenuGui:Font, cBlack
 
 

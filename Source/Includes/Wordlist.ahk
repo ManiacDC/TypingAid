@@ -144,6 +144,7 @@ AddWordToList(AddWord,ForceCountNewOnly,ForceLearn=false, ByRef LearnedWordsCoun
    ;AddWord = Word to add to the list
    ;ForceCountNewOnly = force this word to be permanently learned even if learnmode is off
    ;ForceLearn = disables some checks in CheckValid
+   ;LearnedWordsCount = if this is a stored learned word, this will only have a value when LearnedWords are read in from the wordlist
    global prefs_DoNotLearnStrings
    global prefs_ForceNewWordCharacters
    global prefs_LearnCount
@@ -171,7 +172,7 @@ AddWordToList(AddWord,ForceCountNewOnly,ForceLearn=false, ByRef LearnedWordsCoun
       ; If this is an on-the-fly learned word
       AddWordInList := g_WordListDB.Query("SELECT * FROM words WHERE word = '" . AddWord . "';")
       
-      IF !( AddWordInList.Count() ) ; if the word is not in the list
+      IF !( AddWordInList.Count() > 0 ) ; if the word is not in the list
       {
       
          IfNotEqual, ForceCountNewOnly, 1
