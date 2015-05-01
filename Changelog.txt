@@ -1,8 +1,9 @@
 *2.21.0 5/1/2015
 ** Added the ability to insert a word by clicking on it in the Wordlist (turn of Single Click in the settings to require a double click for insertion)
 ** Added a setting to sort Learned Words before words in Wordlist.txt
-** Added a setting to specify charactes which will terminate the current word, add the character to the end of the word, and permanently learn the word.
+** Added a setting to specify charactes which will terminate the current word, add the character to the end of the word, and permanently learn the word
 ** Added Setting back in for NumPresses (if set to 2, double hit the number to insert the word)
+** Reorganized Settings Window to move more Wordlist Box settings to the Wordlist Box tab
 ** Changed "Save & Exit" in the settings window to "Save & Close"
 ** Minor code fixes
 
