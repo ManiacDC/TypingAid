@@ -484,7 +484,7 @@ ShowListBox()
       
       WinGet, g_ListBox_Id, ID, Word List Appears Here.
       
-      ListBoxThread := DllCall("GetWindowThreadProcessId", "Ptr", g_ListBox_Id)
+      ListBoxThread := DllCall("GetWindowThreadProcessId", "UPtr", g_ListBox_Id)
       if (g_ScrollEventHook && (ListBoxThread != g_ScrollEventHookThread))
       {
          DllCall("UnhookWinEvent", "Uint", g_ScrollEventHook)
