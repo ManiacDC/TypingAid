@@ -235,7 +235,7 @@ CheckForActive(ActiveProcess,ActiveTitle)
    Loop, Parse, prefs_ExcludeProgramTitles, |
    {
       
-      if (SubStr(A_LoopField, 1, 1) == quotechar)
+      if (SubStr(A_LoopField, 1, 1) == quotechar && SubStr(A_LoopField, StrLen(A_LoopField), 1) == quotechar)
       {
          StringTrimLeft, TrimmedString, A_LoopField, 1
          StringTrimRight, TrimmedString, TrimmedString, 1
@@ -263,7 +263,7 @@ CheckForActive(ActiveProcess,ActiveTitle)
 
    Loop, Parse, prefs_IncludeProgramTitles, |
    {
-      if (SubStr(A_LoopField, 1, 1) == quotechar)
+      if (SubStr(A_LoopField, 1, 1) == quotechar && SubStr(A_LoopField, StrLen(A_LoopField), 1) == quotechar)
       {
          StringTrimLeft, TrimmedString, A_LoopField, 1
          StringTrimRight, TrimmedString, TrimmedString, 1
