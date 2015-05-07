@@ -679,23 +679,32 @@ GetList(TitleType,GetExe)
    GetExe=0
    
    GuiControlGet, MenuTitleList, MenuGui: , %Menu_TitleType%
+   
+   MenuProcessHeight := 380
+   
+   StringRight, ListType, Menu_TitleType, 6
 	
    Sort,RunningList, D| U	
    Gui, ProcessList:+OwnerMenuGui
-   Gui, ProcessList:+Owner
    Gui, MenuGui:+Disabled  ; disable main window
    Gui, ProcessList:Add, Text,x10 y10, Select program:
-   Gui, ProcessList:Add, DDL, x110 y10 w250 R10 gToEdit,%RunningList%
-   Gui, ProcessList:Add, Text,x10 y40, Edit:
-   Gui, ProcessList:Add, Edit, x110 y40 w250
+   Gui, ProcessList:Add, DDL, xp+100 yp w250 R10 gToEdit,%RunningList%
+   Gui, ProcessList:Add, Text,x10 yp+30, Edit:
+   Gui, ProcessList:Add, Edit, xp+100 yp w250
    Gui, ProcessList:Add, Button, xp+260 yp gAddNew1 w40 Default, Add
-   Gui, ProcessList:Add, Text, x10 yp+40, Current list:
-   Gui, ProcessList:Add, ListBox, x110 yp w250 r10, %MenuTitleList%
+   if (ListType == "Titles")
+   {
+      Gui, ProcessList:Add, Text,x10 yp+30, Exact Match:
+      Gui, ProcessList:Add, Checkbox, xp+100 yp
+      MenuProcessHeight += 30
+   }
+   Gui, ProcessList:Add, Text, x10 yp+30, Current list:
+   Gui, ProcessList:Add, ListBox, xp+100 yp w250 r10, %MenuTitleList%
    Gui, ProcessList:Add, Button, xp+260 yp gRemoveNew1 w40 , Del
    Gui, ProcessList:Add, Text, x10 yp+170, a) Select a program or window from the list or type a name in the`n%A_Space%%A_Space%%A_Space%%A_Space%%A_Space%'Edit' control (you may need to edit it further)`nb) Click ADD to add it to the list`nc) To remove a program/title, select an item from the 'current list' and`n%A_Space%%A_Space%%A_Space%%A_Space%click DEL.
    Gui, ProcessList:Add, Button, x10 yp+90 w190 gSaveTitleList, Save 
    Gui, ProcessList:Add, Button, xp+210 yp w190 gCancelTitle, Cancel
-   Gui, ProcessList:Show, w420 h380, %g_ScriptTitle% Settings
+   Gui, ProcessList:Show, w420 h%MenuProcessHeight%, %g_ScriptTitle% Settings
    Return
 }
 
@@ -1045,8 +1054,15 @@ return
 
 AddNew1()
 {
+   GuiControlGet, MenuExactMatch, ProcessList:, Button2
    GuiControlGet, MenuOutputVar, ProcessList:,Edit1
    ControlGet, MenuTitleList, List, , ListBox1
+   
+   if (MenuExactMatch == 1)
+   {
+      MenuOutputVar := """" . MenuOutputVar . """"
+   }
+   
    StringReplace, MenuTitleList, MenuTitleList, `n, |, All
    MenuTitleList := "|" . MenuTitleList . "|"
    
@@ -1060,6 +1076,7 @@ AddNew1()
    
    GuiControl, ProcessList:, ListBox1, %MenuOutputVar%|
    GuiControl, ProcessList:, Edit1, 
+   GuiControl, ProcessList:, Button2, 0
    ControlFocus, Edit1
    return
 }

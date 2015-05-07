@@ -221,6 +221,8 @@ CheckForActive(ActiveProcess,ActiveTitle)
    global prefs_IncludeProgramExecutables
    global prefs_IncludeProgramTitles
    
+   quotechar := """"
+   
    If g_InSettings
       Return,
    
@@ -232,8 +234,19 @@ CheckForActive(ActiveProcess,ActiveTitle)
    
    Loop, Parse, prefs_ExcludeProgramTitles, |
    {
-      IfInString, ActiveTitle, %A_LoopField%
-         Return,
+      
+      if (SubStr(A_LoopField, 1, 1) == quotechar)
+      {
+         StringTrimLeft, TrimmedString, A_LoopField, 1
+         StringTrimRight, TrimmedString, TrimmedString, 1
+         IfEqual, ActiveTitle, %TrimmedString%
+         {
+            return,
+         }
+      }  else IfInString, ActiveTitle, %A_LoopField%
+      {
+         return,
+      }
    }
 
    IfEqual, prefs_IncludeProgramExecutables,
@@ -250,8 +263,18 @@ CheckForActive(ActiveProcess,ActiveTitle)
 
    Loop, Parse, prefs_IncludeProgramTitles, |
    {
-      IfInString, ActiveTitle, %A_LoopField%
+      if (SubStr(A_LoopField, 1, 1) == quotechar)
+      {
+         StringTrimLeft, TrimmedString, A_LoopField, 1
+         StringTrimRight, TrimmedString, TrimmedString, 1
+         IfEqual, ActiveTitle, %TrimmedString%
+         {
+            Return, 1
+         }
+      } else IfInString, ActiveTitle, %A_LoopField%
+      {
          Return, 1
+      }
    }
 
    Return, 

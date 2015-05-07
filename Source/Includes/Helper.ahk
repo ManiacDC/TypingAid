@@ -47,6 +47,8 @@ CheckHelperWindowAuto(ActiveProcess,ActiveTitle)
    global prefs_HelperWindowProgramExecutables
    global prefs_HelperWindowProgramTitles
    
+   quotechar := """"
+   
    Loop, Parse, prefs_HelperWindowProgramExecutables, |
    {
       IfEqual, ActiveProcess, %A_LoopField%
@@ -55,8 +57,18 @@ CheckHelperWindowAuto(ActiveProcess,ActiveTitle)
 
    Loop, Parse, prefs_HelperWindowProgramTitles, |
    {
-      IfInString, ActiveTitle, %A_LoopField%
+      if (SubStr(A_LoopField, 1, 1) == quotechar)
+      {
+         StringTrimLeft, TrimmedString, A_LoopField, 1
+         StringTrimRight, TrimmedString, TrimmedString, 1
+         IfEqual, ActiveTitle, %TrimmedString%
+         {
+            Return, true
+         }
+      } else IfInString, ActiveTitle, %A_LoopField%
+      {
          Return, true
+      }
    }
 
    Return
