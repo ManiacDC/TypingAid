@@ -1211,8 +1211,9 @@ MaybeUpdateWordlist()
 
 ExitApp
 
-#Include %A_ScriptDir%\Includes\ListBox.ahk
+#Include %A_ScriptDir%\Includes\Conversions.ahk
 #Include %A_ScriptDir%\Includes\Helper.ahk
+#Include %A_ScriptDir%\Includes\ListBox.ahk
 #Include %A_ScriptDir%\Includes\Preferences File.ahk
 #Include %A_ScriptDir%\Includes\Sending.ahk
 #Include %A_ScriptDir%\Includes\Settings.ahk

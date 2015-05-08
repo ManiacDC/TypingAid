@@ -21,38 +21,9 @@ ReadWordList()
       exitapp
    }
    
-   tableconverted := g_WordListDB.Query("SELECT tableconverted FROM LastState;")
+   DatabaseRebuilt := MaybeConvertDatabase()
    
-   for each, row in tableconverted.Rows
-   {
-      WordlistConverted := row[1]
-   }
-   
-   IfNotEqual, WordlistConverted, 1
-   {
-      g_WordListDB.Query("DROP TABLE Words;")
-      g_WordListDB.Query("DROP INDEX WordIndex;")
-      g_WordListDB.Query("DROP TABLE LastState;")
-      
-      IF not g_WordListDB.Query("CREATE TABLE Words (wordindexed TEXT, word TEXT UNIQUE, count INTEGER);")
-      {
-         msgbox Cannot Create Table - fatal error...
-         ExitApp
-      }
-   
-      IF not g_WordListDB.Query("CREATE INDEX WordIndex ON Words (wordindexed);")
-      {
-         msgbox Cannot Create Index - fatal error...
-         ExitApp
-      }
-   
-      IF not g_WordListDB.Query("CREATE TABLE LastState (tableconverted INTEGER);")
-      {
-         MsgBox Cannot Create Table - fatal error...
-         ExitApp
-      }
-   } else
-   {
+   if (!DatabaseRebuilt) {
       CleanupWordList()
    }
    
@@ -63,12 +34,12 @@ ReadWordList()
    {
       IfEqual, A_LoopField, `;LEARNEDWORDS`;
       {
-         IfEqual, WordlistConverted, 1
+         if (DatabaseRebuilt)
          {
-            break
-         } else {
             LearnedWordsCount=0
             g_LegacyLearnedWords=1 ; Set Flag that we need to convert wordlist file
+         } else {
+            break
          }
       } else {
                AddWordToList(A_LoopField,0,"ForceLearn",LearnedWordsCount)
@@ -77,7 +48,7 @@ ReadWordList()
    ParseWords =
    g_WordListDB.EndTransaction()
    
-   IfNotEqual, WordlistConverted, 1
+   if (DatabaseRebuilt)
    {
       Progress, M, Please wait..., Converting wordlist, %A_ScriptName%
     
