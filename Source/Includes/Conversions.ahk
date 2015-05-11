@@ -34,9 +34,6 @@ MaybeConvertDatabase()
 		}
 	}
 	
-	ListVars
-	Pause
-	
 	IfNotEqual, WordlistConverted, 1
 	{
 		RebuildDatabase()		
