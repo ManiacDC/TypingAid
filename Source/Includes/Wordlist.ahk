@@ -15,6 +15,9 @@ ReadWordList()
    MaybeFixFileEncoding(WordlistLearned,"UTF-8")
 
    g_WordListDB := DBA.DataBaseFactory.OpenDataBase("SQLite", A_ScriptDir . "\WordlistLearned.db" )
+	
+   g_WordListDB.Query("PRAGMA journal_mode = TRUNCATE;")
+   
    if !g_WordListDB
    {
       msgbox Problem opening database '%A_ScriptDir%\WordlistLearned.db' - fatal error...
@@ -42,8 +45,8 @@ ReadWordList()
             break
          }
       } else {
-               AddWordToList(A_LoopField,0,"ForceLearn",LearnedWordsCount)
-            }
+         AddWordToList(A_LoopField,0,"ForceLearn",LearnedWordsCount)
+      }
    }
    ParseWords =
    g_WordListDB.EndTransaction()
