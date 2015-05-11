@@ -133,7 +133,7 @@ AddWordToList(AddWord,ForceCountNewOnly,ForceLearn=false, ByRef LearnedWordsCoun
    {
       IfNotEqual,LearnedWordsCount,  ;if this is a stored learned word, this will only have a value when LearnedWords are read in from the wordlist
       {
-         g_WordListDB.Query("INSERT INTO words VALUES ('" . AddWordIndex . "','" . AddWord . "','" . LearnedWordsCount++ . "');")
+         g_WordListDB.Query("INSERT INTO words (wordindexed, word, count) VALUES ('" . AddWordIndex . "','" . AddWord . "','" . LearnedWordsCount++ . "');")
       } else {
          g_WordListDB.Query("INSERT INTO words (wordindexed,word) VALUES ('" . AddWordIndex . "','" . AddWord . "');")
       }
@@ -163,7 +163,7 @@ AddWordToList(AddWord,ForceCountNewOnly,ForceLearn=false, ByRef LearnedWordsCoun
             CountValue := prefs_LearnCount ;set the count to LearnCount so it gets written to the file
          }
          
-         g_WordListDB.Query("INSERT INTO words VALUES ('" . AddWordIndex . "','" . AddWord . "','" . CountValue . "');")
+         g_WordListDB.Query("INSERT INTO words (wordindexed, word, count) VALUES ('" . AddWordIndex . "','" . AddWord . "','" . CountValue . "');")
       } else IfEqual, prefs_LearnMode, On
       {
          IfEqual, ForceCountNewOnly, 1                     
@@ -270,6 +270,8 @@ UpdateWordCount(word,SortOnly)
 
 CleanupWordList()
 {
+   ;Function cleans up all words that are less than the LearnCount threshold or have a NULL for count
+   ;(NULL in count represents a 'wordlist.txt' word, as opposed to a learned word)
    global prefs_LearnCount
    global g_WordListDB
    g_WordListDB.Query("DELETE FROM Words WHERE count < " . prefs_LearnCount . " OR count IS NULL;")
