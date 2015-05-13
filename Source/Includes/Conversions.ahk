@@ -1,6 +1,7 @@
 ; these functions handle database conversion
+; always set the SetDbVersion default argument to the current highest version
 
-SetDbVersion(dBVersion = 1)
+SetDbVersion(dBVersion = 2)
 {
 	global g_WordListDB
 	g_WordListDB.Query("INSERT OR REPLACE INTO LastState VALUES ('databaseVersion', '" . dBVersion . "', NULL);")
@@ -14,20 +15,23 @@ MaybeConvertDatabase()
 	
 	databaseVersionRows := g_WordListDB.Query("SELECT lastStateNumber FROM LastState WHERE lastStateItem = 'databaseVersion';")
 	
-	if (databaseVersionRows) {
+	if (databaseVersionRows)
+	{
 		for each, row in databaseVersionRows.Rows
 		{
 			databaseVersion := row[1]
 		}
 	}
 	
-	if (!databaseVersion) {
+	if (!databaseVersion)
+	{
 		   tableConverted := g_WordListDB.Query("SELECT tableconverted FROM LastState;")
 	} else {
 		tableConverted := g_WordListDB.Query("SELECT lastStateNumber FROM LastState WHERE lastStateItem = 'tableConverted';")
 	}
    
-	if (tableConverted) {
+	if (tableConverted)
+	{
 		for each, row in tableConverted.Rows
 		{
 			WordlistConverted := row[1]
@@ -40,8 +44,14 @@ MaybeConvertDatabase()
 		return, true
 	}
 	
-	if (!databaseVersion) {
+	if (!databaseVersion)
+	{
 		RunConversionOne(WordlistConverted)
+	}
+	
+	if (databaseVersion < 2)
+	{
+		RunConversionTwo()
 	}
 	
 	return, false
@@ -56,7 +66,7 @@ RebuildDatabase()
 	g_WordListDB.Query("DROP INDEX WordIndex;")
 	g_WordListDB.Query("DROP TABLE LastState;")
 	
-	IF not g_WordListDB.Query("CREATE TABLE Words (wordindexed TEXT, word TEXT PRIMARY KEY, count INTEGER, worddescription TEXT);")
+	IF not g_WordListDB.Query("CREATE TABLE Words (wordindexed TEXT, word TEXT PRIMARY KEY, count INTEGER, worddescription TEXT, wordreplacement TEXT);")
 	{
 		msgbox Cannot Create Words Table - fatal error...
 		ExitApp
@@ -92,6 +102,15 @@ RunConversionOne(WordlistConverted)
 	
 	SetDbVersion(1)
 	
+}
+
+RunConversionTwo()
+{
+	global g_WordListDB
+	
+	g_WordListDB.Query("ALTER TABLE Words ADD COLUMN wordreplacement TEXT;")
+	
+	SetDbVersion(2)
 }
 
 CreateLastStateTable()

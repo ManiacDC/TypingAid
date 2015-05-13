@@ -289,7 +289,9 @@ RecomputeMatches()
 {
    ; This function will take the given word, and will recompile the list of matches and redisplay the wordlist.
    global g_MatchTotal
-   global g_singlematch
+   global g_SingleMatch
+   global g_SingleMatchDescription
+   global g_SingleMatchReplacement
    global g_Word
    global g_WordListDB
    global prefs_ArrowKeyMethod
@@ -315,17 +317,20 @@ RecomputeMatches()
    
    StringUpper, WordMatch, g_Word   
    
+   StringReplace, WordExactEscaped, g_Word, ', '', All
+   StringReplace, WordMatchEscaped, WordMatch, ', '', All
+   
    IfEqual, prefs_SuppressMatchingWord, On
    {
       IfEqual, prefs_NoBackSpace, Off
       {
-         SuppressMatchingWordQuery := " AND word <> '" . g_Word . "'"
+         SuppressMatchingWordQuery := " AND word <> '" . WordExactEscaped . "'"
       } else {
-               SuppressMatchingWordQuery := " AND wordindexed <> '" . WordMatch . "'"
+               SuppressMatchingWordQuery := " AND wordindexed <> '" . WordMatchEscaped . "'"
             }
    }
    
-   WhereQuery := " WHERE wordindexed GLOB '" . WordMatch . "*' " . SuppressMatchingWordQuery
+   WhereQuery := " WHERE wordindexed GLOB '" . WordMatchEscaped . "*' " . SuppressMatchingWordQuery
    
    NormalizeTable := g_WordListDB.Query("SELECT MIN(count) AS normalize FROM Words" . WhereQuery . "AND count IS NOT NULL LIMIT " . LimitTotalMatches . ";")
    
@@ -350,13 +355,17 @@ RecomputeMatches()
    
    OrderByQuery .= " end, CASE WHEN count IS NOT NULL then ( (count - " . Normalize . ") * ( 1 - ( '0.75' / (LENGTH(word) - " . WordLen . ")))) end DESC, Word"
       
-   Matches := g_WordListDB.Query("SELECT word FROM Words" . WhereQuery . OrderByQuery . " LIMIT " . LimitTotalMatches . ";")
+   Matches := g_WordListDB.Query("SELECT word, worddescription, wordreplacement FROM Words" . WhereQuery . OrderByQuery . " LIMIT " . LimitTotalMatches . ";")
    
-   g_singlematch := Object()
+   g_SingleMatch := Object()
+   g_SingleMatchDescription := Object()
+   g_SingleMatchReplacement := Object()
    
    for each, row in Matches.Rows
    {      
-      g_singlematch[++g_MatchTotal] := row[1]
+      g_SingleMatch[++g_MatchTotal] := row[1]
+      g_SingleMatchDescription[g_MatchTotal] := row[2]
+      g_SingleMatchReplacement[g_MatchTotal] := row[3]
       
       continue
    }
@@ -586,7 +595,7 @@ CheckWord(Key)
    global g_Match
    global g_MatchStart
    global g_NumKeyMethod
-   global g_singlematch
+   global g_SingleMatch
    global g_Word
    global prefs_ListBoxRows
    global prefs_NumPresses
@@ -651,7 +660,7 @@ CheckWord(Key)
       Return 
    }
       
-   if ( ( (WordIndex + 1 - MatchStart) > prefs_ListBoxRows) || ( g_Match = "" ) || (g_singlematch[WordIndex] = "") )   ; only continue singlematch is not empty 
+   if ( ( (WordIndex + 1 - MatchStart) > prefs_ListBoxRows) || ( g_Match = "" ) || (g_SingleMatch[WordIndex] = "") )   ; only continue g_SingleMatch is not empty 
    { 
       SendCompatible(Key,0)
       ProcessKey(Key,"")
@@ -732,7 +741,7 @@ EvaluateUpDown(Key)
    global g_MatchStart
    global g_MatchTotal
    global g_OriginalMatchStart
-   global g_singlematch
+   global g_SingleMatch
    global g_Word
    global prefs_ArrowKeyMethod
    global prefs_DisabledAutoCompleteKeys
@@ -810,7 +819,7 @@ EvaluateUpDown(Key)
          Return     
       }
       
-      if (g_singlematch[g_MatchPos] = "") ;only continue if singlematch is not empty
+      if (g_SingleMatch[g_MatchPos] = "") ;only continue if g_SingleMatch is not empty
       {
          SendKey(Key)
          g_MatchPos := g_MatchTotal
@@ -935,12 +944,12 @@ AddSelectedWordToList()
 DeleteSelectedWordFromList()
 {
    global g_MatchPos
-   global g_singlematch
+   global g_SingleMatch
    
-   if !(g_singlematch[g_MatchPos] = "") ;only continue if singlematch is not empty
+   if !(g_SingleMatch[g_MatchPos] = "") ;only continue if g_SingleMatch is not empty
    {
       
-      DeleteWordFromList(g_singlematch[g_MatchPos])
+      DeleteWordFromList(g_SingleMatch[g_MatchPos])
       RecomputeMatches()
       Return
    }
@@ -1064,7 +1073,9 @@ ClearAllVars(ClearWord)
       g_LastInput_id=
    }
    
-   g_singlematch =
+   g_SingleMatch =
+   g_SingleMatchDescription =
+   g_SingleMatchReplacement =
    g_Match= 
    g_MatchPos=
    g_MatchStart= 

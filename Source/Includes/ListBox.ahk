@@ -215,7 +215,7 @@ SavePriorMatchPosition()
    global g_MatchStart
    global g_OldMatch
    global g_OldMatchStart
-   global g_singlematch
+   global g_SingleMatch
    global prefs_ArrowKeyMethod
    
    if !(g_MatchPos)
@@ -224,7 +224,7 @@ SavePriorMatchPosition()
       g_OldMatchStart = 
    } else IfEqual, prefs_ArrowKeyMethod, LastWord
    {
-      g_OldMatch := g_singlematch[g_MatchPos]
+      g_OldMatch := g_SingleMatch[g_MatchPos]
       g_OldMatchStart = 
    } else IfEqual, prefs_ArrowKeyMethod, LastPosition
    {
@@ -245,7 +245,7 @@ SetupMatchPosition()
    global g_MatchTotal
    global g_OldMatch
    global g_OldMatchStart
-   global g_singlematch
+   global g_SingleMatch
    global prefs_ArrowKeyMethod
    global prefs_ListBoxRows
    
@@ -287,7 +287,7 @@ SetupMatchPosition()
       ListPosition =
       Loop, %g_MatchTotal%
       {
-         if ( g_OldMatch == g_singlematch[A_Index] )
+         if ( g_OldMatch == g_SingleMatch[A_Index] )
          {
             ListPosition := A_Index
             Break
@@ -321,7 +321,6 @@ RebuildMatchList()
    global g_MatchStart
    global g_MatchTotal
    global g_OriginalMatchStart
-   global g_singlematch
    global prefs_ListBoxRows
    
    g_Match = 
@@ -342,7 +341,7 @@ RebuildMatchList()
    
    Loop, %g_MatchTotal%
    {
-      CurrentLength := AddToMatchList(A_Index,g_singlematch[A_Index])
+      CurrentLength := AddToMatchList(A_Index)
       IfGreater, CurrentLength, %g_MatchLongestLength%
          g_MatchLongestLength := CurrentLength      
    }
@@ -350,12 +349,15 @@ RebuildMatchList()
    Return
 }
 
-AddToMatchList(position,value)
+AddToMatchList(position)
 {
    global g_DelimiterChar
    global g_Match
    global g_MatchStart
    global g_NumKeyMethod
+   global g_SingleMatch
+   global g_SingleMatchDescription
+   global g_SingleMatchReplacement
    
    IfEqual, g_NumKeyMethod, Off
    {
@@ -370,8 +372,19 @@ AddToMatchList(position,value)
       prefix := Mod(position - g_MatchStart +1,10) . " "
    }
    
-   g_Match .= prefix . value . g_DelimiterChar
-   Return, StrLen("8 " . value)
+   CurrentMatch := g_SingleMatch[position]
+   if (g_SingleMatchReplacement[position])
+   {
+      CurrentMatch .= "->" . g_SingleMatchReplacement[position]
+   }
+   if (g_SingleMatchDescription[position])
+   {
+      CurrentMatch .= "|" . g_SingleMatchDescription[position]
+   }
+   
+   g_Match .= prefix . CurrentMatch
+   g_Match .= g_DelimiterChar
+   Return, StrLen("8 " . CurrentMatch)
 }
 
 ;------------------------------------------------------------------------

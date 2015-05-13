@@ -20,20 +20,28 @@ SendKey(Key)
    
 SendWord(WordIndex)
 {
-   global g_singlematch
+   global g_SingleMatch
+   global g_SingleMatchReplacement
    global g_Word
    ;Send the word
-   sending := g_singlematch[WordIndex]
+   if (g_SingleMatchReplacement[WordIndex])
+   {
+      sending := g_SingleMatchReplacement[WordIndex]
+      ForceBackspace := true
+   } else {
+      sending := g_SingleMatch[WordIndex]
+      ForceBackspace := false
+   }
    ; Update Typed Count
    UpdateWordCount(sending,0)
-   SendFull(sending, StrLen(g_Word))   
+   SendFull(sending, StrLen(g_Word), ForceBackspace)   
    ClearAllVars(true)
    Return
 }  
 
 ;------------------------------------------------------------------------
             
-SendFull(SendValue,BackSpaceLen)
+SendFull(SendValue,BackSpaceLen,ForceBackspace=false)
 {
    global g_Active_Id
    global prefs_AutoSpace
@@ -44,7 +52,12 @@ SendFull(SendValue,BackSpaceLen)
    
    ; If we are not backspacing, remove the typed characters from the string to send
    IfNotEqual, prefs_NoBackSpace, Off
-      StringTrimLeft, SendValue, SendValue, %BackSpaceLen%
+   {
+      if !(ForceBackspace)
+      {
+         StringTrimLeft, SendValue, SendValue, %BackSpaceLen%
+      }
+   }
    
    ; if autospace is on, add a space to the string to send
    IfEqual, prefs_AutoSpace, On
@@ -54,17 +67,22 @@ SendFull(SendValue,BackSpaceLen)
    {
       ; Shift key hits are here to account for an occassional bug which misses the first keys in SendPlay
       sending = {Shift Down}{Shift Up}{Shift Down}{Shift Up}      
-      IfEqual, prefs_NoBackSpace, Off
-         sending .= "{BS " . BackSpaceLen . "}"      
+      if (ForceBackspace || prefs_NoBackSpace = "Off")
+      {
+         sending .= "{BS " . BackSpaceLen . "}"
+      }
       sending .= "{Raw}" . SendValue
          
       SendPlay, %sending% ; First do the backspaces, Then send word (Raw because we want the string exactly as in wordlist.txt) 
       Return
    }
 
-   IfEqual, prefs_NoBackSpace, Off
+   if (ForceBackspace || prefs_NoBackSpace = "Off")
+   {
       sending = {BS %BackSpaceLen%}{Raw}%SendValue%
-   Else sending = {Raw}%SendValue%
+   } Else {
+      sending = {Raw}%SendValue%
+   }
    
    IfEqual, prefs_SendMethod, 2
    {
@@ -83,9 +101,12 @@ SendFull(SendValue,BackSpaceLen)
    Clipboard := SendValue
    ClipWait, 0
    
-   IfEqual, prefs_NoBackSpace, Off
+   if (ForceBackspace || prefs_NoBackSpace = "Off")
+   {
       sending = {BS %BackSpaceLen%}{Ctrl Down}v{Ctrl Up}
-   else sending = {Ctrl Down}v{Ctrl Up}
+   } else {
+   sending = {Ctrl Down}v{Ctrl Up}
+   }
    
    IfEqual, prefs_SendMethod, 1C
    {

@@ -77,7 +77,7 @@ ReadWordList()
       ;reverse the numbers of the word counts in memory
       ReverseWordNums(LearnedWordsCount)
       
-      g_WordListDB.Query("INSERT INTO LastState VALUES ('1');")
+      g_WordListDB.Query("INSERT INTO LastState VALUES ('tableConverted','1',NULL);")
       
       Progress, Off
    }
@@ -102,7 +102,9 @@ ReverseWordNums(LearnedWordsCount)
    g_WordListDB.BeginTransaction()
    For each, row in LearnedWordsTable.Rows
    {
-      WhereQuery := "WHERE word = '" . row[1] . "'"
+      SearchValue := row[1]
+      StringReplace, SearchValueEscaped, SearchValue, ', '', All
+      WhereQuery := "WHERE word = '" . SearchValueEscaped . "'"
       g_WordListDB.Query("UPDATE words SET count = (SELECT " . LearnedWordsCount . " - count FROM words " . WhereQuery . ") " . WhereQuery . ";")
    }
    g_WordListDB.EndTransaction()
@@ -127,24 +129,64 @@ AddWordToList(AddWord,ForceCountNewOnly,ForceLearn=false, ByRef LearnedWordsCoun
    global g_WordListDone
    global g_WordListDB
    
-   StringUpper, AddWordIndex, AddWord
+   if !(LearnedWordsCount) {
+      StringSplit, SplitAddWord, AddWord, |
+      
+      IfEqual, SplitAddWord2, D
+      {
+         AddWordDescription := SplitAddWord3
+         AddWord := SplitAddWord1
+         IfEqual, SplitAddWord4, R
+         {
+            AddWordReplacement := SplitAddWord5
+         }
+      } else IfEqual, SplitAddword2, R
+      {
+         AddWordReplacement := SplitAddWord3
+         AddWord := SplitAddWord1
+         IfEqual, SplitAddWord4, D
+         {
+            AddWordDescription := SplitAddWord5
+         }
+      }
+   }
          
    if !(CheckValid(AddWord,ForceLearn))
       return
+   
+   StringUpper, AddWordIndex, AddWord
+   
+   StringReplace, AddWordEscaped, AddWord, ', '', All
+   StringReplace, AddWordIndexEscaped, AddWordIndex, ', '', All
+   StringReplace, AddWordReplacementEscaped, AddWordReplacement, ', '', All
+   StringReplace, AddWordDescriptionEscaped, AddWordDescription, ', '', All
 
    IfEqual, g_WordListDone, 0 ;if this is read from the wordlist
    {
       IfNotEqual,LearnedWordsCount,  ;if this is a stored learned word, this will only have a value when LearnedWords are read in from the wordlist
       {
-         g_WordListDB.Query("INSERT INTO words (wordindexed, word, count) VALUES ('" . AddWordIndex . "','" . AddWord . "','" . LearnedWordsCount++ . "');")
+         g_WordListDB.Query("INSERT INTO words (wordindexed, word, count) VALUES ('" . AddWordIndexEscaped . "','" . AddWordEscaped . "','" . LearnedWordsCount++ . "');")
       } else {
-         g_WordListDB.Query("INSERT INTO words (wordindexed,word) VALUES ('" . AddWordIndex . "','" . AddWord . "');")
+         if (AddWordReplacement)
+         {
+            WordReplacementQuery := "'" . AddWordReplacementEscaped . "'"
+         } else {
+            WordReplacementQuery := "NULL"
+         }
+         
+         if (AddWordDescription)
+         {
+            WordDescriptionQuery := "'" . AddWordDescriptionEscaped . "'"
+         } else {
+            WordDescriptionQuery := "NULL"
+         }
+         g_WordListDB.Query("INSERT INTO words (wordindexed, word, worddescription, wordreplacement) VALUES ('" . AddWordIndexEscaped . "','" . AddWordEscaped . "'," . WordDescriptionQuery . "," . WordReplacementQuery . ");")
       }
       
    } else if (prefs_LearnMode = "On" || ForceCountNewOnly == 1)
    { 
       ; If this is an on-the-fly learned word
-      AddWordInList := g_WordListDB.Query("SELECT * FROM words WHERE word = '" . AddWord . "';")
+      AddWordInList := g_WordListDB.Query("SELECT * FROM words WHERE word = '" . AddWordEscaped . "';")
       
       IF !( AddWordInList.Count() > 0 ) ; if the word is not in the list
       {
@@ -166,7 +208,7 @@ AddWordToList(AddWord,ForceCountNewOnly,ForceLearn=false, ByRef LearnedWordsCoun
             CountValue := prefs_LearnCount ;set the count to LearnCount so it gets written to the file
          }
          
-         g_WordListDB.Query("INSERT INTO words (wordindexed, word, count) VALUES ('" . AddWordIndex . "','" . AddWord . "','" . CountValue . "');")
+         g_WordListDB.Query("INSERT INTO words (wordindexed, word, count) VALUES ('" . AddWordIndexEscaped . "','" . AddWordEscaped . "','" . CountValue . "');")
       } else IfEqual, prefs_LearnMode, On
       {
          IfEqual, ForceCountNewOnly, 1                     
@@ -179,7 +221,7 @@ AddWordToList(AddWord,ForceCountNewOnly,ForceLearn=false, ByRef LearnedWordsCoun
                
             IF ( CountValue < prefs_LearnCount )
             {
-               g_WordListDB.QUERY("UPDATE words SET count = ('" . prefs_LearnCount . "') WHERE word = '" . AddWord . "');")
+               g_WordListDB.QUERY("UPDATE words SET count = ('" . prefs_LearnCount . "') WHERE word = '" . AddWordEscaped . "');")
             }
          } else {
             UpdateWordCount(AddWord,0) ;Increment the word count if it's already in the list and we aren't forcing it on
@@ -242,7 +284,8 @@ DeleteWordFromList(DeleteWord)
    IfNotEqual, prefs_LearnMode, On
       Return
    
-   g_WordListDB.Query("DELETE FROM words WHERE word = '" . DeleteWord . "';")
+   StringReplace, DeleteWordEscaped, DeleteWord, ', '', All
+   g_WordListDB.Query("DELETE FROM words WHERE word = '" . DeleteWordEscaped . "';")
       
    Return   
 }
@@ -262,9 +305,9 @@ UpdateWordCount(word,SortOnly)
    
    IfEqual, SortOnly, 
       Return
-   
-   WhereQuery := "WHERE word = '" . word . "'"
-   g_WordListDB.Query("UPDATE words SET count = (SELECT count + 1 FROM words " . WhereQuery . ") " . WhereQuery . ";")
+
+   StringReplace, wordEscaped, word, ', '', All
+   g_WordListDB.Query("UPDATE words SET count = count + 1 WHERE word = '" . wordEscaped . "';")
    
    Return
 }
