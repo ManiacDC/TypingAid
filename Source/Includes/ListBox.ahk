@@ -339,9 +339,11 @@ RebuildMatchList()
    
    g_OriginalMatchStart := g_MatchStart
    
+   MaxLength := ComputeListBoxMaxLength()
+   
    Loop, %g_MatchTotal%
    {
-      CurrentLength := AddToMatchList(A_Index)
+      CurrentLength := AddToMatchList(A_Index, MaxLength)
       IfGreater, CurrentLength, %g_MatchLongestLength%
          g_MatchLongestLength := CurrentLength      
    }
@@ -349,7 +351,7 @@ RebuildMatchList()
    Return
 }
 
-AddToMatchList(position)
+AddToMatchList(position, MaxLength)
 {
    global g_DelimiterChar
    global g_Match
@@ -382,6 +384,12 @@ AddToMatchList(position)
       CurrentMatch .= "|" . g_SingleMatchDescription[position]
    }
    
+   ;MaxLength - 2 to make room for prefix
+   if (StrLen(CurrentMatch) > (MaxLength - 2))
+   {
+      StringLeft, CurrentMatch, CurrentMatch, MaxLength - 2
+   }
+   
    g_Match .= prefix . CurrentMatch
    g_Match .= g_DelimiterChar
    Return, StrLen("8 " . CurrentMatch)
@@ -389,7 +397,59 @@ AddToMatchList(position)
 
 ;------------------------------------------------------------------------
 
+; find out the longest length we can use in the listbox
+; Any changes to this function probably need to be reflected in ShowListBox() or ForceWithinMonitorBounds
+ComputeListBoxMaxLength()
+{
+   global g_ListBoxCharacterWidthComputed
+   global g_MatchTotal
+   global g_SM_CMONITORS
+   global g_SM_CXFOCUSBORDER
+   global g_SM_CXVSCROLL
+   
+   ; grab the width of a vertical scrollbar
+
+   Rows := GetRows()
+   
+   IfGreater, g_MatchTotal, %Rows%
+   {
+      SysGet, ScrollBarWidth, %g_SM_CXVSCROLL%
+      if ScrollBarWidth is not integer
+         ScrollBarWidth = 17
+   } else ScrollBarWidth = 0
+
+   ; Grab the internal border width of the ListBox box
+   SysGet, BorderWidthX, %g_SM_CXFOCUSBORDER%
+   If BorderWidthX is not integer
+      BorderWidthX = 1
+   
+   ;Use 8 pixels for each character in width
+   ListBoxBaseSizeX := g_ListBoxCharacterWidthComputed + ScrollBarWidth + (BorderWidthX * 2)
+   
+   ListBoxPosX := HCaretX()
+   ListBoxPosY := HCaretY()
+   
+   SysGet, NumMonitors, %g_SM_CMONITORS%
+
+   IfLess, NumMonitors, 1
+      NumMonitors =1
+         
+   Loop, %NumMonitors%
+   {
+      SysGet, Mon, Monitor, %A_Index%
+      IF ( ( ListBoxPosX < MonLeft ) || (ListBoxPosX > MonRight ) || ( ListBoxPosY < MonTop ) || (ListBoxPosY > MonBottom ) )
+         Continue
+      
+      MonWidth := MonRight - MonLeft
+      break
+   }
+   
+   return Floor((MonWidth-ListBoxBaseSizeX)/ g_ListBoxCharacterWidthComputed)
+}
+   
+
 ;Show matched values
+; Any changes to this function may need to be reflected in ComputeListBoxMaxLength()
 ShowListBox()
 {
    global
@@ -414,7 +474,7 @@ ShowListBox()
       {
          SysGet, ScrollBarWidth, %g_SM_CXVSCROLL%
          if ScrollBarWidth is not integer
-               ScrollBarWidth = 17         
+            ScrollBarWidth = 17
       } else ScrollBarWidth = 0
    
       ; Grab the internal border width of the ListBox box
@@ -422,14 +482,17 @@ ShowListBox()
       If BorderWidthX is not integer
          BorderWidthX = 1
       
-      
       ;Use 8 pixels for each character in width
       ListBoxSizeX := g_ListBoxCharacterWidthComputed * g_MatchLongestLength + g_ListBoxCharacterWidthComputed + ScrollBarWidth + (BorderWidthX * 2)
       
-      
       g_ListBoxPosX := HCaretX()
-      ; + ListBoxOffset Move ListBox down a little so as not to hide the caret. 
-      ListBoxPosY := HCaretY()+prefs_ListBoxOffset
+      ListBoxPosY := HCaretY()
+      
+      ; In rare scenarios, the Cursor may not have been detected. In these cases, we just won't show the ListBox.
+      IF (!(g_ListBoxPosX) || !(ListBoxPosY))
+      {
+         return
+      }
       
       MatchEnd := g_MatchStart + (prefs_ListBoxRows - 1)
       
@@ -459,12 +522,6 @@ ShowListBox()
       ForceWithinMonitorBounds(g_ListBoxPosX,ListBoxPosY,ListBoxActualSizeW,ListBoxActualSizeH,Rows)
       
       g_ListBoxContentWidth := ListBoxActualSizeW - ScrollBarWidth - BorderWidthX
-      
-      ; In rare scenarios, the Cursor may not have been detected. In these cases, we just won't show the ListBox.
-      IF (!(g_ListBoxPosX) || !(ListBoxPosY))
-      {
-         return
-      }
       
       IfEqual, g_ListBox_Id,
       {
@@ -520,11 +577,13 @@ ShowListBox()
    }
 }
 
+; Any changes to this function may need to be reflected in ComputeListBoxMaxLength()
 ForceWithinMonitorBounds(ByRef ListBoxPosX,ByRef ListBoxPosY,ListBoxActualSizeW,ListBoxActualSizeH,Rows)
 {
+   global g_SM_CMONITORS
    global prefs_ListBoxOffset
    ;Grab the number of non-dummy monitors
-   SysGet, NumMonitors, 80
+   SysGet, NumMonitors, %g_SM_CMONITORS%
    
    IfLess, NumMonitors, 1
       NumMonitors =1
@@ -542,8 +601,13 @@ ForceWithinMonitorBounds(ByRef ListBoxPosX,ByRef ListBoxPosY,ListBoxActualSizeW,
             ListBoxPosX := MonLeft
       }
          
+      
+      ; + prefs_ListBoxOffset Move ListBox down a little so as not to hide the caret. 
+      ListBoxPosY := ListBoxPosY + prefs_ListBoxOffset
       If ( (ListBoxPosY + ListBoxActualSizeH ) > MonBottom )
-          ListBoxPosY := HCaretY() - Ceil(prefs_ListBoxOffset - (ListBoxActualSizeH / Rows )) - ListBoxActualSizeH  
+      {
+         ListBoxPosY := HCaretY() - Ceil(prefs_ListBoxOffset - (ListBoxActualSizeH / Rows )) - ListBoxActualSizeH
+      }
          
       Break
    }
