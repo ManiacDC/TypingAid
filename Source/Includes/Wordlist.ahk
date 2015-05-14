@@ -165,13 +165,14 @@ AddWordToList(AddWord,ForceCountNewOnly,ForceLearn=false, ByRef LearnedWordsCoun
    {
       IfNotEqual,LearnedWordsCount,  ;if this is a stored learned word, this will only have a value when LearnedWords are read in from the wordlist
       {
-         g_WordListDB.Query("INSERT INTO words (wordindexed, word, count) VALUES ('" . AddWordIndexEscaped . "','" . AddWordEscaped . "','" . LearnedWordsCount++ . "');")
+         ; must update wordreplacement since SQLLite3 considers nulls unique
+         g_WordListDB.Query("INSERT INTO words (wordindexed, word, count, wordreplacement) VALUES ('" . AddWordIndexEscaped . "','" . AddWordEscaped . "','" . LearnedWordsCount++ . "','');")
       } else {
          if (AddWordReplacement)
          {
             WordReplacementQuery := "'" . AddWordReplacementEscaped . "'"
          } else {
-            WordReplacementQuery := "NULL"
+            WordReplacementQuery := "''"
          }
          
          if (AddWordDescription)
@@ -208,7 +209,8 @@ AddWordToList(AddWord,ForceCountNewOnly,ForceLearn=false, ByRef LearnedWordsCoun
             CountValue := prefs_LearnCount ;set the count to LearnCount so it gets written to the file
          }
          
-         g_WordListDB.Query("INSERT INTO words (wordindexed, word, count) VALUES ('" . AddWordIndexEscaped . "','" . AddWordEscaped . "','" . CountValue . "');")
+         ; must update wordreplacement since SQLLite3 considers nulls unique
+         g_WordListDB.Query("INSERT INTO words (wordindexed, word, count, wordreplacement) VALUES ('" . AddWordIndexEscaped . "','" . AddWordEscaped . "','" . CountValue . "','');")
       } else IfEqual, prefs_LearnMode, On
       {
          IfEqual, ForceCountNewOnly, 1                     

@@ -1,7 +1,7 @@
 ; these functions handle database conversion
 ; always set the SetDbVersion default argument to the current highest version
 
-SetDbVersion(dBVersion = 2)
+SetDbVersion(dBVersion = 3)
 {
 	global g_WordListDB
 	g_WordListDB.Query("INSERT OR REPLACE INTO LastState VALUES ('databaseVersion', '" . dBVersion . "', NULL);")
@@ -54,6 +54,11 @@ MaybeConvertDatabase()
 		RunConversionTwo()
 	}
 	
+	if (databaseVersion < 3)
+	{
+		RunConversionThree()
+	}
+	
 	return, false
 }
 
@@ -62,25 +67,19 @@ MaybeConvertDatabase()
 RebuildDatabase()
 {
 	global g_WordListDB
+	g_WordListDB.BeginTransaction()
 	g_WordListDB.Query("DROP TABLE Words;")
 	g_WordListDB.Query("DROP INDEX WordIndex;")
 	g_WordListDB.Query("DROP TABLE LastState;")
 	
-	IF not g_WordListDB.Query("CREATE TABLE Words (wordindexed TEXT, word TEXT PRIMARY KEY, count INTEGER, worddescription TEXT, wordreplacement TEXT);")
-	{
-		msgbox Cannot Create Words Table - fatal error...
-		ExitApp
-	}
-
-	IF not g_WordListDB.Query("CREATE INDEX WordIndex ON Words (wordindexed);")
-	{
-		msgbox Cannot Create WordIndex Index - fatal error...
-		ExitApp
-	}
+	CreateWordsTable()
+	
+	CreateWordIndex()
 	
 	CreateLastStateTable()
 	
 	SetDbVersion()
+	g_WordListDB.EndTransaction()
 		
 }
 
@@ -88,19 +87,20 @@ RebuildDatabase()
 RunConversionOne(WordlistConverted)
 {
 	global g_WordListDB
+	g_WordListDB.BeginTransaction()
 	
 	g_WordListDB.Query("ALTER TABLE LastState RENAME TO OldLastState;")
-	IF not g_WordListDB.Query("CREATE TABLE LastState (lastStateItem TEXT PRIMARY KEY, lastStateNumber INTEGER, otherInfo TEXT) WITHOUT ROWID;")
-	{
-		MsgBox Cannot Create LastState Table - fatal error...
-		ExitApp
-	}
+	
+	CreateLastStateTable()
+	
 	g_WordListDB.Query("DROP TABLE OldLastState;")
 	g_WordListDB.Query("INSERT OR REPLACE INTO LastState VALUES ('tableConverted', '" . WordlistConverted . "', NULL);")
 	
-	g_WordListDB.Query("ALTER TABLE Words ADD COLUMN worddescription TEXT;")
+	;superseded by conversion 3
+	;g_WordListDB.Query("ALTER TABLE Words ADD COLUMN worddescription TEXT;")
 	
 	SetDbVersion(1)
+	g_WordListDB.EndTransaction()
 	
 }
 
@@ -108,9 +108,31 @@ RunConversionTwo()
 {
 	global g_WordListDB
 	
-	g_WordListDB.Query("ALTER TABLE Words ADD COLUMN wordreplacement TEXT;")
+	;superseded by conversion 3
+	;g_WordListDB.Query("ALTER TABLE Words ADD COLUMN wordreplacement TEXT;")
 	
-	SetDbVersion(2)
+	;SetDbVersion(2)
+}
+
+RunConversionThree()
+{
+	global g_WordListDB
+	g_WordListDB.BeginTransaction()
+	
+	CreateWordsTable("Words2")
+	
+	g_WordListDB.Query("UPDATE Words SET wordreplacement = '' WHERE wordreplacement IS NULL;")
+	
+	g_WordListDB.Query("INSERT INTO Words2 SELECT * FROM Words;")
+	
+	g_WordListDB.Query("DROP TABLE Words;")
+	
+	g_WordListDB.Query("ALTER TABLE Words2 RENAME TO Words;")
+	
+	CreateWordIndex()
+	
+	SetDbVersion(3)
+	g_WordListDB.EndTransaction()
 }
 
 CreateLastStateTable()
@@ -119,7 +141,35 @@ CreateLastStateTable()
 
 	IF not g_WordListDB.Query("CREATE TABLE LastState (lastStateItem TEXT PRIMARY KEY, lastStateNumber INTEGER, otherInfo TEXT) WITHOUT ROWID;")
 	{
-		MsgBox Cannot Create LastState Table - fatal error...
+		ErrMsg := g_WordListDB.ErrMsg()
+		ErrCode := g_WordListDB.ErrCode()
+		MsgBox Cannot Create LastState Table - fatal error: %ErrCode% - %ErrMsg%
+		ExitApp
+	}
+}
+
+CreateWordsTable(WordsTableName:="Words")
+{
+	global g_WordListDB
+	
+	IF not g_WordListDB.Query("CREATE TABLE " . WordsTableName . " (wordindexed TEXT NOT NULL, word TEXT NOT NULL, count INTEGER, worddescription TEXT, wordreplacement TEXT NOT NULL, PRIMARY KEY (word, wordreplacement) );")
+	{
+		ErrMsg := g_WordListDB.ErrMsg()
+		ErrCode := g_WordListDB.ErrCode()
+		msgbox Cannot Create %WordsTableName% Table - fatal error: %ErrCode% - %ErrMsg%
+		ExitApp
+	}
+}
+
+CreateWordIndex()
+{
+	global g_WordListDB
+
+	IF not g_WordListDB.Query("CREATE INDEX WordIndex ON Words (wordindexed);")
+	{
+		ErrMsg := g_WordListDB.ErrMsg()
+		ErrCode := g_WordListDB.ErrCode()
+		msgbox Cannot Create WordIndex Index - fatal error: %ErrCode% - %ErrMsg%
 		ExitApp
 	}
 }
