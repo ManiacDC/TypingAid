@@ -43,6 +43,7 @@ ReadPreferences(RestoreDefaults = false,RestorePreferences = false)
    global dft_ListBoxFontOverride
    global dft_ListBoxFontSize
    global dft_ListBoxCharacterWidth
+   global dft_ListBoxMaxWidth
    global dft_ListBoxOpacity
    global dft_ListBoxRows
    global dft_HelperWindowProgramExecutables
@@ -74,6 +75,7 @@ ReadPreferences(RestoreDefaults = false,RestorePreferences = false)
    global prefs_ListBoxFontOverride
    global prefs_ListBoxFontSize
    global prefs_ListBoxCharacterWidth
+   global prefs_ListBoxMaxWidth
    global prefs_ListBoxOpacity
    global prefs_ListBoxRows
    global prefs_HelperWindowProgramExecutables
@@ -135,8 +137,9 @@ ReadPreferences(RestoreDefaults = false,RestorePreferences = false)
       dft_ListBoxOffSet,prefs_ListBoxOffset,ListBoxSettings,14
       dft_ListBoxFontFixed,prefs_ListBoxFontFixed,ListBoxSettings,Off
       dft_ListBoxFontOverride,prefs_ListBoxFontOverride,ListBoxSettings,%SpaceVar%
-      dft_ListBoxFontSize,prefs_ListBoxFontSize,ListBoxSettings,10      
+      dft_ListBoxFontSize,prefs_ListBoxFontSize,ListBoxSettings,10 
       dft_ListBoxCharacterWidth,prefs_ListBoxCharacterWidth,ListBoxSettings,%SpaceVar%
+      dft_ListBoxMaxWidth,prefs_ListBoxMaxWidth,ListBoxSettings,%SpaceVar%
       dft_ListBoxOpacity,prefs_ListBoxOpacity,ListBoxSettings,215
       dft_ListBoxRows,prefs_ListBoxRows,ListBoxSettings,10
       dft_HelperWindowProgramExecutables,prefs_HelperWindowProgramExecutables,HelperWindow,%SpaceVar%
@@ -220,10 +223,11 @@ ValidatePreferences()
 {
    global g_ListBoxCharacterWidthComputed, g_NumKeyMethod
    global prefs_ArrowKeyMethod, prefs_DisabledAutoCompleteKeys
+   global dft_ArrowKeyMethod
    global prefs_AutoSpace, prefs_DetectMouseClickMove, prefs_LearnCount, prefs_LearnLength, prefs_LearnMode, prefs_Length
    global dft_AutoSpace, dft_DetectMouseClickMove, dft_LearnCount, dft_LearnLength, dft_LearnMode, dft_Length
-   global prefs_ListBoxCharacterWidth, prefs_ListBoxFontFixed, prefs_ListBoxFontSize, prefs_ListBoxOffset, prefs_ListBoxOpacity, prefs_ListBoxRows
-   global dft_ListBoxCharacterWidth, dft_ListBoxFontFixed, dft_ListBoxFontSize, dft_ListBoxOffset, dft_ListBoxOpacity, dft_ListBoxRows
+   global prefs_ListBoxCharacterWidth, prefs_ListBoxFontFixed, prefs_ListBoxFontSize, prefs_ListBoxMaxWidth, prefs_ListBoxOffset, prefs_ListBoxOpacity, prefs_ListBoxRows
+   global dft_ListBoxCharacterWidth, dft_ListBoxFontFixed, dft_ListBoxFontSize, dft_ListBoxMaxWidth, dft_ListBoxOffset, dft_ListBoxOpacity, dft_ListBoxRows
    global prefs_NoBackSpace, prefs_NumPresses, prefs_SendMethod, prefs_ShowLearnedFirst, prefs_SuppressMatchingWord, prefs_TerminatingCharacters
    global dft_NoBackSpace, dft_NumPresses, dft_SendMethod, dft_ShowLearnedFirst, dft_SuppressMatchingWord, dft_TerminatingCharacters
    
@@ -348,6 +352,25 @@ ValidatePreferences()
       g_ListBoxCharacterWidthComputed := prefs_ListBoxCharacterWidth
    } else {
       g_ListBoxCharacterWidthComputed := Ceil(prefs_ListBoxFontSize * 0.8)
+   }
+   
+   if dft_ListBoxMaxWidth is not Integer
+   {
+      dft_ListBoxMaxWidth =
+   }
+   
+   if prefs_ListBoxMaxWidth is not Integer
+   {
+      prefs_ListBoxMaxWidth := dft_ListBoxMaxWidth
+   }
+   
+   if !prefs_ListBoxMaxWidth
+   {
+      ; skip out
+   } else if prefs_ListBoxMaxWidth is Integer
+   {
+      IfLess, prefs_ListBoxMaxWidth, 100
+         prefs_ListBoxMaxWidth = 100
    }
       
    If prefs_ListBoxOpacity is not Integer
@@ -595,8 +618,13 @@ helpinfo_ListBoxCharacterWidth=
 
 helpinfo_ListBoxFontOverride=
 (
-;"list font" is used to specify a font for the Wordlist Box to use. The default for Fixed is Courier,
+;"List font" is used to specify a font for the Wordlist Box to use. The default for Fixed is Courier,
 ;and the default for Variable is Tahoma.
+)
+
+helpinfo_ListBoxMaxWidth=
+(
+;"List max width in pixels" is used to specify the maximum width for the Wordlist Box in pixels. By default, this will not expand beyond the width of the current monitor.
 )
 
 helpinfo_IncludeProgramTitles=
@@ -687,6 +715,8 @@ helpinfo_FullHelpString =
 %helpinfo_ListBoxOffset%`r`n`r`n%helpinfo_ListBoxFontFixed%`r`n`r`n%helpinfo_ListBoxFontSize%
 
 %helpinfo_ListBoxOpacity%`r`n`r`n%helpinfo_ListBoxCharacterWidth%`r`n`r`n%helpinfo_ListBoxFontOverride%
+
+%helpinfo_ListBoxMaxWidth%
 
 %helpinfo_IncludeProgramTitles%`r`n`r`n%helpinfo_ExcludeProgramTitles%`r`n`r`n%helpinfo_IncludeProgramExecutables%`r`n`r`n%helpinfo_ExcludeProgramExecutables%
 

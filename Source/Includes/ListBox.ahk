@@ -387,10 +387,13 @@ AddToMatchList(position, MaxLength)
    ;MaxLength - 2 to make room for prefix
    if (StrLen(CurrentMatch) > (MaxLength - 2))
    {
-      StringLeft, CurrentMatch, CurrentMatch, MaxLength - 2
+      ; remove 5 characters so we can add the ellipsis
+      StringLeft, CurrentMatch, CurrentMatch, MaxLength - 5
+      CurrentMatch .= "..."
    }
    
    g_Match .= prefix . CurrentMatch
+   
    g_Match .= g_DelimiterChar
    Return, StrLen("8 " . CurrentMatch)
 }
@@ -406,6 +409,7 @@ ComputeListBoxMaxLength()
    global g_SM_CMONITORS
    global g_SM_CXFOCUSBORDER
    global g_SM_CXVSCROLL
+   global prefs_ListBoxMaxWidth
    
    ; grab the width of a vertical scrollbar
 
@@ -444,7 +448,18 @@ ComputeListBoxMaxLength()
       break
    }
    
-   return Floor((MonWidth-ListBoxBaseSizeX)/ g_ListBoxCharacterWidthComputed)
+   if !prefs_ListBoxMaxWidth
+   {
+      Width := MonWidth
+   } else if (prefs_ListBoxMaxWidth < MonWidth)
+   {
+      Width := prefs_ListBoxMaxWidth
+   } else 
+   {
+      Width := MonWidth
+   }
+   
+   return Floor((Width-ListBoxBaseSizeX)/ g_ListBoxCharacterWidthComputed)
 }
    
 

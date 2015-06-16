@@ -34,8 +34,8 @@ ConstructGui()
    global helpinfo_NoBackSpace, helpinfo_NumPresses, helpinfo_SendMethod, helpinfo_ShowLearnedFirst, helpinfo_SuppressMatchingWord, helpinfo_TerminatingCharacters
    global prefs_ExcludeProgramExecutables, prefs_ExcludeProgramTitles, prefs_IncludeProgramExecutables, prefs_IncludeProgramTitles, prefs_HelperWindowProgramExecutables, prefs_HelperWindowProgramTitles
    global helpinfo_ExcludeProgramExecutables, helpinfo_ExcludeProgramTitles, helpinfo_IncludeProgramExecutables, helpinfo_IncludeProgramTitles, helpinfo_HelperWindowProgramExecutables, helpinfo_HelperWindowProgramTitles
-   global prefs_ListBoxCharacterWidth, prefs_ListBoxFontFixed, prefs_ListBoxFontOverride, prefs_ListBoxFontSize, prefs_ListBoxOffset, prefs_ListBoxOpacity, prefs_ListBoxRows
-   global helpinfo_ListBoxCharacterWidth, helpinfo_ListBoxFontFixed, helpinfo_ListBoxFontOverride, helpinfo_ListBoxFontSize, helpinfo_ListBoxOffset, helpinfo_ListBoxOpacity, helpinfo_ListBoxRows
+   global prefs_ListBoxCharacterWidth, prefs_ListBoxFontFixed, prefs_ListBoxFontOverride, prefs_ListBoxFontSize, prefs_ListBoxMaxWidth, prefs_ListBoxOffset, prefs_ListBoxOpacity, prefs_ListBoxRows
+   global helpinfo_ListBoxCharacterWidth, helpinfo_ListBoxFontFixed, helpinfo_ListBoxFontOverride, helpinfo_ListBoxFontSize, helpinfo_ListBoxMaxWidth, helpinfo_ListBoxOffset, helpinfo_ListBoxOpacity, helpinfo_ListBoxRows
    global helpinfo_FullHelpString
    global Menu_ArrowKeyMethodOptionsText, Menu_CaseCorrection, Menu_ListBoxOpacityUpDown, Menu_SendMethodOptionsCode, Menu_SendMethodC
    global Menu_CtrlEnter, Menu_CtrlSpace, Menu_Enter, Menu_SingleClick, Menu_NumberKeys, Menu_RightArrow, Menu_Tab
@@ -392,6 +392,16 @@ ConstructGui()
    Gui, MenuGui:Add, DDL, x%MenuGroup3of3EditX% y%MenuRowEditY% w%MenuThreeColEditWidth% r10 w200 vprefs_ListBoxFontOverride gEditValue, %MenuFontList%
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup3of3HelpX% y%MenuRowHelpY% vhelpinfo_ListBoxFontOverride gHelpMe, %MenuGuiHelpIcon%
+   Gui, MenuGui:Font, cBlack
+
+   MenuRowY := MenuRowY + MenuRowHeight + MenuSeparatorY
+   MenuRowHelpY := MenuRowY - MenuHelpIndentY
+   MenuRowEditY := MenuRowY + MenuEditIndentY
+
+   Gui, MenuGui:Add, GroupBox, x%MenuGroup1BoxX% y%MenuRowY% w%MenuThreeColGroupWidth% h%MenuRowHeight% , List max width in pixels
+   Gui, MenuGui:Add, Edit, xp+10 yp+20 w%MenuThreeColEditWidth% vprefs_ListBoxMaxWidth gEditValue, %prefs_ListBoxMaxWidth%
+   Gui, MenuGui:Font, cGreen
+   Gui, MenuGui:Add, Text, x%MenuGroup1of3HelpX% y%MenuRowHelpY% vhelpinfo_ListBoxMaxWidth gHelpMe, %MenuGuiHelpIcon%
    Gui, MenuGui:Font, cBlack
 
    MenuRowY := MenuRowY + MenuRowHeight + MenuSeparatorY
@@ -799,7 +809,7 @@ return
 
 Save()
 {
-   global prefs_LearnCount, prefs_ListBoxOpacity
+   global prefs_ArrowKeyMethod, prefs_DisabledAutoCompleteKeys, prefs_LearnCount, prefs_ListBoxOpacity, prefs_NoBackSpace, prefs_SendMethod
    global Menu_ChangedPrefs, Menu_ListBoxOpacityUpDown, Menu_OldLearnCount
    global g_ScriptTitle
    ; should only save preferences.ini if different from defaults
