@@ -136,7 +136,7 @@ ReadPreferences(RestoreDefaults = false,RestorePreferences = false)
       dft_EndWordCharacters,prefs_EndWordCharacters,Settings,%SpaceVar%
       dft_ListBoxOffSet,prefs_ListBoxOffset,ListBoxSettings,14
       dft_ListBoxFontFixed,prefs_ListBoxFontFixed,ListBoxSettings,Off
-      dft_ListBoxFontOverride,prefs_ListBoxFontOverride,ListBoxSettings,%SpaceVar%
+      dft_ListBoxFontOverride,prefs_ListBoxFontOverride,ListBoxSettings,<Default>
       dft_ListBoxFontSize,prefs_ListBoxFontSize,ListBoxSettings,10 
       dft_ListBoxCharacterWidth,prefs_ListBoxCharacterWidth,ListBoxSettings,%SpaceVar%
       dft_ListBoxMaxWidth,prefs_ListBoxMaxWidth,ListBoxSettings,%SpaceVar%

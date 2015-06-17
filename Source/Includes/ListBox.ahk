@@ -7,13 +7,15 @@ InitializeListBox()
    Gui, ListBoxGui: -Caption +AlwaysOnTop +ToolWindow +Delimiter%g_DelimiterChar%
    
    Local ListBoxFont
-   IfNotEqual, prefs_ListBoxFontOverride,
+   if (prefs_ListBoxFontOverride && prefs_ListBoxFontOverride != "<Default>")
+   {
       ListBoxFont := prefs_ListBoxFontOverride
-   else {
-         IfEqual, prefs_ListBoxFontFixed, On   
-            ListBoxFont = Courier New
-         else ListBoxFont = Tahoma
-      }
+   } else IfEqual, prefs_ListBoxFontFixed, On
+   {
+      ListBoxFont = Courier New
+   } else {
+      ListBoxFont = Tahoma
+   }
       
    Gui, ListBoxGui:Font, s%prefs_ListBoxFontSize%, %ListBoxFont%
 
@@ -340,10 +342,18 @@ RebuildMatchList()
    g_OriginalMatchStart := g_MatchStart
    
    MaxLength := ComputeListBoxMaxLength()
+   HalfLength := Round(MaxLength/2)
    
    Loop, %g_MatchTotal%
    {
-      CurrentLength := AddToMatchList(A_Index, MaxLength)
+      CurrentLength := AddToMatchList(A_Index, MaxLength, HalfLength, 0, true)
+      IfGreater, CurrentLength, %LongestBaseLength%
+         LongestBaseLength := CurrentLength      
+   }
+   
+   Loop, %g_MatchTotal%
+   {
+      CurrentLength := AddToMatchList(A_Index, MaxLength, HalfLength, LongestBaseLength, false)
       IfGreater, CurrentLength, %g_MatchLongestLength%
          g_MatchLongestLength := CurrentLength      
    }
@@ -351,7 +361,7 @@ RebuildMatchList()
    Return
 }
 
-AddToMatchList(position, MaxLength)
+AddToMatchList(position, MaxLength, HalfLength, LongestBaseLength, ComputeBaseLengthOnly)
 {
    global g_DelimiterChar
    global g_Match
@@ -360,6 +370,7 @@ AddToMatchList(position, MaxLength)
    global g_SingleMatch
    global g_SingleMatchDescription
    global g_SingleMatchReplacement
+   global prefs_ListBoxFontFixed
    
    IfEqual, g_NumKeyMethod, Off
    {
@@ -375,27 +386,84 @@ AddToMatchList(position, MaxLength)
    }
    
    CurrentMatch := g_SingleMatch[position]
-   if (g_SingleMatchReplacement[position])
+   if (g_SingleMatchReplacement[position] || g_SingleMatchDescription[position])
    {
-      CurrentMatch .= "->" . g_SingleMatchReplacement[position]
-   }
-   if (g_SingleMatchDescription[position])
-   {
-      CurrentMatch .= "|" . g_SingleMatchDescription[position]
+      AdditionalDataExists := true
+      BaseLength := HalfLength
+   } else if (ComputeBaseLengthOnly) {
+      ; we don't need to compute the base length if there
+      ; is no Replacement or Description
+      Return, 0
+   } else {
+      BaseLength := MaxLength
    }
    
-   ;MaxLength - 2 to make room for prefix
-   if (StrLen(CurrentMatch) > (MaxLength - 2))
+   CurrentMatchLength := StrLen(CurrentMatch) + StrLen(prefix)
+   
+   if (CurrentMatchLength > BaseLength)
    {
-      ; remove 5 characters so we can add the ellipsis
-      StringLeft, CurrentMatch, CurrentMatch, MaxLength - 5
+      CompensatedBaseLength := BaseLength - strlen(prefix)
+      ; remove 3 characters so we can add the ellipsis
+      StringLeft, CurrentMatch, CurrentMatch, CompensatedBaseLength - 3
       CurrentMatch .= "..."
+   
+      CurrentMatchLength := StrLen(CurrentMatch) + StrLen(prefix)
+   }
+   
+   if (ComputeBaseLengthOnly)
+   {
+      Return, CurrentMatchLength
+   }
+   
+   Iterations := 0
+   Tabs = 
+   Remainder := 0
+   
+   if (AdditionalDataExists) 
+   {
+      if (g_SingleMatchReplacement[position])
+      {
+         CurrentMatch .= "->" . g_SingleMatchReplacement[position]
+      }
+      if (g_SingleMatchDescription[position])
+      {
+         ;;CurrentMatch .= "|" . g_SingleMatchDescription[position]
+         IfEqual, prefs_ListBoxFontFixed, On
+         {
+            Iterations := Ceil(LongestBaseLength/8) - Floor((strlen(CurrentMatch) + strlen(prefix))/8)
+         
+            Remainder := Mod(strlen(CurrentMatch) + strlen(prefix), 8)
+         
+            Loop, %Iterations%
+            {
+               Tabs .= Chr(9)
+            }
+         } else {
+            Iterations := 1
+            Remainder := 0
+            Tabs := Chr(9)
+         }
+         
+         CurrentMatch .= Tabs . "|" . g_SingleMatchDescription[position]
+      }
+         
+      CurrentMatchLength := strlen(CurrentMatch) + strlen(prefix) - strlen(Tabs) + (Iterations * 8) - Remainder
+      
+      ;MaxLength - prefix length to make room for prefix
+      if (CurrentMatchLength > MaxLength)
+      {
+         CompensatedMaxLength := MaxLength - strlen(prefix) + strlen(Tabs) - (Iterations * 8) + Remainder
+         ; remove 3 characters so we can add the ellipsis
+         StringLeft, CurrentMatch, CurrentMatch, CompensatedMaxLength - 3
+         CurrentMatch .= "..."
+         CurrentMatchLength := strlen(CurrentMatch) + strlen(prefix) - strlen(Tabs) + (Iterations * 8) - Remainder
+      }
    }
    
    g_Match .= prefix . CurrentMatch
    
    g_Match .= g_DelimiterChar
-   Return, StrLen("8 " . CurrentMatch)
+   Return, CurrentMatchLength
 }
 
 ;------------------------------------------------------------------------

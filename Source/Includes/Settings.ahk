@@ -385,10 +385,14 @@ ConstructGui()
    Gui, MenuGui:Font, cBlack
 
    Gui, MenuGui:Add, GroupBox, x%MenuGroup3of3BoxX% y%MenuRowY% w%MenuThreeColGroupWidth% h%MenuRowHeight% , List font
-   MenuFontList := "|" . MenuFontList . "|"
    sort, MenuFontList, D|
+   MenuFontList := "|<Default>|" . MenuFontList
    If (MenuListBoxFont = "") or (MenuListBoxFont = " ")
-	  StringReplace, MenuFontList, MenuFontList, |%prefs_ListBoxFontOverride%|, |%prefs_ListBoxFontOverride%||
+   {
+      StringReplace, MenuFontList, MenuFontList, |%prefs_ListBoxFontOverride%|, |%prefs_ListBoxFontOverride%||
+   }
+   ; remove the extra leading "|" we added for searching
+   StringTrimLeft, MenuFontList, MenuFontList, 1
    Gui, MenuGui:Add, DDL, x%MenuGroup3of3EditX% y%MenuRowEditY% w%MenuThreeColEditWidth% r10 w200 vprefs_ListBoxFontOverride gEditValue, %MenuFontList%
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup3of3HelpX% y%MenuRowHelpY% vhelpinfo_ListBoxFontOverride gHelpMe, %MenuGuiHelpIcon%
