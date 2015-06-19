@@ -81,12 +81,15 @@ InitializeListBox()
 
 BlockInput, Send
 
-;Read in the WordList
-ReadWordList()
-
 InitializeHotKeys()
 
 DisableKeyboardHotKeys()
+
+;Change the Running performance speed (Priority changed to High in GetIncludedActiveWindow)
+SetBatchLines, -1
+
+;Read in the WordList
+ReadWordList()
 
 g_WinChangedCallback := RegisterCallback("WinChanged")
 g_ListBoxScrollCallback := RegisterCallback("ListBoxScroll")
@@ -105,9 +108,6 @@ if !(g_ListBoxScrollCallback)
    
 ;Find the ID of the window we are using
 GetIncludedActiveWindow()
-
-;Change the Running performance speed (Priority changed to High in GetIncludedActiveWindow)
-SetBatchLines, -1
 
 MainLoop()
 

@@ -3,6 +3,7 @@
 ReadWordList()
 {
    global g_LegacyLearnedWords
+   global g_ScriptTitle
    global g_WordListDone
    global g_WordListDB
    ;mark the wordlist as not done
@@ -15,14 +16,14 @@ ReadWordList()
    MaybeFixFileEncoding(WordlistLearned,"UTF-8")
 
    g_WordListDB := DBA.DataBaseFactory.OpenDataBase("SQLite", A_ScriptDir . "\WordlistLearned.db" )
-	
-   g_WordListDB.Query("PRAGMA journal_mode = TRUNCATE;")
    
    if !g_WordListDB
    {
       msgbox Problem opening database '%A_ScriptDir%\WordlistLearned.db' - fatal error...
       exitapp
    }
+	
+   g_WordListDB.Query("PRAGMA journal_mode = TRUNCATE;")
    
    DatabaseRebuilt := MaybeConvertDatabase()
    
@@ -30,11 +31,23 @@ ReadWordList()
       CleanupWordList()
    }
    
+   Progress, M, Please wait..., Loading wordlist, %g_ScriptTitle%
    g_WordListDB.BeginTransaction()
    ;reads list of words from file 
    FileRead, ParseWords, %Wordlist%
    Loop, Parse, ParseWords, `n, `r
    {
+      ParseWordsCount++
+   }
+   Loop, Parse, ParseWords, `n, `r
+   {
+      ParseWordsSubCount++
+      ProgressPercent := Round(ParseWordsSubCount/ParseWordsCount * 100)
+      if (ProgressPercent <> OldProgressPercent)
+      {
+         Progress, %ProgressPercent%
+         OldProgressPercent := ProgressPercent
+      }
       IfEqual, A_LoopField, `;LEARNEDWORDS`;
       {
          if (DatabaseRebuilt)
@@ -50,10 +63,11 @@ ReadWordList()
    }
    ParseWords =
    g_WordListDB.EndTransaction()
+   Progress, Off
    
    if (DatabaseRebuilt)
    {
-      Progress, M, Please wait..., Converting wordlist, %A_ScriptName%
+      Progress, M, Please wait..., Converting learned words, %g_ScriptTitle%
     
       ;Force LearnedWordsCount to 0 if not already set as we are now processing Learned Words
       IfEqual, LearnedWordsCount,
@@ -72,7 +86,7 @@ ReadWordList()
       ParseWords =
       g_WordListDB.EndTransaction()
       
-      Progress, 50, Please wait..., Converting wordlist, %A_ScriptName%
+      Progress, 50, Please wait..., Converting learned words, %g_ScriptTitle%
 
       ;reverse the numbers of the word counts in memory
       ReverseWordNums(LearnedWordsCount)
@@ -321,8 +335,11 @@ CleanupWordList()
    ;Function cleans up all words that are less than the LearnCount threshold or have a NULL for count
    ;(NULL in count represents a 'wordlist.txt' word, as opposed to a learned word)
    global prefs_LearnCount
+   global g_ScriptTitle
    global g_WordListDB
+   Progress, M, Please wait..., Cleaning wordlist, %g_ScriptTitle%
    g_WordListDB.Query("DELETE FROM Words WHERE count < " . prefs_LearnCount . " OR count IS NULL;")
+   Progress, Off
 }
 
 ;------------------------------------------------------------------------
