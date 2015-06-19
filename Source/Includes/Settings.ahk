@@ -38,7 +38,7 @@ ConstructGui()
    global helpinfo_ListBoxCharacterWidth, helpinfo_ListBoxFontFixed, helpinfo_ListBoxFontOverride, helpinfo_ListBoxFontSize, helpinfo_ListBoxMaxWidth, helpinfo_ListBoxOffset, helpinfo_ListBoxOpacity, helpinfo_ListBoxRows
    global helpinfo_FullHelpString
    global Menu_ArrowKeyMethodOptionsText, Menu_CaseCorrection, Menu_ListBoxOpacityUpDown, Menu_SendMethodOptionsCode, Menu_SendMethodC
-   global Menu_CtrlEnter, Menu_CtrlSpace, Menu_Enter, Menu_SingleClick, Menu_NumberKeys, Menu_RightArrow, Menu_Tab
+   global Menu_CtrlEnter, Menu_CtrlSpace, Menu_Enter, Menu_SingleClick, Menu_NumberKeys, Menu_NumpadEnter, Menu_RightArrow, Menu_Tab
    global g_ScriptTitle
    ; Must be global for colors to function, colors will not function if static
    global Menu_VisitForum
@@ -169,6 +169,7 @@ ConstructGui()
    ;  N = Number Keys
    ;  U = Enter
    ;  L = Single Click
+   ;  M = Numpad Enter
    Menu_CheckedE=Checked
    Menu_CheckedS=Checked
    Menu_CheckedT=Checked
@@ -176,6 +177,7 @@ ConstructGui()
    Menu_CheckedN=Checked
    Menu_CheckedU=Checked
    Menu_CheckedL=Checked
+   Menu_CheckedM=Checked
    Loop, parse, prefs_DisabledAutoCompleteKeys
    {
 	  If (A_LoopField = "E")
@@ -192,6 +194,8 @@ ConstructGui()
 		 Menu_CheckedU =
 	  If (A_LoopField = "L")
 		 Menu_CheckedL =
+	  If (A_LoopField = "M")
+		 Menu_CheckedM =
    }
 
    MenuCheckmarkIndent := MenuTwoColEditWidth/3 + MenuEditIndentX
@@ -202,6 +206,7 @@ ConstructGui()
    Gui, MenuGui:Add, Checkbox, x%MenuGroup1EditX% yp+%MenuTextMenuRowY% vMenu_CtrlSpace gEditValue %Menu_CheckedS%, Ctrl + Space
    Gui, MenuGui:Add, Checkbox, xp%MenuCheckmarkIndent% yp vMenu_NumberKeys gEditValue %Menu_CheckedN%, Number Keys
    Gui, MenuGui:Add, Checkbox, xp%MenuCheckmarkIndent% yp vMenu_Enter gEditValue %Menu_CheckedU%, Enter
+   Gui, MenuGui:Add, Checkbox, xp%MenuCheckmarkIndent% yp vMenu_NumpadEnter gEditValue %Menu_CheckedM%, Numpad Enter
 
    Gui, MenuGui:Font, cGreen
    Gui, MenuGui:Add, Text, x%MenuGroup2of3HelpX% y%MenuRowHelpY% vhelpinfo_DisabledAutoCompleteKeys gHelpMe, %MenuGuiHelpIcon%
@@ -879,6 +884,8 @@ SaveSettings()
       prefs_DisabledAutoCompleteKeys .= "U"
    If (Menu_SingleClick = 0)
       prefs_DisabledAutoCompleteKeys .= "L"
+   If (Menu_NumpadEnter = 0)
+      prefs_DisabledAutoCompleteKeys .= "M"
 
    Loop, parse, Menu_ArrowKeyMethodOptionsText, |
    {

@@ -282,7 +282,8 @@ ValidatePreferences()
             If prefs_DisabledAutoCompleteKeys contains T
                If prefs_DisabledAutoCompleteKeys contains R
                   If prefs_DisabledAutoCompleteKeys contains U
-                     prefs_ArrowKeyMethod = Off
+                     If prefs_DisabledAutoCompleteKeys contains M
+                        prefs_ArrowKeyMethod = Off
    
    If prefs_ArrowKeyMethod not in First,Off,LastWord,LastPosition
    {

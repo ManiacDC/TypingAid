@@ -497,6 +497,8 @@ InitializeHotKeys()
       Hotkey, $Down, Off
       Hotkey, $PgUp, Off
       Hotkey, $PgDn, Off
+      HotKey, $Enter, Off
+      Hotkey, $NumpadEnter, Off
    } else {
       g_EnabledKeyboardHotKeys .= "$Up" . g_DelimiterChar
       g_EnabledKeyboardHotKeys .= "$Down" . g_DelimiterChar
@@ -505,18 +507,21 @@ InitializeHotKeys()
       If prefs_DisabledAutoCompleteKeys contains E
          Hotkey, $^Enter, Off
       else g_EnabledKeyboardHotKeys .= "$^Enter" . g_DelimiterChar
-         If prefs_DisabledAutoCompleteKeys contains S
-            HotKey, $^Space, Off
-         else g_EnabledKeyboardHotKeys .= "$^Space" . g_DelimiterChar
-         If prefs_DisabledAutoCompleteKeys contains T
-            HotKey, $Tab, Off
-         else g_EnabledKeyboardHotKeys .= "$Tab" . g_DelimiterChar
-         If prefs_DisabledAutoCompleteKeys contains R
-            HotKey, $Right, Off
-         else g_EnabledKeyboardHotKeys .= "$Right" . g_DelimiterChar
-         If prefs_DisabledAutoCompleteKeys contains U
-            HotKey, $Enter, Off
-         else g_EnabledKeyboardHotKeys .= "$Enter" . g_DelimiterChar
+      If prefs_DisabledAutoCompleteKeys contains S
+         HotKey, $^Space, Off
+      else g_EnabledKeyboardHotKeys .= "$^Space" . g_DelimiterChar
+      If prefs_DisabledAutoCompleteKeys contains T
+         HotKey, $Tab, Off
+      else g_EnabledKeyboardHotKeys .= "$Tab" . g_DelimiterChar
+      If prefs_DisabledAutoCompleteKeys contains R
+         HotKey, $Right, Off
+      else g_EnabledKeyboardHotKeys .= "$Right" . g_DelimiterChar
+      If prefs_DisabledAutoCompleteKeys contains U
+         HotKey, $Enter, Off
+      else g_EnabledKeyboardHotKeys .= "$Enter" . g_DelimiterChar
+      If prefs_DisabledAutoCompleteKeys contains M
+         HotKey, $NumpadEnter, Off
+      else g_EnabledKeyboardHotKeys .= "$NumpadEnter" . g_DelimiterChar
    }
 
    ; remove last ascii 2
@@ -572,6 +577,7 @@ $PgUp::
 $PgDn::
 $Right::
 $Enter::
+$NumpadEnter::
 EvaluateUpDown(A_ThisHotKey)
 Return
 
@@ -790,7 +796,7 @@ EvaluateUpDown(Key)
       Return
    }
    
-   if ( ( Key = "$^Enter" ) || ( Key = "$Tab" ) || ( Key = "$^Space" ) || ( Key = "$Right") || ( Key = "$Enter") || ( Key = "$LButton") )
+   if ( ( Key = "$^Enter" ) || ( Key = "$Tab" ) || ( Key = "$^Space" ) || ( Key = "$Right") || ( Key = "$Enter") || ( Key = "$LButton") || ( Key = "$NumpadEnter") )
    {
       IfEqual, Key, $^Enter
       {
@@ -810,6 +816,9 @@ EvaluateUpDown(Key)
       } else IfEqual, Key, $LButton
       {
          KeyTest = L
+      } else IfEqual, Key, $NumpadEnter
+      {
+         KeyTest = M
       }
       
       if (KeyTest == "L") {
