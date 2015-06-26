@@ -3,8 +3,8 @@ TypingAid is a simple, compact, and handy auto-completion utility.
 It is customizable enough to be useful for regular typing and for programming.
 
 [b]Download:[/b]
-[url=https://github.com/ManiacDC/TypingAid/releases/download/v2.21.1.0/TypingAid.zip]TypingAid v2.21.1 Precompiled Executable[/url]
-[url=https://github.com/ManiacDC/TypingAid/archive/v2.21.1.0.zip]TypingAid v2.21.1 AHK Script[/url]
+[url=https://github.com/ManiacDC/TypingAid/releases/download/v2.22.0.0/TypingAid.zip]TypingAid v2.22.0 Precompiled Executable[/url]
+[url=https://github.com/ManiacDC/TypingAid/archive/v2.22.0.0.zip]TypingAid v2.22.0 AHK Script[/url]
 
 As of version 2.19.7.0, the script is no longer compatible with AHK Basic. Please get the newest version from [url]http://www.ahkscript.org[/url].
 
@@ -37,6 +37,12 @@ In addition to being able to use the number keys to select a word, you can selec
 The script will learn words as you type them if "Learn new words as you type" is set to On in Settings. If you type a word more than 5 times (or as defined in "Minimum length of word to learn") in a single session the word will be permanently added to the list of learned words. Learned words will always appear below predefined words, but will be ranked and ordered among other learned words based on the frequency you type them. You can permanently learn a word by highlighting a word and hitting Ctrl-Shift-C (this works even if "Learn new words as you type" is set to Off). You may use Ctrl-Shift-Del to remove the currently selected Learned Word.
 Learned words are stored in the WordlistLearned.db sqlite3 database. Learned words are backed up in WordlistLearned.txt. To modify the list of Learned words manually, delete the WordlistLearned.db database, then manually edit the WordlistLearned.txt file. On the next launch of the script, the WordlistLearned.db database will be rebuilt.
 
+Word descriptions can be added to 'Wordlist.txt' that will appear in the wordlist next to the word. These descriptions should be in the form of <word>|d|<description>, e.g., Tylenol|d|Pain Reliever. This could be used for things like definitions, translation aids, or function arguments. When Fixed Width fonts are used in the wordlist, the description columns will be tabbed evenly so they line up.
+
+Word replacements can be added to 'Wordlist.txt' that will appear in the wordlist next to the word. These replacements should be in the form of <word>|r|<description>, e.g., fire|r|fuego. When the word is chosen, it will be backspaced out and replaced with the new word. If Case Correction is off, the first letter will be changed to match the case of the word being replaced. This could be used for spelling replacements, text expansion, or translation aids. Multiple replacements can be defined for a word (put each on a separate line).
+
+A description and a replacement can both be added to the same word.
+
 When Settings are changed, the script will automatically create a file named Preferences.ini in the script directory. This file allows for sharing settings between users. Users are encouraged to only edit settings by using the Settings window.
 To allow for distribution of standardized preferences, a Defaults.ini may be distributed with the same format as Preferences.ini. If the Defaults.ini is present, this will override the hardcoded defaults in the script. A user may override the Defaults.ini by changing settings in the Settings window.
 
@@ -64,6 +70,7 @@ Customizable features include:
 [*]Wordlist Box Opacity setting to set the transparency of the List Box.[/*]
 [*]Wordlist Box Character Width to override the computed character width.[/*]
 [*]Wordlist Box Default Font override.[/*]
+[*]Wordlist Box Max Width[/*]
 [*]List of programs for which you want %g_ScriptTitle% enabled.[/*]
 [*]List of programs for which you do not want %g_ScriptTitle% enabled.[/*]
 [*]List of programs for which you want the Helper Window to automatically open.[/*]

@@ -22,7 +22,6 @@ SendWord(WordIndex)
 {
    global g_SingleMatch
    global g_SingleMatchReplacement
-   global g_Word
    ;Send the word
    if (g_SingleMatchReplacement[WordIndex])
    {
@@ -34,29 +33,56 @@ SendWord(WordIndex)
    }
    ; Update Typed Count
    UpdateWordCount(sending,0)
-   SendFull(sending, StrLen(g_Word), ForceBackspace)   
+   SendFull(sending, ForceBackspace)   
    ClearAllVars(true)
    Return
 }  
 
 ;------------------------------------------------------------------------
             
-SendFull(SendValue,BackSpaceLen,ForceBackspace=false)
+SendFull(SendValue,ForceBackspace=false)
 {
    global g_Active_Id
+   global g_Word
    global prefs_AutoSpace
    global prefs_NoBackSpace
    global prefs_SendMethod
    
    SwitchOffListBoxIfActive()
    
-   ; If we are not backspacing, remove the typed characters from the string to send
-   IfNotEqual, prefs_NoBackSpace, Off
-   {
-      if !(ForceBackspace)
+   BackSpaceLen := StrLen(g_Word)
+   
+   if (ForceBackspace || prefs_NoBackspace = "Off") {
+      BackSpaceWord := true
+   }
+   
+   ; capitalize first letter if we are forcing a backspace AND CaseCorrection is off
+   if (ForceBackspace && !(prefs_NoBackspace = "Off")) {
+      IfEqual, A_IsUnicode, 1
       {
-         StringTrimLeft, SendValue, SendValue, %BackSpaceLen%
+         if ( RegExMatch(Substr(g_Word, 1, 1), "S)\p{Lu}") > 0 )  
+         {
+            Capitalize := true
+         }
+      } else if ( RegExMatch(Substr(g_Word, 1, 1), "S)[A-ZР-жи-п]") > 0 )
+      {
+         Capitalize := true
       }
+      
+      StringLeft, FirstLetter, SendValue, 1
+         StringTrimLeft, SendValue, SendValue, 1
+      if (Capitalize) {
+         StringUpper, FirstLetter, FirstLetter
+      } else {
+         StringLower, FirstLetter, FirstLetter
+      }
+      SendValue := FirstLetter . SendValue
+   }
+   
+   ; If we are not backspacing, remove the typed characters from the string to send
+   if !(BackSpaceWord)
+   {
+      StringTrimLeft, SendValue, SendValue, %BackSpaceLen%
    }
    
    ; if autospace is on, add a space to the string to send
@@ -67,7 +93,7 @@ SendFull(SendValue,BackSpaceLen,ForceBackspace=false)
    {
       ; Shift key hits are here to account for an occassional bug which misses the first keys in SendPlay
       sending = {Shift Down}{Shift Up}{Shift Down}{Shift Up}      
-      if (ForceBackspace || prefs_NoBackSpace = "Off")
+      if (BackSpaceWord)
       {
          sending .= "{BS " . BackSpaceLen . "}"
       }
@@ -77,7 +103,7 @@ SendFull(SendValue,BackSpaceLen,ForceBackspace=false)
       Return
    }
 
-   if (ForceBackspace || prefs_NoBackSpace = "Off")
+   if (BackSpaceWord)
    {
       sending = {BS %BackSpaceLen%}{Raw}%SendValue%
    } Else {
@@ -101,7 +127,7 @@ SendFull(SendValue,BackSpaceLen,ForceBackspace=false)
    Clipboard := SendValue
    ClipWait, 0
    
-   if (ForceBackspace || prefs_NoBackSpace = "Off")
+   if (BackSpaceWord)
    {
       sending = {BS %BackSpaceLen%}{Ctrl Down}v{Ctrl Up}
    } else {

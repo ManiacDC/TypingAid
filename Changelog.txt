@@ -1,3 +1,17 @@
+*2.22.0 6/26/2015
+** Added the ability to exact match on Window Titles (enquote, or tick the checkbox)
+** Added Word Replacements. In wordlist.txt, use the form <word>|r|<replacement word>. To define more than one replacement per word, simply add the word again on a different line. If Case Correction is off, the case of the first letter will be changed to match the word being replaced
+** Added Word Descriptions. In wordlist.txt, use the form <word>|d|<description>. Replacements and Descriptions are compatible and can exist on the same word. With fixed width fonts, the description will show in a separate column
+** Added a setting to control the width of the List Box in pixels
+** Added Numpad Enter as an autocomplete key
+** Fixed issues with words that had apostrophes (') in them
+** Set journal_mode to TRUNCATE so the db journal isn't deleted every time
+** Minor performance improvements when loading the wordlist
+** Added a progress bar when loading the wordlist
+** Added a progress bar when cleaning the wordlist (when exiting the script, the box may appear blank. I think this is because the script is exiting)
+** Added framework for database conversions
+** Fixed issue with overriding the default font
+
 *2.21.1 5/4/2015
 ** Fixed clicking on a word in the 64-bit version
 
