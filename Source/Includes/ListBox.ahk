@@ -663,6 +663,7 @@ ShowListBox()
 ; Any changes to this function may need to be reflected in ComputeListBoxMaxLength()
 ForceWithinMonitorBounds(ByRef ListBoxPosX,ByRef ListBoxPosY,ListBoxActualSizeW,ListBoxActualSizeH,Rows)
 {
+   global g_ListBoxFlipped
    global g_SM_CMONITORS
    global prefs_ListBoxOffset
    ;Grab the number of non-dummy monitors
@@ -687,9 +688,19 @@ ForceWithinMonitorBounds(ByRef ListBoxPosX,ByRef ListBoxPosY,ListBoxActualSizeW,
       
       ; + prefs_ListBoxOffset Move ListBox down a little so as not to hide the caret. 
       ListBoxPosY := ListBoxPosY + prefs_ListBoxOffset
-      If ( (ListBoxPosY + ListBoxActualSizeH ) > MonBottom )
+      if (g_ListBoxFlipped) {
+         OldListBoxPosY := ListBoxPosY
+         ListBoxPosY := HCaretY() - Ceil(prefs_ListBoxOffset - (ListBoxActualSizeH / Rows )) - ListBoxActualSizeH
+         
+         if ( ListBoxPosY < MonTop ) {
+            ListBoxPosY := OldListBoxPosY
+            g_ListBoxFlipped =
+         }         
+         
+      } else If ( (ListBoxPosY + ListBoxActualSizeH ) > MonBottom )
       {
          ListBoxPosY := HCaretY() - Ceil(prefs_ListBoxOffset - (ListBoxActualSizeH / Rows )) - ListBoxActualSizeH
+         g_ListBoxFlipped := true
       }
          
       Break

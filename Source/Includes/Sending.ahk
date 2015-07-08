@@ -56,7 +56,7 @@ SendFull(SendValue,ForceBackspace=false)
       BackSpaceWord := true
    }
    
-   ; capitalize first letter if we are forcing a backspace AND CaseCorrection is off
+   ; match case on first letter if we are forcing a backspace AND CaseCorrection is off
    if (ForceBackspace && !(prefs_NoBackspace = "Off")) {
       IfEqual, A_IsUnicode, 1
       {
@@ -78,6 +78,55 @@ SendFull(SendValue,ForceBackspace=false)
       }
       SendValue := FirstLetter . SendValue
    }
+   
+   ; if the user chose a word with accented characters, then we need to
+   ; substitute those letters into the word
+   StringCaseSenseOld := A_StringCaseSense
+   StringCaseSense, Locale   
+   if (!BackSpaceWord && !(SubStr(SendValue, 1, BackSpaceLen) = g_Word)) {
+      BackSpaceWord := true
+      
+      SendIndex := 1
+      WordIndex := 1
+      NewSendValue =
+      While (WordIndex <= BackSpaceLen) {
+         SendChar := SubStr(SendValue, SendIndex, 1)
+         WordChar := SubStr(g_Word, WordIndex, 1)
+         SendIndex++
+         
+         if (SendChar = WordChar) {
+            WordIndex++
+            NewSendValue .= WordChar
+         } else {
+            
+            SendCharNorm := StrUnmark(SendChar)
+            ; if character normalizes to more than 1 character, we need
+            ; to increment the WordIndex pointer again
+            
+            StringUpper, SendCharNormUpper, SendCharNorm
+            StringLower, SendCharNormLower, SendCharNorm
+            StringUpper, SendCharUpper, SendChar
+            StringLower, SendCharLower, SendChar
+            WordChar := SubStr(g_Word, WordIndex, StrLen(SendCharNorm))
+            
+            if (SendCharNorm == WordChar) {
+               NewSendValue .= SendChar
+            } else if (SendCharNormUpper == WordChar) {
+               NewSendValue .= SendCharUpper
+            } else if (SendCharNormLower == WordChar) {
+               NewSendValue .= SendCharLower
+            } else {
+               NewSendValue .= SendChar
+            }
+            WordIndex += StrLen(SendCharNorm)
+         }
+      }
+      
+      NewSendValue .= SubStr(SendValue, SendIndex, StrLen(SendValue) - SendIndex + 1)
+      
+      SendValue := NewSendValue
+   }
+   StringCaseSense, %StringCaseSenseOld%
    
    ; If we are not backspacing, remove the typed characters from the string to send
    if !(BackSpaceWord)

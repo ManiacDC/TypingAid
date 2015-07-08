@@ -271,7 +271,7 @@ ProcessKey(InputChar,EndKey)
       ClearAllVars(true)
       Return
    }
-                
+   
    ;Wait till minimum letters 
    IF ( StrLen(g_Word) < prefs_Length )
    {
@@ -316,7 +316,38 @@ RecomputeMatches()
       LimitTotalMatches = 200
    }
    
-   StringUpper, WordMatch, g_Word   
+   StringUpper, WordMatchOriginal, g_Word
+   
+   WordMatch := StrUnmark(WordMatchOriginal)
+   
+   ; if a user typed an accented character, we should exact match on that accented character
+   if (WordMatch != WordMatchOriginal) {
+      WordAccentQuery =
+      LoopCount := StrLen(g_Word)
+      Loop, %LoopCount%
+      {
+         Position := A_Index
+         SubChar := SubStr(g_Word, Position, 1)
+         SubCharNormalized := StrUnmark(SubChar)
+         if !(SubCharNormalized == SubChar) {
+            StringUpper, SubCharUpper, SubChar
+            StringLower, SubCharLower, SubChar
+            StringReplace, SubCharUpperEscaped, SubCharUpper, ', '', All
+            StringReplace, SubCharLowerEscaped, SubCharLower, ', '', All
+            PrefixChars =
+            Loop, % Position - 1
+            {
+               PrefixChars .= "?"
+            }
+            ; because SQLite cannot do case-insensitivity on accented characters using LIKE, we need
+            ; to handle it manually, so we need 2 searches for each accented character the user typed.
+            ;GLOB is used for consistency with the wordindexed search.
+            WordAccentQuery .= " AND (word GLOB '" . PrefixChars . SubCharUpperEscaped . "*' OR word GLOB '" . PrefixChars . SubCharLowerEscaped . "*')"
+         }         
+      }
+   } else {
+      WordAccentQuery =
+   }
    
    StringReplace, WordExactEscaped, g_Word, ', '', All
    StringReplace, WordMatchEscaped, WordMatch, ', '', All
@@ -331,7 +362,7 @@ RecomputeMatches()
             }
    }
    
-   WhereQuery := " WHERE wordindexed GLOB '" . WordMatchEscaped . "*' " . SuppressMatchingWordQuery
+   WhereQuery := " WHERE wordindexed GLOB '" . WordMatchEscaped . "*' " . SuppressMatchingWordQuery . WordAccentQuery
    
    NormalizeTable := g_WordListDB.Query("SELECT MIN(count) AS normalize FROM Words" . WhereQuery . "AND count IS NOT NULL LIMIT " . LimitTotalMatches . ";")
    
@@ -1081,6 +1112,7 @@ ClearAllVars(ClearWord)
       g_OldCaretY=
       g_OldCaretX=
       g_LastInput_id=
+      g_ListBoxFlipped=
    }
    
    g_SingleMatch =
