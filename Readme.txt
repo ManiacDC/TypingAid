@@ -15,6 +15,7 @@ English Wordlists:
 [url=https://raw.githubusercontent.com/ManiacDC/TypingAid/master/Wordlists/Wordlist%203600.txt]3600 English Words[/url]
 [url=https://raw.githubusercontent.com/ManiacDC/TypingAid/master/Wordlists/English%20wordlist%20unfiltered.txt]Large English Wordlist (Unfiltered, may contain curse words, etc)[/url]
 [url=https://raw.githubusercontent.com/ManiacDC/TypingAid/master/Wordlists/WordList_English%20rommmcek.txt]Large English Wordlist[/url] by [url=http://ahkscript.org/boards/memberlist.php?mode=viewprofile&u=59845]rommmcek[/url]
+[url=https://raw.githubusercontent.com/ManiacDC/TypingAid/master/Wordlists/WordList_English%20rommmcek%20(4%2B%20letter%20words%20only).txt]Large English Wordlist (words with only 4+ letters)[/url] by [url=http://ahkscript.org/boards/memberlist.php?mode=viewprofile&u=59845]rommmcek[/url]
 
 Non-English Wordlists
 [url=https://raw.githubusercontent.com/ManiacDC/TypingAid/master/Wordlists/WordList_French%20rommmcek.txt]Large French Wordlist[/url] by [url=http://ahkscript.org/boards/memberlist.php?mode=viewprofile&u=59845]rommmcek[/url]
