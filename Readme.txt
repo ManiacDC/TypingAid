@@ -9,14 +9,19 @@ It is customizable enough to be useful for regular typing and for programming.
 As of version 2.19.7.0, the script is no longer compatible with AHK Basic. Please get the newest version from [url]http://www.ahkscript.org[/url].
 
 English Wordlists:
-[url=https://github.com/ManiacDC/TypingAid/raw/master/Wordlists/Wordlist%201200%20frequency%20weighted.txt]1200 English Words Weighted By Frequency[/url]
-[url=https://github.com/ManiacDC/TypingAid/raw/master/Wordlists/Wordlist%202000%20common.txt]2000 Common English Words[/url]
-[url=https://github.com/ManiacDC/TypingAid/raw/master/Wordlists/Wordlist%202000%20common%202.txt]2000 Common English Words (Alternative)[/url]
-[url=https://github.com/ManiacDC/TypingAid/raw/master/Wordlists/Wordlist%203600.txt]3600 English Words[/url]
-[url=https://github.com/ManiacDC/TypingAid/raw/master/Wordlists/English%20wordlist%20unfiltered.txt]Large English Wordlist (Unfiltered, may contain curse words, etc)[/url]
+[url=https://raw.githubusercontent.com/ManiacDC/TypingAid/master/Wordlists/Wordlist%201200%20frequency%20weighted.txt]1200 English Words Weighted By Frequency[/url]
+[url=https://raw.githubusercontent.com/ManiacDC/TypingAid/master/Wordlists/Wordlist%202000%20common.txt]2000 Common English Words[/url]
+[url=https://raw.githubusercontent.com/ManiacDC/TypingAid/master/Wordlists/Wordlist%202000%20common%202.txt]2000 Common English Words (Alternative)[/url]
+[url=https://raw.githubusercontent.com/ManiacDC/TypingAid/master/Wordlists/Wordlist%203600.txt]3600 English Words[/url]
+[url=https://raw.githubusercontent.com/ManiacDC/TypingAid/master/Wordlists/English%20wordlist%20unfiltered.txt]Large English Wordlist (Unfiltered, may contain curse words, etc)[/url]
+[url=https://raw.githubusercontent.com/ManiacDC/TypingAid/master/Wordlists/WordList_English%20rommmcek.txt]Large English Wordlist[/url] by [url=http://ahkscript.org/boards/memberlist.php?mode=viewprofile&u=59845]rommmcek[/url]
 
 Non-English Wordlists
+[url=https://raw.githubusercontent.com/ManiacDC/TypingAid/master/Wordlists/WordList_French%20rommmcek.txt]Large French Wordlist[/url] by [url=http://ahkscript.org/boards/memberlist.php?mode=viewprofile&u=59845]rommmcek[/url]
+[url=https://raw.githubusercontent.com/ManiacDC/TypingAid/master/Wordlists/WordList_ItalianAbc%20rommmcek.txt]Large Italian Wordlist[/url] by [url=http://ahkscript.org/boards/memberlist.php?mode=viewprofile&u=59845]rommmcek[/url]
 [url=https://raw.githubusercontent.com/ManiacDC/TypingAid/master/Wordlists/Wordlist%20Romanian.txt]Romanian Wordlist (282,000+ words)[/url] Thanks to [url=http://www.autohotkey.com/board/user/38990-ochisor/]Ochisor[/url]. Extracted from [url=http://www.ub-filosofie.ro/~solcan/wt/gnu/s/aspell-ro.html]here[/url].
+[url=https://raw.githubusercontent.com/ManiacDC/TypingAid/master/Wordlists/Wordlist%20Spanish.txt]Large Spanish Wordlist[/url] by [url=https://github.com/jamesw77bp]jamesw77bp[/url]
+[url=https://raw.githubusercontent.com/ManiacDC/TypingAid/master/Wordlists/WordList_SpanishAbc%20rommmcek.txt]Large Spanish Wordlist[/url] by [url=http://ahkscript.org/boards/memberlist.php?mode=viewprofile&u=59845]rommmcek[/url]
 
 AHK Keyword Wordlist:
 [url=https://github.com/ManiacDC/TypingAid/raw/master/Wordlists/WordList%20AHK.txt]Wordlist AHK.txt[/url] (Thanks [url=http://www.autohotkey.com/board/topic/49517-typingaid-v219-word-autocompletion-utility/page-22#entry425973]tidbit[/url].)
@@ -95,6 +100,9 @@ kakarukeys
 Asaptrad
 j4hangir
 Theclaw
+rommmcek
+jamesw77bp
+
 
 
 [b][url=http://www.autohotkey.com/board/topic/636-intellisense-like-autoreplacement-with-multiple-suggestions/]Original Thread[/url][/b]
