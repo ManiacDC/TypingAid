@@ -1,7 +1,7 @@
 ; these functions handle database conversion
 ; always set the SetDbVersion default argument to the current highest version
 
-SetDbVersion(dBVersion = 4)
+SetDbVersion(dBVersion = 5)
 {
 	global g_WordListDB
 	g_WordListDB.Query("INSERT OR REPLACE INTO LastState VALUES ('databaseVersion', '" . dBVersion . "', NULL);")
@@ -64,6 +64,11 @@ MaybeConvertDatabase()
 		RunConversionFour()
 	}
 	
+	if (databaseVersion < 5)
+	{
+		RunConversionFive()
+	}
+	
 	return, false
 }
 
@@ -76,12 +81,15 @@ RebuildDatabase()
 	g_WordListDB.Query("DROP TABLE Words;")
 	g_WordListDB.Query("DROP INDEX WordIndex;")
 	g_WordListDB.Query("DROP TABLE LastState;")
+	g_WordListDB.Query("DROP TABLE Wordlists;")
 	
 	CreateWordsTable()
 	
 	CreateWordIndex()
 	
 	CreateLastStateTable()
+	
+	CreateWordlistsTable()
 	
 	SetDbVersion()
 	g_WordListDB.EndTransaction()
@@ -168,6 +176,18 @@ RunConversionFour()
 	g_WordListDB.EndTransaction()
 }
 
+;Creates the Wordlists table
+RunConversionFive()
+{
+	global g_WordListDB
+	g_WordListDB.BeginTransaction()
+	
+	CreateWordlistsTable()
+	
+	SetDbVersion(5)
+	g_WordListDB.EndTransaction()
+}
+
 CreateLastStateTable()
 {
 	global g_WordListDB
@@ -203,6 +223,19 @@ CreateWordIndex()
 		ErrMsg := g_WordListDB.ErrMsg()
 		ErrCode := g_WordListDB.ErrCode()
 		msgbox Cannot Create WordIndex Index - fatal error: %ErrCode% - %ErrMsg%
+		ExitApp
+	}
+}
+
+CreateWordlistsTable()
+{
+	global g_WordListDB
+	
+	IF not g_WordListDB.Query("CREATE TABLE Wordlists (wordlist TEXT PRIMARY KEY, wordlistmodified DATETIME, wordlistsize INTEGER) WITHOUT ROWID;")
+	{
+		ErrMsg := g_WordListDB.ErrMsg()
+		ErrCode := g_WordListDB.ErrCode()
+		msgbox Cannot Create Wordlists Table - fatal error: %ErrCode% - %ErrMsg%
 		ExitApp
 	}
 }

@@ -9,7 +9,9 @@ ReadWordList()
    ;mark the wordlist as not done
    g_WordListDone = 0
    
-   Wordlist = %A_ScriptDir%\Wordlist.txt
+   WordlistFileName = wordlist.txt
+   
+   Wordlist = %A_ScriptDir%\%WordlistFileName%
    WordlistLearned = %A_ScriptDir%\WordlistLearned.txt
    
    MaybeFixFileEncoding(Wordlist,"UTF-8")
@@ -26,44 +28,74 @@ ReadWordList()
    g_WordListDB.Query("PRAGMA journal_mode = TRUNCATE;")
    
    DatabaseRebuilt := MaybeConvertDatabase()
+         
+   FileGetSize, WordlistSize, %Wordlist%
+   FileGetTime, WordlistModified, %Wordlist%, M
+   FormatTime, WordlistModified, %WordlistModified%, yyyy-MM-dd HH:mm:ss
    
    if (!DatabaseRebuilt) {
-      CleanupWordList()
+      LearnedWordsTable := g_WordListDB.Query("SELECT wordlistmodified, wordlistsize FROM Wordlists WHERE wordlist = '" . WordlistFileName . "';")
+      
+      LoadWordlist := "Insert"
+      
+      For each, row in LearnedWordsTable.Rows
+      {
+         WordlistLastModified := row[1]
+         WordlistLastSize := row[2]
+         
+         if (WordlistSize != WordlistLastSize || WordlistModified != WordlistLastModified) {
+            LoadWordlist := "Update"
+            CleanupWordList()
+         } else {
+            LoadWordlist =
+         }
+      }
+   } else {
+      LoadWordlist := "Insert"
    }
    
-   Progress, M, Please wait..., Loading wordlist, %g_ScriptTitle%
-   g_WordListDB.BeginTransaction()
-   ;reads list of words from file 
-   FileRead, ParseWords, %Wordlist%
-   Loop, Parse, ParseWords, `n, `r
-   {
-      ParseWordsCount++
-   }
-   Loop, Parse, ParseWords, `n, `r
-   {
-      ParseWordsSubCount++
-      ProgressPercent := Round(ParseWordsSubCount/ParseWordsCount * 100)
-      if (ProgressPercent <> OldProgressPercent)
+   if (LoadWordlist) {
+      Progress, M, Please wait..., Loading wordlist, %g_ScriptTitle%
+      g_WordListDB.BeginTransaction()
+      ;reads list of words from file 
+      FileRead, ParseWords, %Wordlist%
+      Loop, Parse, ParseWords, `n, `r
       {
-         Progress, %ProgressPercent%
-         OldProgressPercent := ProgressPercent
+         ParseWordsCount++
       }
-      IfEqual, A_LoopField, `;LEARNEDWORDS`;
+      Loop, Parse, ParseWords, `n, `r
       {
-         if (DatabaseRebuilt)
+         ParseWordsSubCount++
+         ProgressPercent := Round(ParseWordsSubCount/ParseWordsCount * 100)
+         if (ProgressPercent <> OldProgressPercent)
          {
-            LearnedWordsCount=0
-            g_LegacyLearnedWords=1 ; Set Flag that we need to convert wordlist file
-         } else {
-            break
+            Progress, %ProgressPercent%
+            OldProgressPercent := ProgressPercent
          }
-      } else {
-         AddWordToList(A_LoopField,0,"ForceLearn",LearnedWordsCount)
+         IfEqual, A_LoopField, `;LEARNEDWORDS`;
+         {
+            if (DatabaseRebuilt)
+            {
+               LearnedWordsCount=0
+               g_LegacyLearnedWords=1 ; Set Flag that we need to convert wordlist file
+            } else {
+               break
+            }
+         } else {
+            AddWordToList(A_LoopField,0,"ForceLearn",LearnedWordsCount)
+         }
       }
+      ParseWords =
+      g_WordListDB.EndTransaction()
+      Progress, Off
+      
+      if (LoadWordlist == "Update") {
+         g_WordListDB.Query("UPDATE wordlists SET wordlistmodified = '" . WordlistModified . "', wordlistsize = '" . WordlistSize . "' WHERE wordlist = '" . WordlistFileName . "';")
+      } else {
+         g_WordListDB.Query("INSERT INTO Wordlists (wordlist, wordlistmodified, wordlistsize) VALUES ('" . WordlistFileName . "','" . WordlistModified . "','" . WordlistSize . "');")
+      }
+      
    }
-   ParseWords =
-   g_WordListDB.EndTransaction()
-   Progress, Off
    
    if (DatabaseRebuilt)
    {
