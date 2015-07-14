@@ -341,8 +341,8 @@ ConstructGui()
    MenuRowEditY := MenuRowY + MenuEditIndentY
 
 
-   Gui, MenuGui:Add, GroupBox, x%MenuGroup1BoxX% y%MenuRowY% w%MenuThreeColGroupWidth% h%MenuRowHeight% , List appears X pixels below cursor
-   Menu_ListBoxOffsetOptions=|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31|32
+   Gui, MenuGui:Add, GroupBox, x%MenuGroup1BoxX% y%MenuRowY% w%MenuThreeColGroupWidth% h%MenuRowHeight% , Pixels below cursor override
+   Menu_ListBoxOffsetOptions=|<Computed>|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31|32
    StringReplace,  Menu_ListBoxOffsetOptions, Menu_ListBoxOffsetOptions, |%prefs_ListBoxOffset%|,|%prefs_ListBoxOffset%||
    StringTrimLeft, Menu_ListBoxOffsetOptions, Menu_ListBoxOffsetOptions, 1
    Gui, MenuGui:Add, DDL, x%MenuGroup1EditX% y%MenuRowEditY% w%MenuThreeColEditWidth% r5 vprefs_ListBoxOffset gEditValue, %Menu_ListBoxOffsetOptions%
@@ -381,7 +381,7 @@ ConstructGui()
    Gui, MenuGui:Font, cBlack
 
    Gui, MenuGui:Add, GroupBox, x%MenuGroup2of3BoxX% y%MenuRowY% w%MenuThreeColGroupWidth% h%MenuRowHeight% , List character width override
-   Menu_ListBoxCharacterWidthOptions=||5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|
+   Menu_ListBoxCharacterWidthOptions=|<Computed>|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|
    StringReplace,  Menu_ListBoxCharacterWidthOptions, Menu_ListBoxCharacterWidthOptions, |%prefs_ListBoxCharacterWidth%|,|%prefs_ListBoxCharacterWidth%||
    StringTrimLeft, Menu_ListBoxCharacterWidthOptions, Menu_ListBoxCharacterWidthOptions, 1
    Gui, MenuGui:Add, DDL, x%MenuGroup2of3EditX% y%MenuRowEditY% w%MenuThreeColEditWidth% r5 vprefs_ListBoxCharacterWidth gEditValue, %Menu_ListBoxCharacterWidthOptions%

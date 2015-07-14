@@ -665,7 +665,7 @@ ForceWithinMonitorBounds(ByRef ListBoxPosX,ByRef ListBoxPosY,ListBoxActualSizeW,
 {
    global g_ListBoxFlipped
    global g_SM_CMONITORS
-   global prefs_ListBoxOffset
+   global g_ListBoxOffsetComputed
    ;Grab the number of non-dummy monitors
    SysGet, NumMonitors, %g_SM_CMONITORS%
    
@@ -686,11 +686,11 @@ ForceWithinMonitorBounds(ByRef ListBoxPosX,ByRef ListBoxPosY,ListBoxActualSizeW,
       }
          
       
-      ; + prefs_ListBoxOffset Move ListBox down a little so as not to hide the caret. 
-      ListBoxPosY := ListBoxPosY + prefs_ListBoxOffset
+      ; + g_ListBoxOffsetComputed Move ListBox down a little so as not to hide the caret. 
+      ListBoxPosY := ListBoxPosY + g_ListBoxOffsetComputed
       if (g_ListBoxFlipped) {
          OldListBoxPosY := ListBoxPosY
-         ListBoxPosY := HCaretY() - Ceil(prefs_ListBoxOffset - (ListBoxActualSizeH / Rows )) - ListBoxActualSizeH
+         ListBoxPosY := HCaretY() - Ceil(g_ListBoxOffsetComputed - (ListBoxActualSizeH / Rows )) - ListBoxActualSizeH
          
          if ( ListBoxPosY < MonTop ) {
             ListBoxPosY := OldListBoxPosY
@@ -699,7 +699,7 @@ ForceWithinMonitorBounds(ByRef ListBoxPosX,ByRef ListBoxPosY,ListBoxActualSizeW,
          
       } else If ( (ListBoxPosY + ListBoxActualSizeH ) > MonBottom )
       {
-         ListBoxPosY := HCaretY() - Ceil(prefs_ListBoxOffset - (ListBoxActualSizeH / Rows )) - ListBoxActualSizeH
+         ListBoxPosY := HCaretY() - Ceil(g_ListBoxOffsetComputed - (ListBoxActualSizeH / Rows )) - ListBoxActualSizeH
          g_ListBoxFlipped := true
       }
          

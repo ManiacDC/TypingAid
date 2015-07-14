@@ -134,11 +134,11 @@ ReadPreferences(RestoreDefaults = false,RestorePreferences = false)
       dft_TerminatingCharacters,prefs_TerminatingCharacters,Settings,`%dft_TerminatingCharacters`%
       dft_ForceNewWordCharacters,prefs_ForceNewWordCharacters,Settings,%SpaceVar%
       dft_EndWordCharacters,prefs_EndWordCharacters,Settings,%SpaceVar%
-      dft_ListBoxOffSet,prefs_ListBoxOffset,ListBoxSettings,14
+      dft_ListBoxOffSet,prefs_ListBoxOffset,ListBoxSettings,<Computed>
       dft_ListBoxFontFixed,prefs_ListBoxFontFixed,ListBoxSettings,Off
       dft_ListBoxFontOverride,prefs_ListBoxFontOverride,ListBoxSettings,<Default>
       dft_ListBoxFontSize,prefs_ListBoxFontSize,ListBoxSettings,10 
-      dft_ListBoxCharacterWidth,prefs_ListBoxCharacterWidth,ListBoxSettings,%SpaceVar%
+      dft_ListBoxCharacterWidth,prefs_ListBoxCharacterWidth,ListBoxSettings,<Computed>
       dft_ListBoxMaxWidth,prefs_ListBoxMaxWidth,ListBoxSettings,%SpaceVar%
       dft_ListBoxOpacity,prefs_ListBoxOpacity,ListBoxSettings,215
       dft_ListBoxRows,prefs_ListBoxRows,ListBoxSettings,10
@@ -221,7 +221,7 @@ ReadPreferences(RestoreDefaults = false,RestorePreferences = false)
 
 ValidatePreferences()
 {
-   global g_ListBoxCharacterWidthComputed, g_NumKeyMethod
+   global g_ListBoxCharacterWidthComputed, g_ListBoxOffsetComputed, g_NumKeyMethod
    global prefs_ArrowKeyMethod, prefs_DisabledAutoCompleteKeys
    global dft_ArrowKeyMethod
    global prefs_AutoSpace, prefs_DetectMouseClickMove, prefs_LearnCount, prefs_LearnLength, prefs_LearnMode, prefs_Length
@@ -322,9 +322,6 @@ ValidatePreferences()
    
    IfEqual, prefs_TerminatingCharacters,
       prefs_TerminatingCharacters := dft_TerminatingCharacters
-   
-   if prefs_ListBoxOffset is not Integer
-      prefs_ListBoxOffset := dft_ListBoxOffSet
       
    if prefs_ListBoxFontFixed not in On,Off
       prefs_ListBoxFontFixed := dft_ListBoxFontFixed
@@ -338,21 +335,46 @@ ValidatePreferences()
       prefs_ListBoxFontSize = 2
    }
    
+   if dft_ListBoxOffset is not Integer
+   {
+      dft_ListBoxOffset := "<Computed>"
+   }
+   
+   if prefs_ListBoxOffset is not Integer
+   {
+      if !(prefs_ListBoxOffset == "<Computed>")
+      {
+         prefs_ListBoxOffset := dft_ListBoxOffset
+      }
+   }
+   
+   if prefs_ListBoxOffset is Integer
+   {
+      g_ListBoxOffsetComputed := prefs_ListBoxOffset
+   } else {
+      ; There are 72 points in an inch. Font size is measured in points.
+      g_ListBoxOffsetComputed := Ceil(prefs_ListBoxFontSize * A_ScreenDPI / 72)
+   }
+   
    if dft_ListBoxCharacterWidth is not Integer
    {
-      dft_ListBoxCharacterWidth =
+      dft_ListBoxCharacterWidth := "<Computed>"
    }
    
    if prefs_ListBoxCharacterWidth is not Integer
    {
-      prefs_ListBoxCharacterWidth := dft_ListBoxCharacterWidth
+      if !(prefs_ListBoxCharacterWidth == "<Computed>")
+      {
+         prefs_ListBoxCharacterWidth := dft_ListBoxCharacterWidth
+      }
    }
    
    if prefs_ListBoxCharacterWidth is Integer
    {
       g_ListBoxCharacterWidthComputed := prefs_ListBoxCharacterWidth
    } else {
-      g_ListBoxCharacterWidthComputed := Ceil(prefs_ListBoxFontSize * 0.8)
+      ; There are 72 points in an inch. Font size is measured in points. Most fonts have a width 3/5 the size of their height
+      g_ListBoxCharacterWidthComputed := Ceil(prefs_ListBoxFontSize * A_ScreenDPI / 72 * 0.6)
    }
    
    if dft_ListBoxMaxWidth is not Integer
@@ -586,7 +608,7 @@ helpinfo_ShowLearnedFirst=
 
 helpinfo_ListBoxOffset=
 (
-;"List appears X pixels below cursor" is the number of pixels below the top of the caret (vertical blinking line) to display the list.
+;"Pixels below cursor override" is the number of pixels below the top of the caret (vertical blinking line) to display the list.
 )
 
 helpinfo_ListBoxFontFixed=
