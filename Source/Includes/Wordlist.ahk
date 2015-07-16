@@ -370,9 +370,9 @@ CleanupWordList(LearnedWordsOnly := false)
 {
    ;Function cleans up all words that are less than the LearnCount threshold or have a NULL for count
    ;(NULL in count represents a 'wordlist.txt' word, as opposed to a learned word)
-   global prefs_LearnCount
    global g_ScriptTitle
    global g_WordListDB
+   global prefs_LearnCount
    Progress, M, Please wait..., Cleaning wordlist, %g_ScriptTitle%
    if (LearnedWordsOnly) {
       g_WordListDB.Query("DELETE FROM Words WHERE count < " . prefs_LearnCount . " AND count IS NOT NULL;")
@@ -389,12 +389,13 @@ MaybeUpdateWordlist()
    global g_LegacyLearnedWords
    global g_WordListDB
    global g_WordListDone
+   global prefs_LearnCount
    
    ; Update the Learned Words
    IfEqual, g_WordListDone, 1
    {
       
-      SortWordList := g_WordListDB.Query("SELECT Word FROM Words ORDER BY count DESC;")
+      SortWordList := g_WordListDB.Query("SELECT Word FROM Words WHERE count >= " . prefs_LearnCount . " AND count IS NOT NULL ORDER BY count DESC;")
       
       for each, row in SortWordList.Rows
       {
