@@ -48,6 +48,7 @@ ReadWordList()
             CleanupWordList()
          } else {
             LoadWordlist =
+            CleanupWordList(true)
          }
       }
    } else {
@@ -365,7 +366,7 @@ UpdateWordCount(word,SortOnly)
 
 ;------------------------------------------------------------------------
 
-CleanupWordList()
+CleanupWordList(LearnedWordsOnly := false)
 {
    ;Function cleans up all words that are less than the LearnCount threshold or have a NULL for count
    ;(NULL in count represents a 'wordlist.txt' word, as opposed to a learned word)
@@ -373,7 +374,11 @@ CleanupWordList()
    global g_ScriptTitle
    global g_WordListDB
    Progress, M, Please wait..., Cleaning wordlist, %g_ScriptTitle%
-   g_WordListDB.Query("DELETE FROM Words WHERE count < " . prefs_LearnCount . " OR count IS NULL;")
+   if (LearnedWordsOnly) {
+      g_WordListDB.Query("DELETE FROM Words WHERE count < " . prefs_LearnCount . " AND count IS NOT NULL;")
+   } else {
+      g_WordListDB.Query("DELETE FROM Words WHERE count < " . prefs_LearnCount . " OR count IS NULL;")
+   }
    Progress, Off
 }
 
