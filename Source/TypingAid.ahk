@@ -1113,6 +1113,7 @@ ClearAllVars(ClearWord)
       g_OldCaretX=
       g_LastInput_id=
       g_ListBoxFlipped=
+      g_ListBoxMaxWordHeight=
    }
    
    g_SingleMatch =

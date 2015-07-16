@@ -543,9 +543,6 @@ ShowListBox()
       Local ListBoxActualSize
       Local ListBoxActualSizeH
       Local ListBoxActualSizeW
-      Local ListBoxMaxSize
-      Local ListBoxMaxSizeH
-      Local ListBoxMaxSizeW
       Local ListBoxPosY
       Local ListBoxSizeX
       Local ListBoxThread
@@ -605,9 +602,7 @@ ShowListBox()
          GuiControl, ListBoxGui: , g_ListBox%A_Index%, %g_DelimiterChar%
       }
       
-      GuiControlGet, ListBoxMaxSize, ListBoxGui: Pos, g_ListBox%prefs_ListBoxRows%
-      
-      ForceWithinMonitorBounds(g_ListBoxPosX,ListBoxPosY,ListBoxActualSizeW,ListBoxActualSizeH,ListBoxMaxSizeH, g_ListBox%prefs_ListBoxRows%)
+      ForceWithinMonitorBounds(g_ListBoxPosX,ListBoxPosY,ListBoxActualSizeW,ListBoxActualSizeH,Rows)
       
       g_ListBoxContentWidth := ListBoxActualSizeW - ScrollBarWidth - BorderWidthX
       
@@ -666,11 +661,12 @@ ShowListBox()
 }
 
 ; Any changes to this function may need to be reflected in ComputeListBoxMaxLength()
-ForceWithinMonitorBounds(ByRef ListBoxPosX,ByRef ListBoxPosY,ListBoxActualSizeW,ListBoxActualSizeH,ListBoxMaxSizeH,MaxRows)
+ForceWithinMonitorBounds(ByRef ListBoxPosX,ByRef ListBoxPosY,ListBoxActualSizeW,ListBoxActualSizeH,Rows)
 {
    global g_ListBoxFlipped
    global g_SM_CMONITORS
    global g_ListBoxOffsetComputed
+   global g_ListBoxMaxWordHeight
    ;Grab the number of non-dummy monitors
    SysGet, NumMonitors, %g_SM_CMONITORS%
    
@@ -689,22 +685,25 @@ ForceWithinMonitorBounds(ByRef ListBoxPosX,ByRef ListBoxPosY,ListBoxActualSizeW,
          If ( ListBoxPosX < MonLeft )
             ListBoxPosX := MonLeft
       }
-         
+      
+      if (ListBoxActualSizeH > g_ListBoxMaxWordHeight) {
+         g_ListBoxMaxWordHeight := ListBoxActualSizeH
+      }
       
       ; + g_ListBoxOffsetComputed Move ListBox down a little so as not to hide the caret. 
       ListBoxPosY := ListBoxPosY + g_ListBoxOffsetComputed
       if (g_ListBoxFlipped) {
-         ListBoxMaxPosY := HCaretY() - Ceil(g_ListBoxOffsetComputed - (ListBoxMaxSizeH / MaxRows)) - ListBoxMaxSizeH
+         ListBoxMaxPosY := HCaretY() - Ceil(g_ListBoxOffsetComputed - (ListBoxActualSizeH / Rows)) - g_ListBoxMaxWordHeight
          
          if (ListBoxMaxPosY < MonTop) {
             g_ListBoxFlipped =
          } else {
-            ListBoxPosY := HCaretY() - Ceil(g_ListBoxOffsetComputed - (ListBoxMaxSizeH / MaxRows )) - ListBoxActualSizeH
-         }         
+            ListBoxPosY := HCaretY() - Ceil(g_ListBoxOffsetComputed - (ListBoxActualSizeH / Rows )) - ListBoxActualSizeH
+         }
          
-      } else If ( (ListBoxPosY + ListBoxMaxSizeH ) > MonBottom )
+      } else If ( (ListBoxPosY + g_ListBoxMaxWordHeight ) > MonBottom )
       {
-         ListBoxPosY := HCaretY() - Ceil(g_ListBoxOffsetComputed - (ListBoxMaxSizeH / MaxRows )) - ListBoxActualSizeH
+         ListBoxPosY := HCaretY() - Ceil(g_ListBoxOffsetComputed - (ListBoxActualSizeH / Rows )) - ListBoxActualSizeH
          g_ListBoxFlipped := true
       }
          
