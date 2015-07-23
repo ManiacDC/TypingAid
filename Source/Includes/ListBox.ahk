@@ -4,7 +4,7 @@ InitializeListBox()
 {
    global
    
-   Gui, ListBoxGui: -Caption +AlwaysOnTop +ToolWindow +Delimiter%g_DelimiterChar%
+   Gui, ListBoxGui: -DPIScale -Caption +AlwaysOnTop +ToolWindow +Delimiter%g_DelimiterChar%
    
    Local ListBoxFont
    if (prefs_ListBoxFontOverride && prefs_ListBoxFontOverride != "<Default>")
@@ -740,8 +740,11 @@ GetRows()
 
 ; function to grab the X position of the caret for the ListBox
 HCaretX() 
-{ 
+{
+   global g_DpiAware
+   global g_DpiScalingFactor
    global g_Helper_Id
+   global g_Process_DPI_Unaware
     
    WinGetPos, HelperX,,,, ahk_id %g_Helper_Id% 
    if HelperX !=
@@ -752,7 +755,12 @@ HCaretX()
    { 
       MouseGetPos, MouseX
       return MouseX
-   } 
+   }
+   ; non-DPI Aware
+   if (g_DpiAware == g_Process_DPI_Unaware) {
+      return (A_CaretX * g_DpiScalingFactor)
+   }
+   
    return A_CaretX 
 } 
 
@@ -760,8 +768,11 @@ HCaretX()
 
 ; function to grab the Y position of the caret for the ListBox
 HCaretY() 
-{ 
+{
+   global g_DpiAware
+   global g_DpiScalingFactor
    global g_Helper_Id
+   global g_Process_DPI_Unaware
 
    WinGetPos,,HelperY,,, ahk_id %g_Helper_Id% 
    if HelperY != 
@@ -771,8 +782,12 @@ HCaretY()
    if ( CheckIfCaretNotDetectable() )
    { 
       MouseGetPos, , MouseY
-      return MouseY + 20
-   } 
+      return MouseY + (20*g_DpiScalingFactor)
+   }
+   if (g_DpiAware == g_Process_DPI_Unaware) {
+      return (A_CaretY * g_DpiScalingFactor)
+   }
+   
    return A_CaretY 
 }
 

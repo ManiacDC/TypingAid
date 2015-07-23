@@ -116,7 +116,35 @@ SwitchOffListBoxIfActive()
 ; Returns true if the current window is included
 GetIncludedActiveWindow()
 {
+   global g_Active_Pid
+   global g_DpiAware
+   global g_Process_DPI_Unaware
+   global g_Process_System_DPI_Aware
+   global g_Process_Per_Monitor_DPI_Aware
    CurrentWindowIsActive := GetIncludedActiveWindowGuts()
+   
+   if (g_Active_Pid) {
+      ; we'll first assume the software is system DPI aware
+      DpiAware := g_Process_System_DPI_Aware
+      ; if Win 8.1 or higher, we can actually check if it's system DPI aware
+      if A_OSVersion not in WIN_7,WIN_8,WIN_VISTA,WIN_2003,WIN_XP,WIN_2000
+      {
+         ProcessHandle := DllCall("OpenProcess", "int", g_PROCESS_QUERY_INFORMATION | g_PROCESS_QUERY_LIMITED_INFORMATION, "int", 0, "UInt", g_Active_Pid)
+         DllCall("GetProcessDpiAwareness", "Ptr", ProcessHandle, "Uint*", DpiAware)
+         DllCall("CloseHandle", "Ptr", ProcessHandle)
+      }
+      
+      If (DpiAware == g_Process_DPI_Unaware) {
+         g_DpiAware := DpiAware
+      } else if (DpiAware == g_Process_System_DPI_Aware) {
+         g_DpiAware := DpiAware
+      } else if (DpiAware == g_Process_Per_Monitor_DPI_Aware) {
+         g_DpiAware := DpiAware
+      } else {
+         g_DpiAware := g_Process_System_DPI_Aware
+      }
+   }
+   
    EnableWinHook()
    Return, CurrentWindowIsActive
 }
@@ -124,6 +152,7 @@ GetIncludedActiveWindow()
 GetIncludedActiveWindowGuts()
 {
    global g_Active_Id
+   global g_Active_Pid
    global g_Active_Title
    global g_Helper_Id
    global g_LastActiveIdBeforeHelper
@@ -137,6 +166,7 @@ GetIncludedActiveWindowGuts()
    Loop
    {
       WinGet, ActiveId, ID, A
+      WinGet, ActivePid, PID, ahk_id %ActiveId%
       WinGet, ActiveProcess, ProcessName, ahk_id %ActiveId%
       WinGetTitle, ActiveTitle, ahk_id %ActiveId%
       IfEqual, ActiveId, 
@@ -177,6 +207,7 @@ GetIncludedActiveWindowGuts()
    IfEqual, ActiveId, %g_ListBox_Id%
    {
       g_Active_Id :=  ActiveId
+      g_Active_Pid := ActivePid
       g_Active_Title := ActiveTitle
       Return, CurrentWindowIsActive
    }
@@ -208,6 +239,7 @@ GetIncludedActiveWindowGuts()
       CloseListBox()
    }
    g_Active_Id :=  ActiveId
+   g_Active_Pid := ActivePid
    g_Active_Title := ActiveTitle
    Return, CurrentWindowIsActive
 }

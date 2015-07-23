@@ -53,6 +53,11 @@ g_IDC_HELP := 32651
 g_IMAGE_CURSOR := 2
 g_LR_SHARED := 0x8000
 g_NULL := 0
+g_Process_DPI_Unaware := 0
+g_Process_System_DPI_Aware  := 1
+g_Process_Per_Monitor_DPI_Aware := 2
+g_PROCESS_QUERY_INFORMATION := 0x0400
+g_PROCESS_QUERY_LIMITED_INFORMATION := 0x1000
 g_SB_VERT := 0x1
 g_SIF_POS := 0x4
 g_SM_CMONITORS := 80
@@ -65,6 +70,7 @@ g_WM_MOUSEMOVE := 0x200
 g_WM_SETCURSOR := 0x20
 
 ;setup code
+g_DpiScalingFactor := A_ScreenDPI/96
 g_Helper_Id = 
 g_HelperManual = 
 g_DelimiterChar := Chr(2)
