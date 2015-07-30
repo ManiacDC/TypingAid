@@ -372,15 +372,22 @@ AddToMatchList(position, MaxLength, HalfLength, LongestBaseLength, ComputeBaseLe
    global g_SingleMatchReplacement
    global prefs_ListBoxFontFixed
    
+   IfEqual, prefs_ListBoxFontFixed, On
+   {
+      blankprefix := "  "
+   } else {
+      blankprefix =
+   }
+   
    IfEqual, g_NumKeyMethod, Off
    {
-      prefix =
+      prefix := blankprefix
    } else IfLess, position, %g_MatchStart%
    {
-      prefix =
+      prefix := blankprefix
    } else if ( position > ( g_MatchStart + 9 ) )
    {
-      prefix = 
+      prefix := blankprefix
    } else {
       prefix := Mod(position - g_MatchStart +1,10) . " "
    }

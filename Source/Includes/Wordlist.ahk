@@ -201,43 +201,35 @@ AddWordToList(AddWord,ForceCountNewOnly,ForceLearn=false, ByRef LearnedWordsCoun
    if !(CheckValid(AddWord,ForceLearn))
       return
    
-   StringUpper, AddWordIndex, AddWord
-   
-   ; normalize accented characters
-   AddWordIndex := StrUnmark(AddWordIndex)
-   
-   StringReplace, AddWordEscaped, AddWord, ', '', All
-   StringReplace, AddWordIndexEscaped, AddWordIndex, ', '', All
-   StringReplace, AddWordReplacementEscaped, AddWordReplacement, ', '', All
-   StringReplace, AddWordDescriptionEscaped, AddWordDescription, ', '', All
+   TransformWord(AddWord, AddWordReplacement, AddWordDescription, AddWordTransformed, AddWordIndexTransformed, AddWordReplacementTransformed, AddWordDescriptionTransformed)
 
    IfEqual, g_WordListDone, 0 ;if this is read from the wordlist
    {
       IfNotEqual,LearnedWordsCount,  ;if this is a stored learned word, this will only have a value when LearnedWords are read in from the wordlist
       {
          ; must update wordreplacement since SQLLite3 considers nulls unique
-         g_WordListDB.Query("INSERT INTO words (wordindexed, word, count, wordreplacement) VALUES ('" . AddWordIndexEscaped . "','" . AddWordEscaped . "','" . LearnedWordsCount++ . "','');")
+         g_WordListDB.Query("INSERT INTO words (wordindexed, word, count, wordreplacement) VALUES ('" . AddWordIndexTransformed . "','" . AddWordTransformed . "','" . LearnedWordsCount++ . "','');")
       } else {
          if (AddWordReplacement)
          {
-            WordReplacementQuery := "'" . AddWordReplacementEscaped . "'"
+            WordReplacementQuery := "'" . AddWordReplacementTransformed . "'"
          } else {
             WordReplacementQuery := "''"
          }
          
          if (AddWordDescription)
          {
-            WordDescriptionQuery := "'" . AddWordDescriptionEscaped . "'"
+            WordDescriptionQuery := "'" . AddWordDescriptionTransformed . "'"
          } else {
             WordDescriptionQuery := "NULL"
          }
-         g_WordListDB.Query("INSERT INTO words (wordindexed, word, worddescription, wordreplacement) VALUES ('" . AddWordIndexEscaped . "','" . AddWordEscaped . "'," . WordDescriptionQuery . "," . WordReplacementQuery . ");")
+         g_WordListDB.Query("INSERT INTO words (wordindexed, word, worddescription, wordreplacement) VALUES ('" . AddWordIndexTransformed . "','" . AddWordTransformed . "'," . WordDescriptionQuery . "," . WordReplacementQuery . ");")
       }
       
    } else if (prefs_LearnMode = "On" || ForceCountNewOnly == 1)
    { 
       ; If this is an on-the-fly learned word
-      AddWordInList := g_WordListDB.Query("SELECT * FROM words WHERE word = '" . AddWordEscaped . "';")
+      AddWordInList := g_WordListDB.Query("SELECT * FROM words WHERE word = '" . AddWordTransformed . "';")
       
       IF !( AddWordInList.Count() > 0 ) ; if the word is not in the list
       {
@@ -260,7 +252,7 @@ AddWordToList(AddWord,ForceCountNewOnly,ForceLearn=false, ByRef LearnedWordsCoun
          }
          
          ; must update wordreplacement since SQLLite3 considers nulls unique
-         g_WordListDB.Query("INSERT INTO words (wordindexed, word, count, wordreplacement) VALUES ('" . AddWordIndexEscaped . "','" . AddWordEscaped . "','" . CountValue . "','');")
+         g_WordListDB.Query("INSERT INTO words (wordindexed, word, count, wordreplacement) VALUES ('" . AddWordIndexTransformed . "','" . AddWordTransformed . "','" . CountValue . "','');")
       } else IfEqual, prefs_LearnMode, On
       {
          IfEqual, ForceCountNewOnly, 1                     
@@ -273,7 +265,7 @@ AddWordToList(AddWord,ForceCountNewOnly,ForceLearn=false, ByRef LearnedWordsCoun
                
             IF ( CountValue < prefs_LearnCount )
             {
-               g_WordListDB.QUERY("UPDATE words SET count = ('" . prefs_LearnCount . "') WHERE word = '" . AddWordEscaped . "');")
+               g_WordListDB.QUERY("UPDATE words SET count = ('" . prefs_LearnCount . "') WHERE word = '" . AddWordTransformed . "');")
             }
          } else {
             UpdateWordCount(AddWord,0) ;Increment the word count if it's already in the list and we aren't forcing it on
@@ -320,6 +312,23 @@ CheckValid(Word,ForceLearn=false)
    }
    
    Return, 1
+}
+
+TransformWord(AddWord, AddWordReplacement, AddWordDescription, ByRef AddWordTransformed, ByRef AddWordIndexTransformed, ByRef AddWordReplacementTransformed, ByRef AddWordDescriptionTransformed)
+{
+   StringUpper, AddWordIndex, AddWord
+   
+   ; normalize accented characters
+   AddWordIndex := StrUnmark(AddWordIndex)
+   
+   StringReplace, AddWordTransformed, AddWord, ', '', All
+   StringReplace, AddWordIndexTransformed, AddWordIndex, ', '', All
+   if (AddWordReplacement) {
+      StringReplace, AddWordReplacementTransformed, AddWordReplacement, ', '', All
+   }
+   if (AddWordDescription) {
+      StringReplace, AddWordDescriptionTransformed, AddWordDescription, ', '', All
+   }
 }
 
 DeleteWordFromList(DeleteWord)
@@ -436,15 +445,17 @@ MaybeUpdateWordlist()
 ; Removes marks from letters.  Requires Windows Vista or later.
 ; Code by Lexikos, based on MS documentation
 StrUnmark(string) {
-   if (A_OSVersion == "WIN_2003" || A_OSVersion == "WIN_XP" || A_OSVersion == "WIN_2000")
+   global g_OSVersion
+   global g_NormalizationKD
+   if (g_OSVersion < 6.0)
    {
       return string
    }
    
-   len := DllCall("Normaliz.dll\NormalizeString", "int", 2, "wstr", string, "int", StrLen(string), "ptr", 0, "int", 0)  ; Get *estimated* required buffer size.
+   len := DllCall("Normaliz.dll\NormalizeString", "int", g_NormalizationKD, "wstr", string, "int", StrLen(string), "ptr", 0, "int", 0)  ; Get *estimated* required buffer size.
    Loop {
       VarSetCapacity(buf, len * 2)
-      len := DllCall("Normaliz.dll\NormalizeString", "int", 2, "wstr", string, "int", StrLen(string), "ptr", &buf, "int", len)
+      len := DllCall("Normaliz.dll\NormalizeString", "int", g_NormalizationKD, "wstr", string, "int", StrLen(string), "ptr", &buf, "int", len)
       if len >= 0
          break
       if (A_LastError != 122) ; ERROR_INSUFFICIENT_BUFFER

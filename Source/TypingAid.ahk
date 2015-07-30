@@ -25,6 +25,8 @@ Suspend, On
 #NoEnv
 ListLines Off
 
+g_OSVersion := GetOSVersion()
+
 ;Set the Coordinate Modes before any threads can be executed
 CoordMode, Caret, Screen
 CoordMode, Mouse, Screen
@@ -52,6 +54,7 @@ g_IDC_HAND := 32649
 g_IDC_HELP := 32651
 g_IMAGE_CURSOR := 2
 g_LR_SHARED := 0x8000
+g_NormalizationKD := 0x6
 g_NULL := 0
 g_Process_DPI_Unaware := 0
 g_Process_System_DPI_Aware  := 1
@@ -1196,6 +1199,13 @@ MaybeFixFileEncoding(File,Encoding)
          }
       }
    }
+}
+
+;------------------------------------------------------------------------
+
+GetOSVersion()
+{
+   return ((r := DllCall("GetVersion") & 0xFFFF) & 0xFF) "." (r >> 8)
 }
 
 ;------------------------------------------------------------------------

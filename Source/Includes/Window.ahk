@@ -118,6 +118,7 @@ GetIncludedActiveWindow()
 {
    global g_Active_Pid
    global g_DpiAware
+   global g_OSVersion
    global g_Process_DPI_Unaware
    global g_Process_System_DPI_Aware
    global g_Process_Per_Monitor_DPI_Aware
@@ -127,7 +128,7 @@ GetIncludedActiveWindow()
       ; we'll first assume the software is system DPI aware
       DpiAware := g_Process_System_DPI_Aware
       ; if Win 8.1 or higher, we can actually check if it's system DPI aware
-      if A_OSVersion not in WIN_7,WIN_8,WIN_VISTA,WIN_2003,WIN_XP,WIN_2000
+      if (g_OSVersion >= 6.3)
       {
          ProcessHandle := DllCall("OpenProcess", "int", g_PROCESS_QUERY_INFORMATION | g_PROCESS_QUERY_LIMITED_INFORMATION, "int", 0, "UInt", g_Active_Pid)
          DllCall("GetProcessDpiAwareness", "Ptr", ProcessHandle, "Uint*", DpiAware)
