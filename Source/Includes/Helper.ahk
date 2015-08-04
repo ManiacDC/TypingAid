@@ -91,10 +91,10 @@ MaybeOpenOrCloseHelperWindowManual()
       } else g_HelperManual=1
    } else {
       global g_Active_Id
-      WinGetTitle, ActiveTitle, ahk_id %g_Active_Id%
-      WinGet, ActiveProcess, ProcessName, ahk_id %g_Active_Id%
+      global g_Active_Process
+      global g_Active_Title
       ;Check for Auto Helper, and if Auto clear closed flag and open
-      IF ( CheckHelperWindowAuto(ActiveProcess,ActiveTitle) )
+      IF ( CheckHelperWindowAuto(g_Active_Process,g_Active_Title) )
       {
          global g_HelperClosedWindowIDs
          SearchText := "|" . g_Active_Id . "|"

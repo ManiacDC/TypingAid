@@ -117,11 +117,14 @@ SwitchOffListBoxIfActive()
 GetIncludedActiveWindow()
 {
    global g_Active_Pid
+   global g_Active_Process
    global g_DpiAware
    global g_OSVersion
    global g_Process_DPI_Unaware
    global g_Process_System_DPI_Aware
    global g_Process_Per_Monitor_DPI_Aware
+   global prefs_ListBoxNotDPIAwareProgramExecutables
+   
    CurrentWindowIsActive := GetIncludedActiveWindowGuts()
    
    if (g_Active_Pid) {
@@ -133,6 +136,18 @@ GetIncludedActiveWindow()
          ProcessHandle := DllCall("OpenProcess", "int", g_PROCESS_QUERY_INFORMATION | g_PROCESS_QUERY_LIMITED_INFORMATION, "int", 0, "UInt", g_Active_Pid)
          DllCall("GetProcessDpiAwareness", "Ptr", ProcessHandle, "Uint*", DpiAware)
          DllCall("CloseHandle", "Ptr", ProcessHandle)
+      }
+      
+      ; check the override list for processes that aren't DPI aware
+      if (DpiAware != g_Process_DPI_Unaware) {  
+         Loop, Parse, prefs_ListBoxNotDPIAwareProgramExecutables, |
+         {
+            IfEqual, g_Active_Process, %A_LoopField%
+            {
+               DpiAware := g_Process_DPI_Unaware
+               break
+            }
+         }
       }
       
       If (DpiAware == g_Process_DPI_Unaware) {
@@ -154,6 +169,7 @@ GetIncludedActiveWindowGuts()
 {
    global g_Active_Id
    global g_Active_Pid
+   global g_Active_Process
    global g_Active_Title
    global g_Helper_Id
    global g_LastActiveIdBeforeHelper
@@ -209,6 +225,7 @@ GetIncludedActiveWindowGuts()
    {
       g_Active_Id :=  ActiveId
       g_Active_Pid := ActivePid
+      g_Active_Process := ActiveProcess
       g_Active_Title := ActiveTitle
       Return, CurrentWindowIsActive
    }
@@ -241,6 +258,7 @@ GetIncludedActiveWindowGuts()
    }
    g_Active_Id :=  ActiveId
    g_Active_Pid := ActivePid
+   g_Active_Process := ActiveProcess
    g_Active_Title := ActiveTitle
    Return, CurrentWindowIsActive
 }

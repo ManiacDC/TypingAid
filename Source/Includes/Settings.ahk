@@ -36,6 +36,8 @@ ConstructGui()
    global helpinfo_ExcludeProgramExecutables, helpinfo_ExcludeProgramTitles, helpinfo_IncludeProgramExecutables, helpinfo_IncludeProgramTitles, helpinfo_HelperWindowProgramExecutables, helpinfo_HelperWindowProgramTitles
    global prefs_ListBoxCharacterWidth, prefs_ListBoxFontFixed, prefs_ListBoxFontOverride, prefs_ListBoxFontSize, prefs_ListBoxMaxWidth, prefs_ListBoxOffset, prefs_ListBoxOpacity, prefs_ListBoxRows
    global helpinfo_ListBoxCharacterWidth, helpinfo_ListBoxFontFixed, helpinfo_ListBoxFontOverride, helpinfo_ListBoxFontSize, helpinfo_ListBoxMaxWidth, helpinfo_ListBoxOffset, helpinfo_ListBoxOpacity, helpinfo_ListBoxRows
+   global prefs_ListBoxNotDPIAwareProgramExecutables
+   global helpinfo_ListBoxNotDPIAwareProgramExecutables
    global helpinfo_FullHelpString
    global Menu_ArrowKeyMethodOptionsText, Menu_CaseCorrection, Menu_ListBoxOpacityUpDown, Menu_SendMethodOptionsCode, Menu_SendMethodC
    global Menu_CtrlEnter, Menu_CtrlSpace, Menu_Enter, Menu_SingleClick, Menu_NumberKeys, Menu_NumpadEnter, Menu_RightArrow, Menu_Tab
@@ -417,6 +419,17 @@ ConstructGui()
    MenuRowHelpY := MenuRowY - MenuHelpIndentY
    MenuRowEditY := MenuRowY + MenuEditIndentY
 
+   Gui, MenuGui:Add, GroupBox, x%MenuGroup1BoxX% y%MenuRowY% w%MenuOneColGroupWidth% h%MenuRowHeight% , Processes which are not DPI Aware
+   Gui, MenuGui:Add, Edit, x%MenuGroup1EditX% y%MenuRowEditY% w%MenuOneColEditWidthEdit% r1 vprefs_ListBoxNotDPIAwareProgramExecutables gEditValue, %prefs_ListBoxNotDPIAwareProgramExecutables%
+   Gui, MenuGui:Add, Button, x%MenuOneColEditButton% yp w130 gSetNotDPIAwareProcess, Edit
+   Gui, MenuGui:Font, cGreen
+   Gui, MenuGui:Add, Text, x%MenuGroup1of1HelpX% y%MenuRowHelpY% vhelpinfo_ListBoxNotDPIAwareProgramExecutables gHelpMe, %MenuGuiHelpIcon%
+   Gui, MenuGui:Font, cBlack
+
+   MenuRowY := MenuRowY + MenuRowHeight + MenuSeparatorY
+   MenuRowHelpY := MenuRowY - MenuHelpIndentY
+   MenuRowEditY := MenuRowY + MenuEditIndentY
+
 
    Gui, MenuGui:Tab, 3 ; Programs ---------------------------------------------------------
 
@@ -638,6 +651,10 @@ Full support for UTF-8 character set.
    Return
 }
 
+SetNotDPIAwareProcess:
+GetList("prefs_ListBoxNotDPIAwareProgramExecutables",1)
+Return
+
 SetEnableTitles:
 GetList("prefs_IncludeProgramTitles",0)
 Return
@@ -664,19 +681,23 @@ Return
 
 GetList(TitleType,GetExe)
 {
+   global Menu_GetExe
    global Menu_TitleType
    global Menu_InProcessList
    global g_ScriptTitle
+   global prefs_ListBoxNotDPIAwareProgramExecutables
    global prefs_IncludeProgramTitles
    global prefs_ExcludeProgramTitles
    global prefs_IncludeProgramExecutables
    global prefs_ExcludeProgramExecutables
    global prefs_HelperWindowProgramTitles
    global prefs_HelperWindowProgramExecutables
-   
+
+
    Menu_InProcessList := true
+   Menu_GetExe := GetExe
    Menu_TitleType := TitleType
-   If (GetExe =1)
+   If (GetExe == 1)
    {
       WinGet, id, list,,, Program Manager
       Loop, %id%
@@ -687,7 +708,7 @@ GetList(TitleType,GetExe)
          If (tmptitle <> "")
             RunningList .= tmptitle "|"
       }
-   } Else If (GetExe = 0) ; get list of active window titles
+   } Else If (GetExe == 0) ; get list of active window titles
    {
       WinGet, id, list,,, Program Manager
       Loop, %id%
@@ -698,14 +719,11 @@ GetList(TitleType,GetExe)
          If (tmptitle <> "")
             RunningList .= tmptitle "|"
       }
-   }	
-   GetExe=0
+   }
    
    GuiControlGet, MenuTitleList, MenuGui: , %Menu_TitleType%
    
    MenuProcessHeight := 380
-   
-   StringRight, ListType, Menu_TitleType, 6
 	
    Sort,RunningList, D| U	
    Gui, ProcessList:+OwnerMenuGui
@@ -715,7 +733,7 @@ GetList(TitleType,GetExe)
    Gui, ProcessList:Add, Text,x10 yp+30, Edit:
    Gui, ProcessList:Add, Edit, xp+100 yp w250
    Gui, ProcessList:Add, Button, xp+260 yp gAddNew1 w40 Default, Add
-   if (ListType == "Titles")
+   if (GetExe == 0)
    {
       Gui, ProcessList:Add, Text,x10 yp+30, Exact Match:
       Gui, ProcessList:Add, Checkbox, xp+100 yp
@@ -1079,7 +1097,13 @@ return
 
 AddNew1()
 {
-   GuiControlGet, MenuExactMatch, ProcessList:, Button2
+   global Menu_GetExe
+   if (Menu_GetExe == 0)
+   {
+      GuiControlGet, MenuExactMatch, ProcessList:, Button2
+   } else {
+      MenuExactMatch := 0
+   }
    GuiControlGet, MenuOutputVar, ProcessList:,Edit1
    ControlGet, MenuTitleList, List, , ListBox1
    
@@ -1101,7 +1125,10 @@ AddNew1()
    
    GuiControl, ProcessList:, ListBox1, %MenuOutputVar%|
    GuiControl, ProcessList:, Edit1, 
-   GuiControl, ProcessList:, Button2, 0
+   if (Menu_GetExe == 0)
+   {
+      GuiControl, ProcessList:, Button2, 0
+   }
    ControlFocus, Edit1
    return
 }

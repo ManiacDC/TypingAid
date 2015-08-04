@@ -46,6 +46,7 @@ ReadPreferences(RestoreDefaults = false,RestorePreferences = false)
    global dft_ListBoxMaxWidth
    global dft_ListBoxOpacity
    global dft_ListBoxRows
+   global dft_ListBoxNotDPIAwareProgramExecutables
    global dft_HelperWindowProgramExecutables
    global dft_HelperWindowProgramTitles
    
@@ -78,6 +79,7 @@ ReadPreferences(RestoreDefaults = false,RestorePreferences = false)
    global prefs_ListBoxMaxWidth
    global prefs_ListBoxOpacity
    global prefs_ListBoxRows
+   global prefs_ListBoxNotDPIAwareProgramExecutables
    global prefs_HelperWindowProgramExecutables
    global prefs_HelperWindowProgramTitles
    
@@ -142,6 +144,7 @@ ReadPreferences(RestoreDefaults = false,RestorePreferences = false)
       dft_ListBoxMaxWidth,prefs_ListBoxMaxWidth,ListBoxSettings,%SpaceVar%
       dft_ListBoxOpacity,prefs_ListBoxOpacity,ListBoxSettings,215
       dft_ListBoxRows,prefs_ListBoxRows,ListBoxSettings,10
+      dft_ListBoxNotDPIAwareProgramExecutables,prefs_ListBoxNotDPIAwareProgramExecutables,ListBoxSettings,%SpaceVar%
       dft_HelperWindowProgramExecutables,prefs_HelperWindowProgramExecutables,HelperWindow,%SpaceVar%
       dft_HelperWindowProgramTitles,prefs_HelperWindowProgramTitles,HelperWindow,%SpaceVar%
       ,XY,HelperWindow,%SpaceVar%
@@ -650,6 +653,11 @@ helpinfo_ListBoxMaxWidth=
 ;"List max width in pixels" is used to specify the maximum width for the Wordlist Box in pixels. By default, this will not expand beyond the width of the current monitor.
 )
 
+helpinfo_ListBoxNotDPIAwareProgramExecutables=
+(
+;"Processes which are not DPI Aware" is a list of executable (.exe) files that %g_ScriptTitle% needs to compensate for when scaling the listbox at DPI settings higher than 100`% (96 DPI).
+)
+
 helpinfo_IncludeProgramTitles=
 (
 ;"Window titles you want %g_ScriptTitle% enabled for" is a list of strings (separated by | ) to find in the title of the window you want %g_ScriptTitle% enabled for.
@@ -739,7 +747,7 @@ helpinfo_FullHelpString =
 
 %helpinfo_ListBoxOpacity%`r`n`r`n%helpinfo_ListBoxCharacterWidth%`r`n`r`n%helpinfo_ListBoxFontOverride%
 
-%helpinfo_ListBoxMaxWidth%
+%helpinfo_ListBoxMaxWidth%`r`n`r`n%helpinfo_ListBoxNotDPIAwareProgramExecutables%
 
 %helpinfo_IncludeProgramTitles%`r`n`r`n%helpinfo_ExcludeProgramTitles%`r`n`r`n%helpinfo_IncludeProgramExecutables%`r`n`r`n%helpinfo_ExcludeProgramExecutables%
 
