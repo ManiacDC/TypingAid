@@ -23,7 +23,7 @@ InitializeListBox()
    {
       GuiControl, ListBoxGui:-Redraw, g_ListBox%A_Index%
       ;can't use a g-label here as windows sometimes passes the click message when spamming the scrollbar arrows
-      Gui, ListBoxGui: Add, ListBox, vg_ListBox%A_Index% R%A_Index% X0 Y0 hwndg_ListBoxHwnd%A_Index%
+      Gui, ListBoxGui: Add, ListBox, vg_ListBox%A_Index% R%A_Index% X0 Y0 T%prefs_ListBoxFontSize% T32 hwndg_ListBoxHwnd%A_Index%
    }
 
    Return
@@ -372,12 +372,7 @@ AddToMatchList(position, MaxLength, HalfLength, LongestBaseLength, ComputeBaseLe
    global g_SingleMatchReplacement
    global prefs_ListBoxFontFixed
    
-   IfEqual, prefs_ListBoxFontFixed, On
-   {
-      blankprefix := "  "
-   } else {
-      blankprefix =
-   }
+   blankprefix = `t
    
    IfEqual, g_NumKeyMethod, Off
    {
@@ -389,8 +384,10 @@ AddToMatchList(position, MaxLength, HalfLength, LongestBaseLength, ComputeBaseLe
    {
       prefix := blankprefix
    } else {
-      prefix := Mod(position - g_MatchStart +1,10) . " "
+      prefix := Mod(position - g_MatchStart +1,10) . "`t"
    }
+   
+   prefixlen := 2
    
    CurrentMatch := g_SingleMatch[position]
    if (g_SingleMatchReplacement[position] || g_SingleMatchDescription[position])
@@ -405,16 +402,16 @@ AddToMatchList(position, MaxLength, HalfLength, LongestBaseLength, ComputeBaseLe
       BaseLength := MaxLength
    }
    
-   CurrentMatchLength := StrLen(CurrentMatch) + StrLen(prefix)
+   CurrentMatchLength := StrLen(CurrentMatch) + prefixlen
    
    if (CurrentMatchLength > BaseLength)
    {
-      CompensatedBaseLength := BaseLength - strlen(prefix)
+      CompensatedBaseLength := BaseLength - prefixlen
       ; remove 3 characters so we can add the ellipsis
       StringLeft, CurrentMatch, CurrentMatch, CompensatedBaseLength - 3
       CurrentMatch .= "..."
    
-      CurrentMatchLength := StrLen(CurrentMatch) + StrLen(prefix)
+      CurrentMatchLength := StrLen(CurrentMatch) + prefixlen
    }
    
    if (ComputeBaseLengthOnly)
@@ -437,9 +434,9 @@ AddToMatchList(position, MaxLength, HalfLength, LongestBaseLength, ComputeBaseLe
          ;;CurrentMatch .= "|" . g_SingleMatchDescription[position]
          IfEqual, prefs_ListBoxFontFixed, On
          {
-            Iterations := Ceil(LongestBaseLength/8) - Floor((strlen(CurrentMatch) + strlen(prefix))/8)
+            Iterations := Ceil(LongestBaseLength/8) - Floor((strlen(CurrentMatch) + prefixlen)/8)
          
-            Remainder := Mod(strlen(CurrentMatch) + strlen(prefix), 8)
+            Remainder := Mod(strlen(CurrentMatch) + prefixlen, 8)
          
             Loop, %Iterations%
             {
@@ -454,16 +451,16 @@ AddToMatchList(position, MaxLength, HalfLength, LongestBaseLength, ComputeBaseLe
          CurrentMatch .= Tabs . "|" . g_SingleMatchDescription[position]
       }
          
-      CurrentMatchLength := strlen(CurrentMatch) + strlen(prefix) - strlen(Tabs) + (Iterations * 8) - Remainder
+      CurrentMatchLength := strlen(CurrentMatch) + prefixlen - strlen(Tabs) + (Iterations * 8) - Remainder
       
       ;MaxLength - prefix length to make room for prefix
       if (CurrentMatchLength > MaxLength)
       {
-         CompensatedMaxLength := MaxLength - strlen(prefix) + strlen(Tabs) - (Iterations * 8) + Remainder
+         CompensatedMaxLength := MaxLength - prefixlen + strlen(Tabs) - (Iterations * 8) + Remainder
          ; remove 3 characters so we can add the ellipsis
          StringLeft, CurrentMatch, CurrentMatch, CompensatedMaxLength - 3
          CurrentMatch .= "..."
-         CurrentMatchLength := strlen(CurrentMatch) + strlen(prefix) - strlen(Tabs) + (Iterations * 8) - Remainder
+         CurrentMatchLength := strlen(CurrentMatch) + prefixlen - strlen(Tabs) + (Iterations * 8) - Remainder
       }
    }
    
