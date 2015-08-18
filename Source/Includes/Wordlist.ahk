@@ -316,10 +316,12 @@ CheckValid(Word,ForceLearn=false)
 
 TransformWord(AddWord, AddWordReplacement, AddWordDescription, ByRef AddWordTransformed, ByRef AddWordIndexTransformed, ByRef AddWordReplacementTransformed, ByRef AddWordDescriptionTransformed)
 {
-   StringUpper, AddWordIndex, AddWord
+   AddWordIndex := AddWord
    
    ; normalize accented characters
    AddWordIndex := StrUnmark(AddWordIndex)
+   
+   StringUpper, AddWordIndex, AddWordIndex
    
    StringReplace, AddWordTransformed, AddWord, ', '', All
    StringReplace, AddWordIndexTransformed, AddWordIndex, ', '', All
@@ -463,5 +465,14 @@ StrUnmark(string) {
       len *= -1  ; This is the new estimate.
    }
    ; Remove combining marks and return result.
-   return RegExReplace(StrGet(&buf, len, "UTF-16"), "\pM")
+   string := RegExReplace(StrGet(&buf, len, "UTF-16"), "\pM")
+   
+   StringReplace, string, string, æ, ae, All
+   StringReplace, string, string, Æ, AE, All
+   StringReplace, string, string, œ, oe, All
+   StringReplace, string, string, Œ, OE, All
+   StringReplace, string, string, ß, ss, All   
+   
+   return, string  
+   
 }

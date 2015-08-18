@@ -1,7 +1,7 @@
 ; these functions handle database conversion
 ; always set the SetDbVersion default argument to the current highest version
 
-SetDbVersion(dBVersion = 6)
+SetDbVersion(dBVersion = 7)
 {
 	global g_WordListDB
 	g_WordListDB.Query("INSERT OR REPLACE INTO LastState VALUES ('databaseVersion', '" . dBVersion . "', NULL);")
@@ -72,6 +72,11 @@ MaybeConvertDatabase()
 	if (databaseVersion < 6)
 	{
 		RunConversionSix()
+	}
+	
+	if (databaseVersion < 7)
+	{
+		RunConversionSeven()
 	}
 	
 	return, false
@@ -198,6 +203,12 @@ RunConversionFive()
 ; normalize accented characters
 RunConversionSix()
 {
+	; superseded by conversion 7
+}
+
+; normalize accented characters
+RunConversionSeven()
+{
 	global g_WordListDB
 	g_WordListDB.BeginTransaction()
 	
@@ -210,14 +221,14 @@ RunConversionSix()
 		WordIndexed := row[2]
 		WordReplacement := row[3]
 		
-		TransformWord(Word, WordReplacement, WordDescription, WordTransformed, WordIndexTransformed, WordReplacementTransformed, WordDescriptionTransformed)
+		TransformWord(Word, WordReplacement, WordDescription, WordTransformed, WordIndexedTransformed, WordReplacementTransformed, WordDescriptionTransformed)
 		
-		StringReplace, OldWordIndexedTransformed, WordIndex, ', '', All
+		StringReplace, OldWordIndexedTransformed, WordIndexed, ', '', All
 		
-		g_WordListDB.Query("UPDATE Words SET wordindexed = '" . WordIndexTransformed . "' WHERE word = '" . WordTransformed . "' AND wordindexed = '" . OldWordIndexedTransformed . "' AND wordreplacement = '" . WordReplacementTransformed . "';")
+		g_WordListDB.Query("UPDATE Words SET wordindexed = '" . WordIndexedTransformed . "' WHERE word = '" . WordTransformed . "' AND wordindexed = '" . OldWordIndexedTransformed . "' AND wordreplacement = '" . WordReplacementTransformed . "';")
 	}
 	
-	SetDbVersion(6)
+	SetDbVersion(7)
 	g_WordListDB.EndTransaction()
 }
 

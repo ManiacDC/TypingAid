@@ -427,7 +427,7 @@ AddToMatchList(position, MaxLength, HalfLength, LongestBaseLength, ComputeBaseLe
    {
       if (g_SingleMatchReplacement[position])
       {
-         CurrentMatch .= "->" . g_SingleMatchReplacement[position]
+         CurrentMatch .= " " . chr(26) . " " . g_SingleMatchReplacement[position]
       }
       if (g_SingleMatchDescription[position])
       {
