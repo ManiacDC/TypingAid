@@ -1,0 +1,1060 @@
+!=
+#AllowSameLineComments
+#ClipboardTimeout|d|Milliseconds `nChanges how long the script keeps trying to access the clipboard when the first attempt fails.
+#CommentFlag|d|NewString `nNot recommended
+#ErrorStdOut
+#EscapeChar|d|NewChar `nNot recommended
+#HotkeyInterval|d|Value
+#HotkeyModifierTimeout|d|Milliseconds
+#Hotstring|d|NewOptions
+#IfTimeout|d|timeout `nSets the maximum time that may be spent evaluating a single #If expression.
+#IfWinActive|d|[, WinTitle, WinText] `nMakes subsequent hotkeys and hotstrings only function when the specified window is active.
+#IfWinExist|d|[, WinTitle, WinText] `nMakes subsequent hotkeys and hotstrings only function when the specified window exists.
+#IfWinNotActive|d|[, WinTitle, WinText] `nMakes subsequent hotkeys and hotstrings only function when the specified window is not active.
+#IfWinNotExist|d|[, WinTitle, WinText] `nMakes subsequent hotkeys and hotstrings only function when the specified window doesn't exist.
+#If|d|[expression] `nMakes subsequent hotkeys and hotstrings only function when the specified expression is true.
+#IncludeAgain|d|FileName `nCauses the script to behave as though the specified file's contents are present at this exact position.
+#Include|d|FileName `nCauses the script to behave as though the specified file's contents are present at this exact position.
+#InputLevel|d|[, Level] `nControls which artificial keyboard and mouse events are ignored by hotkeys and hotstrings.
+#InstallKeybdHook
+#InstallMouseHook
+#KeyHistory|d|MaxEvents
+#LTrim|d|[On ¦ Off]
+#MaxHotkeysPerInterval|d|Value
+#MaxMem|d|ValueInMegabytes
+#MaxThreadsBuffer|d|On ¦ Off
+#MaxThreadsPerHotkey|d|Value
+#MaxThreads|d|Value
+#MenuMaskKey|d|keyname `nChanges which key is used to mask Win or Alt keyup events.
+#NoEnv
+#NoTrayIcon
+#Persistent
+#SingleInstance|d|[Force ¦ Ignore ¦ Off]
+#UseHook|d|[On ¦ Off]
+#Warn|d|[WarningType, WarningMode] `nEnables or disables warnings for selected load-time or run-time conditions that may be indicative of developer errors.
+#WinActivateForce
+%A_AhkVersion%
+%A_AppData%
+%A_AppDataCommon%
+%A_AutoTrim%
+%A_BatchLines%
+%A_CaretX%
+%A_CaretY%
+%A_ComputerName%
+%A_ControlDelay%
+%A_Cursor%
+%A_DD%
+%A_DDD%
+%A_DDDD%
+%A_DefaultMouseSpeed%
+%A_Desktop%
+%A_DesktopCommon%
+%A_DetectHiddenText%
+%A_DetectHiddenWindows%
+%A_EndChar%
+%A_EventInfo%
+%A_ExitReason%
+%A_FormatFloat%
+%A_FormatInteger%
+%A_Gui%
+%A_GuiControl%
+%A_GuiControlEvent%
+%A_GuiEvent%
+%A_GuiHeight%
+%A_GuiWidth%
+%A_GuiX%
+%A_GuiY%
+%A_Hour%
+%A_IconFile%
+%A_IconHidden%
+%A_IconNumber%
+%A_IconTip%
+%A_Index%
+%A_IPAddress1%
+%A_IPAddress2%
+%A_IPAddress3%
+%A_IPAddress4%
+%A_ISAdmin%
+%A_IsCompiled%
+%A_IsCritical%
+%A_IsPaused%
+%A_IsSuspended%
+%A_KeyDelay%
+%A_Language%
+%A_LastError%
+%A_LineFile%
+%A_LineNumber%
+%A_LoopField%
+%A_LoopFileAttrib%
+%A_LoopFileDir%
+%A_LoopFileExt%
+%A_LoopFileFullPath%
+%A_LoopFileLongPath%
+%A_LoopFileName%
+%A_LoopFileShortName%
+%A_LoopFileShortPath%
+%A_LoopFileSize%
+%A_LoopFileSizeKB%
+%A_LoopFileSizeMB%
+%A_LoopFileTimeAccessed%
+%A_LoopFileTimeCreated%
+%A_LoopFileTimeModified%
+%A_LoopReadLine%
+%A_LoopRegKey%
+%A_LoopRegName%
+%A_LoopRegSubkey%
+%A_LoopRegTimeModified%
+%A_LoopRegType%
+%A_MDAY%
+%A_Min%
+%A_MM%
+%A_MMM%
+%A_MMMM%
+%A_Mon%
+%A_MouseDelay%
+%A_MSec%
+%A_MyDocuments%
+%A_Now%
+%A_NowUTC%
+%A_NumBatchLines%
+%A_OSType%
+%A_OSVersion%
+%A_PriorHotkey%
+%A_ProgramFiles%
+%A_Programs%
+%A_ProgramsCommon%
+%A_ScreenHeight%
+%A_ScreenWidth%
+%A_ScriptDir%
+%A_ScriptFullPath%
+%A_ScriptName%
+%A_Sec%
+%A_Space%
+%A_StartMenu%
+%A_StartMenuCommon%
+%A_Startup%
+%A_StartupCommon%
+%A_StringCaseSense%
+%A_Tab%
+%A_Temp%
+%A_ThisFunc%
+%A_ThisHotkey%
+%A_ThisLabel%
+%A_ThisMenu%
+%A_ThisMenuItem%
+%A_ThisMenuItemPos%
+%A_TickCount%
+%A_TimeIdle%
+%A_TimeIdlePhysical%
+%A_TimeSincePriorHotkey%
+%A_TimeSinceThisHotkey%
+%A_TitleMatchMode%
+%A_TitleMatchModeSpeed%
+%A_UserName%
+%A_WDay%
+%A_WinDelay%
+%A_WinDir%
+%A_WorkingDir%
+%A_YDay%
+%A_Year%
+%A_YWeek%
+%A_YYYY%
+&
+&&
+&=
+**
+*=
++=
+-=
+.=
+.__Call(|d|[params...]) `n'Call' meta-function of a class or object.
+.__Get(|d|[params...]) `n'Get' meta-function of a class or object.
+.__Handle
+.__Set(|d|[params...,] value) `n'Set' meta-function of a class or object.
+._NewEnum(|d|) `nReturns a new enumerator to enumerate this object's key-value pairs.
+.AtEOF
+.Clone(|d|) `nReturns a shallow copy of the object.
+.Close(|d|) `n[File object] Closes the file, flushes any data in the cache to disk and releases the share locks.
+.Encoding
+.GetAddress(|d|Key) `nReturns the current address of the field's string buffer, if it has one.
+.GetCapacity(|d|[Key]) `nReturns the current capacity of an object or one of its fields.
+.GetCapacity(|d|[Key])|d|\nReturns the current capacity of an object or one of its fields.
+.Insert(|d|index, values...) `nInsert one or more values at the given position.
+.Insert(|d|key, value) `nInsert a key-value pair.
+.Insert(|d|value) `nInsert one or more values at the end of the array.
+.IsBuiltIn
+.IsByRef(|d|index) `n[Func object] Determines whether a parameter is ByRef.
+.IsOptional(|d|index) `n[Func object] Determines whether a parameter is optional.
+.IsVariadic
+.MaxIndex(|d|) `nIf any integer keys are present, returns the highest. Otherwise an empty string is returned.
+.MaxParams
+.MinIndex(|d|) `nIf any integer keys are present, returns the lowest. Otherwise an empty string is returned.
+.MinParams
+.Name
+.Position
+.RawRead(|d|VarOrAddress, Bytes) `n[File object] Read raw binary data from the file into memory.
+.RawWrite(|d|VarOrAddress, Bytes) `n[File object] Write raw binary data to the file.
+.Read(|d|[CharCount]) `n[File object] Reads a string of characters from the file and advances the file pointer.
+.ReadChar(|d|) `n[File object] Reads a little-endian signed 8-bit number from the file and advances the file pointer.
+.ReadDouble(|d|) `n[File object] Reads a little-endian 64-bit floating point number from the file and advances the file pointer.
+.ReadFloat(|d|) `n[File object] Reads a little-endian 32-bit floating point number from the file and advances the file pointer.
+.ReadInt(|d|) `n[File object] Reads a little-endian signed 32-bit number from the file and advances the file pointer.
+.ReadInt64(|d|) `n[File object] Reads a little-endian 64-bit number from the file and advances the file pointer.
+.ReadLine(|d|) `n[File object] Reads a line of text from the file and advances the file pointer.
+.ReadShort(|d|) `n[File object] Reads a little-endian signed 16-bit number from the file and advances the file pointer.
+.ReadUChar(|d|) `n[File object] Reads a little-endian unsigned 8-bit number from the file and advances the file pointer.
+.ReadUInt(|d|) `n[File object] Reads a little-endian unsigned 32-bit number from the file and advances the file pointer.
+.ReadUShort(|d|) `n[File object] Reads a little-endian unsigned 16-bit number from the file and advances the file pointer.
+.Remove(|d|first, last) `nRemove a range of keys and return the number of actual key-value pairs removed.
+.Remove(|d|intkey, "") `nRemove and return the element at intkey without shifting integer keys.
+.Remove(|d|key) `nRemove and return the array element at Index.
+.Seek(|d|Distance [, Origin := 0]) `n[File object] Moves the file pointer.
+.SetCapacity(|d|Key, ByteSize) `nAdjusts the capacity of an object field.
+.SetCapacity(|d|MaxItems) `nAdjusts the capacity of an object.
+.Write(|d|String) `n[File object] Writes a string of characters to the file and advances the file pointer.
+.WriteChar(|d|num) `n[File object] Writes a little-endian signed 8-bit number to the file and advances the file pointer.
+.WriteDouble(|d|num) `n[File object] Writes a little-endian 64-bit floating point number to the file and advances the file pointer.
+.WriteFloat(|d|num) `n[File object] Writes a little-endian 32-bit floating point number to the file and advances the file pointer.
+.WriteInt(|d|num) `n[File object] Writes a little-endian signed 32-bit number to the file and advances the file pointer.
+.WriteInt64(|d|num) `n[File object] Writes a little-endian 64-bit number to the file and advances the file pointer.
+.WriteLine(|d|[String]) `n[File object] Writes a string of characters followed by the newline sequence and advances the file pointer.
+.WriteShort(|d|num) `n[File object] Writes a little-endian signed 16-bit number to the file and advances the file pointer.
+.WriteUChar(|d|num) `n[File object] Writes a little-endian unsigned 8-bit number to the file and advances the file pointer.
+.WriteUInt(|d|num) `n[File object] Writes a little-endian unsigned 32-bit number to the file and advances the file pointer.
+.WriteUShort(|d|num) `n[File object] Writes a little-endian unsigned 16-bit number to the file and advances the file pointer.
+//
+//=
+<
+<<
+<<=
+<>
+==
+>=
+>>
+>>=
+?:
+^=
+__Call(|d|[params...])
+__Delete(|d|)
+__Get(|d|[params...])
+__New(|d|[params...])
+__Set(|d|[params...,] value)
+_Addref
+_Clone
+_Getaddress
+_Getcapacity
+_Haskey
+_Maxindex
+_Minindex
+_NewEnum(|d|) `nObject method which returns an enumerator object, required by the for command.
+_Release
+_Remove
+_Setcapacity
+A_AhkPath
+A_AhkVersion
+A_AppData
+A_AppDataCommon
+A_AutoTrim
+A_BatchLines
+A_CaretX
+A_CaretY
+A_ComputerName
+A_ControlDelay
+A_Cursor
+A_DD
+A_DDD
+A_DDDD
+A_DefaultMouseSpeed
+A_Desktop
+A_DesktopCommon
+A_DetectHiddenText
+A_DetectHiddenWindows
+A_EndChar
+A_EventInfo
+A_ExitReason
+A_FileEncoding
+A_FormatFloat
+A_FormatInteger
+A_Gui
+A_GuiControl
+A_GuiControlEvent
+A_GuiEvent
+A_GuiHeight
+A_GuiWidth
+A_GuiX
+A_GuiY
+A_Hour
+A_IconFile
+A_IconHidden
+A_IconNumber
+A_IconTip
+A_Index
+A_IPAddress1
+A_IPAddress2
+A_IPAddress3
+A_IPAddress4
+A_Is64bitOS
+A_IsAdmin
+A_IsCompiled
+A_IsCritical
+A_IsPaused
+A_IsSuspended
+A_IsUnicode
+A_KeyDelay
+A_Language
+A_LastError
+A_LineFile
+A_LineNumber
+A_LoopField
+A_LoopFileAttrib
+A_LoopFileDir
+A_LoopFileExt
+A_LoopFileFullPath
+A_LoopFileLongPath
+A_LoopFileName
+A_LoopFileShortName
+A_LoopFileShortPath
+A_LoopFileSize
+A_LoopFileSizeKB
+A_LoopFileSizeMB
+A_LoopFileTimeAccessed
+A_LoopFileTimeCreated
+A_LoopFileTimeModified
+A_LoopReadLine
+A_LoopRegKey
+A_LoopRegName
+A_LoopRegSubkey
+A_LoopRegTimeModified
+A_LoopRegType
+A_MDay
+A_Min
+A_MM
+A_MMM
+A_MMMM
+A_Mon
+A_MouseDelay
+A_MSec
+A_MyDocuments
+A_Now
+A_NowUTC
+A_NumBatchLines
+A_OSType
+A_OSVersion
+A_PriorHotkey
+A_PriorKey
+A_ProgramFiles
+A_Programs
+A_ProgramsCommon
+A_PtrSize
+A_RegView
+A_ScreenDPI
+A_ScreenHeight
+A_ScreenWidth
+A_ScriptDir
+A_ScriptFullPath
+A_ScriptHwnd
+A_ScriptName
+A_Sec
+A_Space
+A_StartMenu
+A_StartMenuCommon
+A_Startup
+A_StartupCommon
+A_StringCaseSense
+A_Tab
+A_Temp
+A_ThisFunc
+A_ThisHotkey
+A_ThisLabel
+A_ThisMenu
+A_ThisMenuItem
+A_ThisMenuItemPos
+A_TickCount
+A_TimeIdle
+A_TimeIdlePhysical
+A_TimeSincePriorHotkey
+A_TimeSinceThisHotkey
+A_TitleMatchMode
+A_TitleMatchModeSpeed
+A_UserName
+A_WDay
+A_WinDelay
+A_WinDir
+A_WorkingDir
+A_YDay
+A_Year
+A_YWeek
+A_YYYY
+AboveNormal
+Abs(|d|Number)
+ACos(|d|Number)
+ActiveX
+ahk_class
+ahk_exe
+ahk_group
+ahk_id
+ahk_pid
+AltDown
+AltSubmit
+AltTab
+AltTabAndMenu
+AltTabMenu
+AltTabMenuDismiss
+AltUp
+AppsKey
+Array(|d|[values...]) `nCreates an array.
+Asc(|d|String)
+ASin(|d|Number)
+ATan(|d|Number)
+AutoSize
+AutoTrim|d|, On ¦ Off
+Background
+BackgroundTrans
+BackSpace
+BelowNormal
+BitAnd
+BitNot
+BitOr
+BitShiftLeft
+BitShiftRight
+BitXOr
+Blind
+BlockInput|d|, On ¦ Off ¦ Send ¦ Mouse ¦ SendAndMouse ¦ Default ¦ MouseMove ¦ MouseMoveOff
+Border
+break|d|[, LoopLabel]
+Browser_Back
+Browser_Favorites
+Browser_Forward
+Browser_Home
+Browser_Refresh
+Browser_Search
+Browser_Stop
+Caption
+catch|d|[, OutputVar]
+Ceil(|d|Number)
+Center
+CharP
+Check3
+Checkbox
+CheckedGray
+Choose
+ChooseString
+Chr(|d|Number)
+class|d|ClassName [extends ClassName]
+ClipboardAll
+ClipWait|d|[, SecondsToWait, 1]
+ComboBox
+ComObjActive(|d|ProgIdOrCLSID) `nRetrieves a running object that has been registered with OLE.
+ComObjArray(|d|VarType, Count1 [, Count2, ... Count8]) `nCreates a SAFEARRAY for use with COM.
+Comobjconnect
+ComObjCreate(|d|ProgIdOrCLSID [, IID]) `nCreates a COM object.
+ComObject(|d|vt, val [, flags]) `nCreates an object representing a typed value to be passed as a parameter or return value.
+ComObjEnwrap(|d|pdisp) `n[DEPRECATED - Use ComObject(9,ptr,1) and ObjAddRef(ptr) instead]
+ComObjError(|d|[Enable])\nEnables or disables notification of COM errors. If Enable is omitted, the current setting is returned.
+ComObjFlags(|d|ComObject [, NewFlags, Mask]) `nRetrieves or changes flags which control a COM wrapper object's behaviour.
+ComObjGet(|d|name) `nReturns a reference to an object provided by a COM component.
+ComObjGet(|d|name)|d|\nReturns a reference to an object provided by a COM component.
+ComObjMissing(|d|) `n[DEPRECATED - Write consecutive commas instead]
+Comobjparameter
+ComObjQuery(|d|ComObject [, SID], IID) `nQueries a COM object for an interface or service.
+ComObjType(|d|obj [, "Name ¦ IID"]) `nRetrieves type information for a COM object.
+ComObjUnwrap(|d|obj) `n[DEPRECATED - Use ComObjValue(ptr) and ObjAddRef(ptr) instead]
+ComObjValue(|d|obj) `nRetrieves the raw 64-bit signed integer stored in a ComObject wrapper.
+ComSpec
+continue|d|[, LoopLabel]
+Control,|d|Cmd [, Value, Control, WinTitle, WinText, ExcludeTitle, ExcludeText]
+ControlClick|d|[, Control-or-Pos, WinTitle, WinText, WhichButton, ClickCount, Options, ExcludeTitle, ExcludeText]
+ControlFocus|d|[, Control, WinTitle, WinText, ExcludeTitle, ExcludeText]
+ControlGet,|d|OutputVar, Cmd [, Value, Control, WinTitle, WinText, ExcludeTitle, ExcludeText]
+ControlGetFocus,|d|OutputVar [WinTitle, WinText, ExcludeTitle, ExcludeText]
+ControlGetPos|d|[, X, Y, Width, Height, Control, WinTitle, WinText, ExcludeTitle, ExcludeText]
+ControlGetText,|d|OutputVar [, Control, WinTitle, WinText, ExcludeTitle, ExcludeText]
+ControlList
+ControlMove,|d|Control, X, Y, Width, Height [, WinTitle, WinText, ExcludeTitle, ExcludeText]
+ControlSendRaw|d|[, Control, Keys, WinTitle, WinText, ExcludeTitle, ExcludeText]
+ControlSend|d|[, Control, Keys, WinTitle, WinText, ExcludeTitle, ExcludeText]
+ControlSetText,|d|Control, NewText [, WinTitle, WinText, ExcludeTitle, ExcludeText]
+CoordMode,|d|ToolTip ¦ Pixel ¦ Mouse ¦ Caret ¦ Menu [, Screen ¦ Relative ¦ Window ¦ Client]
+Cos(|d|Number)
+Critical|d|[, Off]
+Ctrl
+CtrlBreak
+CtrlDown
+CtrlUp
+Custom
+DateTime
+Days
+DDL
+DeleteAll
+Deref
+DetectHiddenText,|d|On ¦ Off
+DetectHiddenWindows,|d|On ¦ Off
+Disabled
+DllCall(|d|"[DllFile\\]Function" [, Type1, Arg1, Type2, Arg2, ..., "Cdecl ReturnType"])
+DoubleP
+DPIScale
+Drive,|d|Sub-command [, Drive , Value]
+DriveGet,|d|OutputVar, Cmd [, Value]
+DriveSpaceFree,|d|OutputVar, Path
+DropDownList
+Edit
+Eject
+Enabled
+Endrepeat
+Enter
+EnvAdd,|d|Var, Value [, TimeUnits]
+EnvDiv,|d|Var, Value
+EnvGet,|d|OutputVar, EnvVarName
+EnvMult,|d|Var, Value
+EnvSet,|d|EnvVar, Value
+EnvSub,|d|Var, Value [, TimeUnits]
+EnvUpdate
+Exception(|d|message [, what, extra])
+ExitApp|d|[, ExitCode]
+Exit|d|[, ExitCode]
+Exp(|d|Number)
+ExStyle
+F1
+F10
+F11
+F12
+F13
+F14
+F15
+F16
+F17
+F18
+F19
+F2
+F20
+F21
+F22
+F23
+F24
+F3
+F4
+F5
+F6
+F7
+F8
+F9
+false
+FileAppend|d|[, Text, Filename, Encoding]
+FileAppend|d|[,|d|Text, Filename, Encoding]
+FileAppend|d|[,|d|Text,|d|Filename, Encoding]
+Filecopy
+Filecopydir
+FileCreateDir,|d|Path
+FileCreateShortcut,|d|Target, ShortcutFile [, WorkingDir, Args, Description, IconFile, ShortcutKey, IconNumber, RunState]
+FileDelete,|d|FilePattern
+FileEncoding|d|[, CPnnn ¦ UTF-8/16[-RAW] ] `nSets the default encoding for FileRead, FileReadLine, Loop Read, FileAppend, and FileOpen.
+FileExist(|d|"FilePattern")
+FileGetAttrib,|d|OutputVar( RASHNDOCT) [, Filename]
+FileGetShortcut,|d|ShortcutFile [, OutTarget, OutDir, OutArgs, OutDescription, OutIcon, OutIconNum, OutRunState]
+FileGetSize,|d|OutputVar [, Filename, Units]
+FileGetSize,|d|OutputVar|d|[, Filename, Units]
+Filegettime
+FileGetVersion,|d|OutputVar [, Filename]
+FileGetVersion,|d|OutputVar|d|[, Filename]
+FileGetVersion,|d|OutputVar|d|[,|d|Filename]
+FileGetVersion,|d|OutputVar|d|[,|d|Filename]
+Fileinstall
+Filemove
+Filemovedir
+FileOpen(|d|file, mode[, encoding]) `nOpens a file and returns a new file object.
+FileRead,|d|OutputVar, Filename
+FileReadLine,|d|OutputVar, Filename, LineNum
+FileRecycle,|d|FilePattern
+FileRecycleEmpty|d|[, Path]
+FileRecycleEmpty|d|[,|d|Path]
+Fileremovedir
+FileSelectFile,|d|OutputVar [, Options, RootDir[\\DefaultFilename], Prompt, Filter]
+FileSelectFolder,|d|OutputVar [, *StartingFolder, Options, Prompt]
+FileSetAttrib,|d|Attributes( +-^RASHNOT) [, FilePattern, OperateOnFolders?, Recurse?]
+FileSetAttrib,|d|Attributes(|d|+-^RASHNOT) [, FilePattern, OperateOnFolders?, Recurse?]
+Filesettime
+FileSystem
+finally
+Flash
+FloatP
+Floor(|d|Number)
+FormatTime,|d|OutputVar [, YYYYMMDDHH24MISS, Format]
+FormatTime,|d|OutputVar|d|[, YYYYMMDDHH24MISS, Format]
+for|d|key [,val] in obj
+FromCodePage
+Func(|d|funcname)
+GetKeyName(|d|key)
+GetKeySC(|d|key)
+GetKeyState(|d|KeyName [, "P" or "T"])
+GetKeyVK(|d|key)
+global
+gosub,|d|Label `nJumps to the specified label and continues execution until Return is encountered.
+goto,|d|Label `nJumps to the specified label and continues execution.
+Grid
+GroupActivate,|d|GroupName [, R]
+GroupAdd,|d|GroupName, WinTitle [, WinText, Label, ExcludeTitle, ExcludeText]
+GroupBox
+GroupClose,|d|GroupName [, A ¦ R]
+GroupDeactivate,|d|GroupName [, R]
+Gui,|d|sub-command [, Param2, Param3, Param4]
+GuiClose
+GuiContextMenu
+GuiControl,|d|Sub-command, ControlID [, Param3]
+GuiControlGet,|d|OutputVar [, Sub-command, ControlID, Param4]
+GuiDropFiles
+GuiEscape
+GuiSize
+Hex
+Hideautoitwin
+HKEY_CLASSES_ROOT
+HKEY_CURRENT_CONFIG
+HKEY_CURRENT_USER
+HKEY_LOCAL_MACHINE
+HKEY_USERS
+Home
+Hotkey,|d|KeyName [, Label, Options]
+Hotkey,|d|KeyName|d|[, Label, Options]
+Hotkey,|d|KeyName|d|[,|d|Label, Options]
+Hours
+hp
+HScroll
+IconSmall
+IDLast
+IfEqual,|d|var, value
+IfExist,|d|File ¦ Dir ¦ Pattern
+IfGreater,|d|var, value
+IfGreaterOrEqual,|d|var, value
+IfInString,|d|Var, SearchString
+IfLess,|d|var, value
+IfLessOrEqual,|d|var, value
+IfMsgBox,|d|Yes ¦ No ¦ OK ¦ Cancel ¦ Abort ¦ Ignore ¦ Retry ¦ Timeout
+IfNotEqual,|d|var, value
+IfNotExist,|d|File ¦ Dir ¦ Pattern
+IfNotInString,|d|Var, SearchString
+IfWinActive|d|[, WinTitle, WinText, ExcludeTitle, ExcludeText]
+IfWinExist|d|[, WinTitle, WinText, ExcludeTitle, ExcludeText]
+IfWinNotActive|d|[, WinTitle, WinText, ExcludeTitle, ExcludeText]
+IfWinNotExist|d|[, WinTitle, WinText, ExcludeTitle, ExcludeText]
+if|d|Var [not] between Low and High
+if|d|Var [not] contains value1,value2,...
+if|d|Var [not] in value1,value2,...
+if|d|Var is [not] integer ¦ float ¦ number ¦ digit ¦ xdigit ¦ alpha ¦ upper ¦ lower ¦ alnum ¦ space ¦ time
+IL_Add(|d|ImageListID, Filename [, IconNumber, ResizeNonIcon?])
+IL_Create(|d|[InitialCount, GrowCount, LargeIcons?])
+IL_Destroy(|d|ImageListID)
+ImageSearch,|d|OutputVarX, OutputVarY, X1, Y1, X2, Y2, ImageFile
+IniDelete,|d|Filename, Section [, Key]
+IniRead,|d|OutputVar, Filename [, Section, Key, Default]
+IniWrite,|d|Value, Filename, Section [, Key]
+InputBox,|d|OutputVar [, Title, Prompt, HIDE, Width, Height, X, Y, Font, Timeout, Default]
+Input|d|[, OutputVar, Options, EndKeys, MatchList]
+InStr(|d|Haystack, Needle [, CaseSensitive?, StartingPos, Occurrence])
+Int64P
+Interrupt
+IntP
+IsByRef(|d|var)
+IsFunc(|d|FunctionName)
+IsLabel(|d|LabelName)
+IsObject(|d|param) `nTests if the parameter is an object.
+italic
+Join
+Joy1
+Joy10
+Joy11
+Joy12
+Joy13
+Joy14
+Joy15
+Joy16
+Joy17
+Joy18
+Joy19
+Joy2
+Joy20
+Joy21
+Joy22
+Joy23
+Joy24
+Joy25
+Joy26
+Joy27
+Joy28
+Joy29
+Joy3
+Joy30
+Joy31
+Joy32
+Joy4
+Joy5
+Joy6
+Joy7
+Joy8
+Joy9
+JoyAxes
+JoyButtons
+JoyInfo
+JoyName
+JoyPOV
+JoyR
+JoyU
+JoyV
+JoyX
+JoyY
+JoyZ
+KeyWait,|d|KeyName [, Options]
+LAlt
+LastFound
+LastFoundExist
+Launch_App1
+Launch_App2
+Launch_Mail
+Launch_Media
+LButton
+LControl
+LCtrl
+Link
+ListBox
+ListHotkeys
+ListLines
+ListVars
+ListView
+Ln(|d|Number)
+LocalSameAsGlobal
+Log(|d|Number)
+Logoff
+Loop1|r|Loop|d|[, Count]
+Loop2|r|Loop,|d|FilePattern [, IncludeFolders?, Recurse?]
+Loop3|r|Loop,|d|Parse, InputVar [, Delimiters ¦ CSV, OmitChars]
+Loop4|r|Loop,|d|Read, InputFile [, OutputFile]
+Loop5|r|Loop,|d|HKLM ¦ HKU ¦ HKCU ¦ HKCR ¦ HKCC [, Key, IncludeSubkeys?, Recurse?] `n{\n	commands\n} `nPerforms a repetition/file/file reading/parsing/registry loop.
+Lowercase
+LShift
+LTrim(|d|string [, omitchars := " `t"]) `nTrims characters from the beginning of a string.
+LV_Add(|d|[Options, Col1, Col2, ...])
+LV_Delete(|d|[RowNumber])
+LV_DeleteCol(|d|ColumnNumber)
+LV_GetCount(|d|["S ¦ C"])
+LV_GetNext(|d|[StartingRowNumber, "C ¦ F"])
+LV_GetText(|d|OutputVar, RowNumber [, ColumnNumber])
+LV_Insert(|d|RowNumber [, Options, Col1, Col2, ...])
+LV_InsertCol(|d|ColumnNumber [, Options, ColumnTitle])
+LV_Modify(|d|RowNumber, Options [, NewCol1, NewCol2, ...])
+LV_ModifyCol(|d|[ColumnNumber, Options, ColumnTitle])
+LV_SetImageList(|d|ImageListID [, 0 ¦ 1 ¦ 2])
+LWin
+LWinDown
+LWinUp
+MainWindow
+Margin
+MaximizeBox
+MaxSize
+MButton
+Media_Next
+Media_Play_Pause
+Media_Prev
+Media_Stop
+Menu,|d|MenuName, Cmd [, P3, P4, P5]
+MinimizeBox
+MinMax
+MinSize
+Minutes
+Mod(|d|Dividend, Divisor)
+MonthCal
+MouseClick,|d|WhichButton [, X, Y, ClickCount, Speed, D ¦ U, R]
+MouseClickDrag,|d|WhichButton, X1, Y1, X2, Y2 [, Speed, R]
+MouseGetPos|d|[, OutputVarX, OutputVarY, OutputVarWin, OutputVarControl, 1 ¦ 2 ¦ 3]
+MouseMove,|d|X, Y [, Speed, R]
+MouseMove,|d|X,|d|Y [, Speed, R]
+NoActivate
+NoDefault
+NoHide
+NoIcon
+NoMainWindow
+NoSort
+NoSortHdr
+NoStandard
+NoTab
+NoTimers
+NumGet(|d|VarOrAddress [, Offset := 0] [, Type := "UPtr"])
+Numpad0
+Numpad1
+Numpad2
+Numpad3
+Numpad4
+Numpad5
+Numpad6
+Numpad7
+Numpad8
+Numpad9
+NumpadAdd
+NumpadClear
+NumpadDel
+NumpadDiv
+NumpadDot
+NumpadDown
+NumpadEnd
+NumpadEnter
+NumpadHome
+NumpadIns
+NumpadLeft
+NumpadMult
+NumpadPgdn
+NumpadPgup
+NumpadRight
+NumpadSub
+NumpadUp
+NumPut(|d|Number, VarOrAddress [, Offset := 0] [, Type := "UPtr"])
+ObjAddRef(|d|address)
+ObjClone(|d|obj)
+Object(|d|[key, value, [key2, value2...]]) `nCreates a scriptable object which is also an associative array.
+Object(|d|obj) `nRetrieves an interface pointer from an object reference or vice versa.
+ObjGetAddress(|d|obj, key)
+ObjGetCapacity(|d|obj[, key])
+ObjHasKey(|d|obj, key)
+ObjInsert(|d|obj, index, values...)
+ObjInsert(|d|obj, key, value)
+ObjInsert(|d|obj, value)
+ObjMaxIndex(|d|obj)
+ObjMinIndex(|d|obj)
+ObjNewEnum(|d|obj)
+ObjRelease(|d|address)
+ObjRemove(|d|obj, first, last)
+ObjRemove(|d|obj, intkey, "")
+ObjRemove(|d|obj, key)
+ObjSetCapacity(|d|obj, key, bytesize)
+ObjSetCapacity(|d|obj, maxitems)
+OnClipboardChange
+OnExit|d|[, Label]
+OnMessage(|d|MsgNumber [, "FunctionName"])
+OutputDebug,|d|Text
+OwnDialogs
+Owner
+Pause|d|[, On ¦ Off ¦ Toggle, OperateOnUnderlyingThread?]
+PGDN
+PGUP
+Picture
+PixelGetColor,|d|OutputVar, X, Y [, Alt ¦ Slow ¦ RGB]
+PixelSearch,|d|OutputVarX, OutputVarY, X1, Y1, X2, Y2, ColorID [, Variation, Fast ¦ RGB]
+PostMessage,|d|Msg [, wParam, lParam, Control, WinTitle, WinText, ExcludeTitle, ExcludeText]
+Pow
+PrintScreen
+Priority
+Process,|d|Cmd, PID-or-Name [, Param3]
+ProcessName
+ProcessPath
+Progress,|d|Param1 [, SubText, MainText, WinTitle, FontName]
+Radio
+RAlt
+Random,|d|OutputVar [, Min, Max]
+RButton
+RCtrl
+ReadOnly
+Realtime
+Redraw
+REG_DWORD_BIG_ENDIAN
+REG_FULL_RESOURCE_DESCRIPTOR
+REG_LINK
+REG_QWORD
+REG_RESOURCE_LIST
+REG_RESOURCE_REQUIREMENTS_LIST
+RegDelete,|d|HKLM ¦ HKU ¦ HKCU ¦ HKCR ¦ HKCC, SubKey [, ValueName]
+RegExMatch(|d|Haystack, NeedleRegEx [, UnquotedOutputVar := "", StartingPos := 1])
+RegExReplace(|d|Haystack, NeedleRegEx [, Replacement := "", OutputVarCount := "", Limit := -1, StartingPos := 1])
+Region
+RegisterCallback(|d|"FunctionName" [, Options := "", ParamCount := FormalCount, EventInfo := Address])
+RegRead,|d|OutputVar, HKLM ¦ HKU ¦ HKCU ¦ HKCR ¦ HKCC, SubKey [, ValueName]
+RegWrite,|d|REG_SZ ¦ REG_EXPAND_SZ ¦ REG_MULTI_SZ ¦ REG_DWORD ¦ REG_BINARY, HKLM ¦ HKU ¦ HKCU ¦ HKCR ¦ HKCC, SubKey [, ValueName, Value]
+Reload
+Rename
+Report
+return|d|[Expression]
+Round(|d|Number [, Places])
+RShift
+RTrim(|d|string [, omitchars := " `t"]) `nTrims characters from the end of a string.
+Run,|d|Target [, WorkingDir, Max ¦ Min ¦ Hide ¦ UseErrorLevel, OutputVarPID]
+RunAs|d|[, User, Password, Domain] 
+RunWait,|d|Target [, WorkingDir, Max ¦ Min ¦ Hide ¦ UseErrorLevel, OutputVarPID]
+RWinDown
+RWinUp
+SB_SetIcon(|d|Filename [, IconNumber, PartNumber])
+SB_SetParts(|d|[Width1, Width2, ... Width255])
+SB_SetText(|d|NewText [, PartNumber, Style])
+Send,|d|Keys
+SendEvent,|d|Keys
+SendInput,|d|Keys
+SendLevel|d|[, Level] `nControls which artificial keyboard and mouse events are ignored by hotkeys and hotstrings.
+SendMessage,|d|Msg [, wParam, lParam, Control, WinTitle, WinText, ExcludeTitle, ExcludeText]
+SendMode,|d|Event ¦ Play ¦ Input ¦ InputThenPlay
+SendPlay,|d|Keys
+SendRaw,|d|Keys
+Serial
+SetBatchLines,|d|-1  ¦  20ms  ¦  LineCount
+SetCapsLockState,|d|On ¦ Off ¦ AlwaysOn ¦ AlwaysOff
+SetControlDelay,|d|Delay
+SetDefaultMouseSpeed,|d|Speed
+SetEnv,|d|Var, Value
+SetFormat,|d|FloatFast ¦ IntegerFast, TotalWidth.DecimalPlaces ¦ H ¦ D
+SetKeyDelay|d|[, Delay, PressDuration]
+SetLabel
+SetMouseDelay,|d|Delay
+SetNumLockState,|d|On ¦ Off ¦ AlwaysOn ¦ AlwaysOff
+SetRegView,|d|RegView `nSets the default encoding for FileRead, FileReadLine, Loop Read, FileAppend, and FileOpen.
+SetScrollLockState,|d|On ¦ Off ¦ AlwaysOn ¦ AlwaysOff
+SetStoreCapslockMode,|d|On ¦ Off
+SetTimer,|d|Label [, Period ¦ On ¦ Off]
+SetTitleMatchMode,|d|Fast ¦ Slow ¦ RegEx ¦ 1 ¦ 2 ¦ 3
+SetWinDelay,|d|Delay
+SetWorkingDir,|d|DirName
+ShiftAltTab
+ShiftDown
+ShiftUp
+Shutdown,|d|Code
+Sin(|d|Number)
+Sleep,|d|Delay
+Slider
+Sort,|d|VarName [, Options]
+SortDesc
+SoundBeep|d|[, Frequency, Duration]
+SoundGet,|d|OutputVar [, ComponentType, ControlType, DeviceNumber]
+SoundGetWaveVolume,|d|OutputVar [, DeviceNumber]
+SoundPlay,|d|Filename [, wait]
+SoundSet,|d|NewSetting [, ComponentType, ControlType, DeviceNumber]
+SoundSetWaveVolume,|d|Percent [, DeviceNumber]
+SplashImage|d|[, ImageFile, Options, SubText, MainText, WinTitle, FontName]
+SplashTextOff
+SplashTextOn|d|[, Width, Height, Title, Text]
+SplitPath,|d|InputVar [, OutFileName, OutDir, OutExtension, OutNameNoExt, OutDrive]
+Sqrt(|d|Number)
+Standard
+static
+StatusBarGetText,|d|OutputVar [, Part#, WinTitle, WinText, ExcludeTitle, ExcludeText]
+StatusBarWait|d|[, BarText, Seconds, Part#, WinTitle, WinText, Interval, ExcludeTitle, ExcludeText]
+StatusCD
+StrGet(|d|address [, max][, encoding]) `nRetrieves the null-terminated string at the specified address.
+StrGet(|d|address|d|[, max][, encoding]) `nRetrieves the null-terminated string at the specified address.
+strike
+StringCaseSense,|d|On ¦ Off ¦ Locale
+StringGetPos,|d|OutputVar, InputVar, SearchText [, L# ¦ R#, Offset]
+StringLeft,|d|OutputVar, InputVar, Count
+StringLen,|d|OutputVar, InputVar
+StringLower,|d|OutputVar, InputVar [, T]
+StringMid,|d|OutputVar, InputVar, StartChar [, Count, L]
+StringReplace,|d|OutputVar, InputVar, SearchText [, ReplaceText, All]
+StringRight,|d|OutputVar, InputVar, Count
+StringSplit,|d|OutputArray, InputVar [, Delimiters, OmitChars]
+StringTrimLeft,|d|OutputVar, InputVar, Count
+StringTrimRight,|d|OutputVar, InputVar, Count
+StringUpper,|d|OutputVar, InputVar [, T]
+StrLen(|d|String)
+StrPut(|d|string, address [, max] [, encoding]) `nCopies a string to the specified location.
+StrSplit(|d|String [, Delimiters, OmitChars])
+Submit
+SubStr(|d|String, StartingPos [, Length])
+Suspend|d|[, On ¦ Off ¦ Toggle ¦ Permit]
+SysGet,|d|OutputVar, Sub-command [, Param3]
+SysMenu
+Tab2
+TabStop
+Tan(|d|Number)
+Theme
+Thread,|d|Setting, P2 [, P3]
+throw|d|Expression
+Tile
+ToCodePage
+ToggleCheck
+ToggleEnable
+ToolTip|d|[, Text, X, Y, WhichToolTip]
+ToolWindow
+Topmost
+TransColor
+Transform,|d|OutputVar, Cmd, Value1 [, Value2]
+Transparent
+TrayTip|d|[, Title, Text, Seconds, Options]
+TreeView
+Trim(|d|string [, omitchars := " `t"]) `nTrims characters from the beginning and end of a string.
+TryAgain
+TV_Add(|d|Name, [ParentItemID, Options])
+TV_Delete(|d|[ItemID])
+TV_Get(|d|ItemID, "Expand  ¦  Check  ¦  Bold")
+TV_GetChild(|d|ParentItemID)
+TV_GetCount(|d|)
+TV_GetNext(|d|[ItemID, "Checked  ¦  Full"])
+TV_GetParent(|d|ItemID)
+TV_GetPrev(|d|ItemID)
+TV_GetSelection(|d|)
+TV_GetText(|d|OutputVar, ItemID)
+TV_Modify(|d|ItemID [, Options, NewName])
+TV_SetImageList(|d|ImageList [, 0 ¦ 2])
+UCharP
+UInt64
+UInt64P
+UIntP
+UnCheck
+underline
+Unicode
+Unlock
+until|d|Expression
+UpDown
+Uppercase
+URLDownloadToFile|d|, URL, Filename
+UseEnv
+UseUnsetGlobal
+UseUnsetLocal
+UShortP
+UStr
+UStrP
+VarSetCapacity(|d|Var [, RequestedCapacity, FillByte])
+VisFirst
+Visible
+Volume_Down
+Volume_Mute
+Volume_Up
+VScroll
+WantCtrlA
+WantF2
+WantReturn
+WheelDown
+WheelLeft
+WheelRight
+WheelUp
+while|d|Expression
+WinActivateBottom|d|[, WinTitle, WinText, ExcludeTitle, ExcludeText]
+WinActivate|d|[, WinTitle, WinText, ExcludeTitle, ExcludeText]
+WinActive(|d|["WinTitle", "WinText", "ExcludeTitle", "ExcludeText"])
+WinClose|d|[, WinTitle, WinText, SecondsToWait, ExcludeTitle, ExcludeText]
+WinExist(|d|["WinTitle" , "WinText", "ExcludeTitle", "ExcludeText"])
+WinGet,|d|OutputVar [, Cmd, WinTitle, WinText, ExcludeTitle, ExcludeText]
+WinGetActiveStats,|d|Title, Width, Height, X, Y
+WinGetActiveTitle,|d|OutputVar
+WinGetClass,|d|OutputVar [, WinTitle, WinText, ExcludeTitle, ExcludeText]
+WinGetPos|d|[, X, Y, Width, Height, WinTitle, WinText, ExcludeTitle, ExcludeText]
+WinGetText,|d|OutputVar [, WinTitle, WinText, ExcludeTitle, ExcludeText]
+WinGetTitle,|d|OutputVar [, WinTitle, WinText, ExcludeTitle, ExcludeText]
+WinHide|d|[, WinTitle, WinText, ExcludeTitle, ExcludeText]
+WinKill|d|[, WinTitle, WinText, SecondsToWait, ExcludeTitle, ExcludeText]
+WinMaximize|d|[, WinTitle, WinText, ExcludeTitle, ExcludeText]
+WinMenuSelectItem|d|, WinTitle, WinText, Menu [, SubMenu1, SubMenu2, SubMenu3, SubMenu4, SubMenu5, SubMenu6, ExcludeTitle, ExcludeText]
+WinMinimizeAll
+WinMinimizeAllUndo
+WinMinimize|d|[, WinTitle, WinText, ExcludeTitle, ExcludeText]
+WinMove,|d|WinTitle, WinText, X, Y [, Width, Height, ExcludeTitle, ExcludeText]
+WinRestore|d|[, WinTitle, WinText, ExcludeTitle, ExcludeText]
+WinSet,|d|AlwaysOnTop ¦ Trans, On ¦ Off ¦ Toggle ¦ Value( 0-255) [, WinTitle, WinText, ExcludeTitle, ExcludeText]
+WinSetTitle,|d|WinTitle, WinText, NewTitle [, ExcludeTitle, ExcludeText]
+WinShow|d|[, WinTitle, WinText, ExcludeTitle, ExcludeText]
+WinWait,|d|WinTitle, WinText, Seconds [, ExcludeTitle, ExcludeText]
+WinWaitActive|d|[, WinTitle, WinText, Seconds, ExcludeTitle, ExcludeText]
+WinWaitClose,|d|WinTitle, WinText, Seconds [, ExcludeTitle, ExcludeText]
+WinWaitNotActive|d|[, WinTitle, WinText, Seconds, ExcludeTitle, ExcludeText]
+XButton1
+XButton2
+{!}
+{#}
+{$}
+{+}
+{^}
+{`}
+{BLIND}
+{~}
+|=
+||
