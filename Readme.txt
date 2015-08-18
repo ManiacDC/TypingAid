@@ -19,6 +19,7 @@ English Wordlists:
 
 Non-English Wordlists
 [url=https://raw.githubusercontent.com/ManiacDC/TypingAid/master/Wordlists/WordList_French%20rommmcek.txt]Large French Wordlist[/url] by [url=http://ahkscript.org/boards/memberlist.php?mode=viewprofile&u=59845]rommmcek[/url]
+[url=https://raw.githubusercontent.com/ManiacDC/TypingAid/master/Wordlists/WordList_German%20rommmcek.txt]Large German Wordlist[/url] by [url=http://ahkscript.org/boards/memberlist.php?mode=viewprofile&u=59845]rommmcek[/url]
 [url=https://raw.githubusercontent.com/ManiacDC/TypingAid/master/Wordlists/WordList_ItalianAbc%20rommmcek.txt]Large Italian Wordlist[/url] by [url=http://ahkscript.org/boards/memberlist.php?mode=viewprofile&u=59845]rommmcek[/url]
 [url=https://raw.githubusercontent.com/ManiacDC/TypingAid/master/Wordlists/Wordlist%20Romanian.txt]Romanian Wordlist (282,000+ words)[/url] Thanks to [url=http://www.autohotkey.com/board/user/38990-ochisor/]Ochisor[/url]. Extracted from [url=http://www.ub-filosofie.ro/~solcan/wt/gnu/s/aspell-ro.html]here[/url].
 [url=https://raw.githubusercontent.com/ManiacDC/TypingAid/master/Wordlists/Wordlist%20Spanish.txt]Large Spanish Wordlist[/url] by [url=https://github.com/jamesw77bp]jamesw77bp[/url]
@@ -26,6 +27,9 @@ Non-English Wordlists
 
 AHK Keyword Wordlist:
 [url=https://github.com/ManiacDC/TypingAid/raw/master/Wordlists/WordList%20AHK.txt]Wordlist AHK.txt[/url] (Thanks [url=http://www.autohotkey.com/board/topic/49517-typingaid-v219-word-autocompletion-utility/page-22#entry425973]tidbit[/url].)
+[url=https://raw.githubusercontent.com/ManiacDC/TypingAid/master/Wordlists/WordList%20AHK%20with%20parameter%20descriptions.txt]Wordlist AHK with parameter descriptions[/url] by [url=http://ahkscript.org/boards/memberlist.php?mode=viewprofile&u=59845]rommmcek[/url]
+[url=https://raw.githubusercontent.com/ManiacDC/TypingAid/master/Wordlists/WordList%20AHK%20with%20parameter%20descriptions%20and%20comments.txt]Wordlist AHK with parameter descriptions and comments[/url] by [url=http://ahkscript.org/boards/memberlist.php?mode=viewprofile&u=59845]rommmcek[/url]
+[url=https://raw.githubusercontent.com/ManiacDC/TypingAid/master/Wordlists/WordList%20AHK%20with%20parameters%20autocompleted.txt]Wordlist AHK with parameters autocompleted[/url] by [url=http://ahkscript.org/boards/memberlist.php?mode=viewprofile&u=59845]rommmcek[/url]
 
 [b]Screenshots:[/b]
 [img]https://github.com/ManiacDC/TypingAid/raw/master/Images/TypingAidListBox.png[/img]
