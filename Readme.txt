@@ -16,6 +16,8 @@ English Wordlists:
 [url=https://raw.githubusercontent.com/ManiacDC/TypingAid/master/Wordlists/English%20wordlist%20unfiltered.txt]Large English Wordlist (Unfiltered, may contain curse words, etc)[/url]
 [url=https://raw.githubusercontent.com/ManiacDC/TypingAid/master/Wordlists/WordList_English%20rommmcek.txt]Large English Wordlist[/url] by [url=http://ahkscript.org/boards/memberlist.php?mode=viewprofile&u=59845]rommmcek[/url]
 [url=https://raw.githubusercontent.com/ManiacDC/TypingAid/master/Wordlists/WordList_English%20rommmcek%20(4%2B%20letter%20words%20only).txt]Large English Wordlist (words with only 4+ letters)[/url] by [url=http://ahkscript.org/boards/memberlist.php?mode=viewprofile&u=59845]rommmcek[/url]
+[url=https://raw.githubusercontent.com/ManiacDC/TypingAid/master/Wordlists/Wordlist%20English%20Gutenberg.txt]350,000+ English words (extracted from Project Gutenberg)[/url], [url=https://github.com/dwyl/english-words]found here[/url]
+[url=https://raw.githubusercontent.com/ManiacDC/TypingAid/master/Wordlists/Wordlist%20English%20Unix.txt]235,000+ English words (extracted from /usr/share/dict/words)[/url], [url=https://github.com/dwyl/english-words]found here[/url]
 
 Non-English Wordlists
 [url=https://raw.githubusercontent.com/ManiacDC/TypingAid/master/Wordlists/WordList_French%20rommmcek.txt]Large French Wordlist[/url] by [url=http://ahkscript.org/boards/memberlist.php?mode=viewprofile&u=59845]rommmcek[/url]
