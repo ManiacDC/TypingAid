@@ -329,6 +329,8 @@ RecomputeMatches()
    
    WordMatch := StrUnmark(WordMatchOriginal)
    
+   StringUpper, WordMatch, WordMatch
+   
    ; if a user typed an accented character, we should exact match on that accented character
    if (WordMatch != WordMatchOriginal) {
       WordAccentQuery =
