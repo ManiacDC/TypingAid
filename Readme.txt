@@ -18,6 +18,9 @@ English Wordlists:
 [url=https://raw.githubusercontent.com/ManiacDC/TypingAid/master/Wordlists/WordList_English%20rommmcek%20(4%2B%20letter%20words%20only).txt]Large English Wordlist (words with only 4+ letters)[/url] by [url=http://ahkscript.org/boards/memberlist.php?mode=viewprofile&u=59845]rommmcek[/url]
 [url=https://raw.githubusercontent.com/ManiacDC/TypingAid/master/Wordlists/WordList%20English%20Gutenberg.txt]350,000+ English words (extracted from Project Gutenberg)[/url], [url=https://github.com/dwyl/english-words]found here[/url]
 [url=https://raw.githubusercontent.com/ManiacDC/TypingAid/master/Wordlists/WordList%20English%20Unix.txt]235,000+ English words (extracted from /usr/share/dict/words)[/url], [url=https://github.com/dwyl/english-words]found here[/url]
+[url=https://raw.githubusercontent.com/ManiacDC/TypingAid/master/Wordlists/Wordlist%20100000%20frequency%20weighted%20(Google%20Books).txt]100,000 English Words Weighted by Frequency (based on Google Books)[/url]
+[url=https://raw.githubusercontent.com/ManiacDC/TypingAid/master/Wordlists/Wordlist%20333333%20frequency%20weighted%20(Norvig).txt]333,333 English Words Weighted by Frequency (based on Google Web Trillion Word Corpus, by Norvig)[/url]
+[url=https://raw.githubusercontent.com/ManiacDC/TypingAid/master/Wordlists/Wordlist%20550000%20frequency%20weighted%20(BNC).txt]550,000+ English Words Weighted by Frequency (based on British National Corpus)[/url]
 
 Non-English Wordlists
 [url=https://raw.githubusercontent.com/ManiacDC/TypingAid/master/Wordlists/WordList_French%20rommmcek.txt]Large French Wordlist[/url] by [url=http://ahkscript.org/boards/memberlist.php?mode=viewprofile&u=59845]rommmcek[/url]
